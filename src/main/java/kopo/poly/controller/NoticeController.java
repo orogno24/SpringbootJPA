@@ -182,7 +182,6 @@ public class NoticeController {
         // 조회된 리스트 결과값 넣어주기
         model.addAttribute("rDTO", rDTO);
 
-
         log.info(this.getClass().getName() + ".noticeInfo End!");
 
         return "notice/noticeInfo";
