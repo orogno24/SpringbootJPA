@@ -37,5 +37,10 @@ public interface IUserInfoService {
     // 비밀번호찾기
     UserInfoDTO searchPasswordProc(UserInfoDTO pDTO) throws Exception;
 
+    // 닉네임변경
+    void newUserNameProc(UserInfoDTO pDTO) throws Exception;
+
+    // 비밀번호변경
+    void newPasswordProc(UserInfoDTO pDTO) throws Exception;
 
 }

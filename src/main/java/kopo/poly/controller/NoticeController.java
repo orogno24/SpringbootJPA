@@ -2,6 +2,7 @@ package kopo.poly.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import kopo.poly.dto.CommentDTO;
 import kopo.poly.dto.MsgDTO;
 import kopo.poly.dto.NoticeDTO;
 import kopo.poly.service.INoticeService;
@@ -66,7 +67,7 @@ public class NoticeController {
 
         // 함수 처리가 끝나고 보여줄 HTML (Thymeleaf) 파일명
         // templates/notice/noticeList.html
-        return "notice/noticeList";
+        return "notice/noticeListUsingQueryDSL";
 
     }
 
@@ -110,7 +111,7 @@ public class NoticeController {
             // 로그인을 아직 구현하지 않았기에 공지사항 리스트에서 로그인 한 것처럼 Session 값을 저장함
             String userId = CmmUtil.nvl((String) session.getAttribute("SS_USER_ID"));
             String title = CmmUtil.nvl(request.getParameter("title")); // 제목
-            String noticeYn = CmmUtil.nvl(request.getParameter("noticeYn")); // 공지글 여부
+            String noticeYn = "N"; // 공지글 여부
             String contents = CmmUtil.nvl(request.getParameter("contents")); // 내용
 
             /*
@@ -162,16 +163,8 @@ public class NoticeController {
 
         String nSeq = CmmUtil.nvl(request.getParameter("nSeq"), "0"); // 공지글번호(PK)
 
-        /*
-         * ####################################################################################
-         * 반드시, 값을 받았으면, 꼭 로그를 찍어서 값이 제대로 들어오는지 파악해야함 반드시 작성할 것
-         * ####################################################################################
-         */
         log.info("nSeq : " + nSeq);
 
-        /*
-         * 값 전달은 반드시 DTO 객체를 이용해서 처리함 전달 받은 값을 DTO 객체에 넣는다.
-         */
         NoticeDTO pDTO = NoticeDTO.builder().noticeSeq(Long.parseLong(nSeq)).build();
 
         // 공지사항 상세정보 가져오기
@@ -234,10 +227,9 @@ public class NoticeController {
         MsgDTO dto = null; // 결과 메시지 구조
 
         try {
-            String userId = CmmUtil.nvl((String) session.getAttribute("SESSION_USER_ID")); // 아이디
+            String userId = CmmUtil.nvl((String) session.getAttribute("SS_USER_ID")); // 아이디
             String nSeq = CmmUtil.nvl(request.getParameter("nSeq")); // 글번호(PK)
             String title = CmmUtil.nvl(request.getParameter("title")); // 제목
-            String noticeYn = CmmUtil.nvl(request.getParameter("noticeYn")); // 공지글 여부
             String contents = CmmUtil.nvl(request.getParameter("contents")); // 내용
 
             /*
@@ -248,14 +240,13 @@ public class NoticeController {
             log.info("userId : " + userId);
             log.info("nSeq : " + nSeq);
             log.info("title : " + title);
-            log.info("noticeYn : " + noticeYn);
             log.info("contents : " + contents);
 
             /*
              * 값 전달은 반드시 DTO 객체를 이용해서 처리함 전달 받은 값을 DTO 객체에 넣는다.
              */
             NoticeDTO pDTO = NoticeDTO.builder().userId(userId).noticeSeq(Long.parseLong(nSeq))
-                    .title(title).noticeYn(noticeYn).contents(contents).build();
+                    .title(title).contents(contents).build();
 
             // 게시글 수정하기 DB
             noticeService.updateNoticeInfo(pDTO);

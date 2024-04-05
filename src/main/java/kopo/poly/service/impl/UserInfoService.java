@@ -2,7 +2,6 @@ package kopo.poly.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kopo.poly.dto.MailDTO;
-import kopo.poly.dto.NoticeDTO;
 import kopo.poly.dto.UserInfoDTO;
 import kopo.poly.repository.UserInfoRepository;
 import kopo.poly.repository.entity.UserInfoEntity;
@@ -14,6 +13,7 @@ import kopo.poly.util.EncryptUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
@@ -227,6 +227,73 @@ public class UserInfoService implements IUserInfoService {
 
         return rDTO;
 
+    }
+
+    @Transactional
+    @Override   // 닉네임 변경 함수
+    public void newUserNameProc(UserInfoDTO pDTO) throws Exception {
+
+        log.info(this.getClass().getName() + "changeUserName start!");
+
+        log.info("userName : " + pDTO.userName());
+
+        String userId = CmmUtil.nvl(pDTO.userId());
+
+        Optional<UserInfoEntity> uEntity = userInfoRepository.findByUserId(userId);
+
+        if (uEntity.isPresent()) {
+
+            UserInfoEntity rEntity = uEntity.get();
+
+            UserInfoEntity pEntity = UserInfoEntity.builder()
+                    .userId(rEntity.getUserId()).userName(pDTO.userName())
+                    .password(rEntity.getPassword())
+                    .email(rEntity.getEmail())
+                    .regId(rEntity.getUserId()).regDt(rEntity.getRegDt())
+                    .chgId(rEntity.getUserId()).chgDt(DateUtil.getDateTime("yyyy-MM-dd hh:mm:ss"))
+                    .build();
+
+            userInfoRepository.save(pEntity);
+
+        }
+
+        log.info(this.getClass().getName() + "changeUserName end!");
+
+    }
+
+    @Transactional
+    @Override
+    public void newPasswordProc(UserInfoDTO pDTO) throws Exception {
+
+        log.info(this.getClass().getName() + "newPasswordProc start!");
+
+        String userId = CmmUtil.nvl(pDTO.userId());
+
+        // 사용자 ID로 사용자 엔티티 조회
+        Optional<UserInfoEntity> uEntity = userInfoRepository.findByUserId(userId);
+
+        if (uEntity.isPresent()) {
+
+            UserInfoEntity rEntity = uEntity.get();
+
+            log.info("rEntity userId : " + rEntity.getUserId());
+            log.info("rEntity password : " + rEntity.getPassword());
+            log.info("rEntity userName : " + rEntity.getUserName());
+            log.info("rEntity email : " + rEntity.getEmail());
+
+            UserInfoEntity pEntity = UserInfoEntity.builder()
+                    .userId(rEntity.getUserId()).userName(rEntity.getUserName())
+                    .password(pDTO.password())
+                    .email(rEntity.getEmail())
+                    .regId(rEntity.getUserId()).regDt(rEntity.getRegDt())
+                    .chgId(rEntity.getUserId()).chgDt(DateUtil.getDateTime("yyyy-MM-dd hh:mm:ss"))
+                    .build();
+
+            userInfoRepository.save(pEntity);
+
+        }
+
+        log.info(this.getClass().getName() + "newPasswordProc End!");
     }
 
 }

@@ -3,63 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>비밀번호 변경</title>
+    <title>닉네임 변경</title>
     <link rel="icon" href="/assets/img/logo.png" type="image/x-icon">
     <link rel="shortcut icon" href="/assets/img/logo.png" type="image/x-icon">
     <script type="text/javascript" src="/js/jquery-3.6.0.min.js"></script>
     <script type="text/javascript">
 
+        function changeImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    const imageThumbnail = document.getElementById('imageThumbnail');
+                    imageThumbnail.src = e.target.result;
+                }
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        function changeText() {
+            var newText = prompt("새로운 닉네임을 입력하세요:");
+            if (newText !== null) {
+                document.getElementById("dynamicText").innerText = newText;
+            }
+        }
+
+        function 새페이지로이동() {
+            window.location.href = 'index6.html';
+        }
+
+
+        let userNameCheck = "Y"
 
         // HTML로딩이 완료되고, 실행됨
         $(document).ready(function () {
 
             $("#btnSend").on("click", function () {
-                doSubmit(); // 비밀번호 수정하기 실행
+                doSubmit(); // 닉네임 수정하기 실행
+            })
+
+            $("#btnUserName").on("click", function() {
+                dogetUserNameExists(); // 닉네임 중복검사
             })
         })
 
         function doSubmit() {
             let f = document.getElementById("f");
 
-            if (f.password.value === "") {
+            if (f.userName.value === "") {
                 alert("새로운 비밀번호를 입력하세요.");
-                f.password.focus();
+                f.userName.focus();
                 return;
             }
 
-            if (f.password2.value === "") {
+            if (f.userName2.value === "") {
                 alert("검증을 위한 새로운 비밀번호를 입력하세요.");
-                f.password2.focus();
+                f.userName2.focus();
                 return;
             }
 
-            if (f.password.value.length < 4) {
-                alert("비밀번호는 4자리 이상이어야 합니다.");
-                f.password.focus();
+            if (f.userName.value !== f.userName2.value) {
+                alert("입력한 닉네임이 일치하지 않습니다.");
+                f.userName.focus();
                 return;
             }
 
-            if (f.password.value.length > 16) {
-                alert("비밀번호는 16자리 미만이어야 합니다.");
-                f.password.focus();
-                return;
-            }
-
-            if (f.password.value !== f.password2.value) {
-                alert("입력한 비밀번호가 일치하지 않습니다.");
-                f.password.focus();
-                return;
-            }
-
-            // Ajax 호출해서 비번 수정하기
+            // if (userNameCheck === "Y") {
+            //     alert("중복 검사를 진행해주세요");
+            //     return;
+            // }
+            // Ajax 호출해서 닉네임 수정하기
             $.ajax({
-                    url: "/user/newPasswordProc",
+                    url: "/user/newUserNameProc",
                     type: "post", // 전송방식은 Post
                     dataType: "JSON", // 전송 결과는 JSON으로 받기
                     data: $("#f").serialize(), // form 태그 내 input 등 객체를 자동으로 전송할 형태로 변경하기
-                    success: function (json) { // /user/newPasswordProc 호출이 성공했다면..
+                    success: function (json) { // /user/newUserNameProc 호출이 성공했다면..
                         alert(json.msg); // 메시지 띄우기
-                        location.href = "/user/login"; //  로그인 페이지 이동
+                        location.href = "/html/index.html"; //  로그인 페이지 이동
+                    }
+                }
+            )
+        }
+
+        function dogetUserNameExists(){         // 닉네임 중복검사
+            let f = document.getElementById("f");
+
+            if (f.userName.value === "") {
+                alert("닉네임을 입력하세요.");
+                f.userName.focus();
+                return;
+            }
+
+            // Ajax 호출해서 닉네임 중복체크
+            $.ajax({
+                    url: "/user/getUserNameExists",
+                    type: "post", // 전송방식은 Post
+                    dataType: "JSON", // 전송 결과는 JSON으로 받기
+                    data: $("#f").serialize(), // form 태그 내 input 등 객체를 자동으로 전송할 형태로 변경하기
+                    success: function (json) { // 호출이 성공했다면..
+                        if (json.existsYn === "Y") {
+                            alert("이미 동일한 닉네임이 존재합니다.");
+                            f.userName.focus();
+                        } else {
+                            alert("사용가능한 닉네임입니다.");
+                            userNameCheck = "N";
+                        }
                     }
                 }
             )
@@ -74,11 +123,6 @@
         font-style: normal;
     }
 
-    @import url("//fonts.googleapis.com/earlyaccess/nanumgothic.css" );
-    input[type=password]{
-        font-family:"Nanum Gothic", sans-serif !important;
-    }
-
     * {
         font-family: 'NIXGONM-Vb';
     }
@@ -91,6 +135,18 @@
         background: white;
         margin: 0;
         padding: 20px;
+    }
+
+
+    .buttonBlue {
+        background-color: #5c80b7;
+        border-radius: 20px; /* 둥글게 만들기 위한 값 */
+        color: #fff;
+        cursor: pointer;
+    }
+
+    .buttonBlue:hover {
+        background-color: #44628d;
     }
 
     .page {
@@ -186,7 +242,7 @@
         margin: .3em 0 1em 0;
         width: 100%;
         vertical-align: middle;
-        color: #5c80b7;
+        color: #fff;
         font-size: 16px;
         line-height: 20px;
         -webkit-font-smoothing: antialiased;
@@ -207,15 +263,11 @@
     /* Button modifiers */
 
     .buttonBlue {
-        background-color: #5c80b7;
-        border-radius: 20px; /* 둥글게 만들기 위한 값 */
-        color: #fff;
-        cursor: pointer;
+        background: #5c80b7;
+        /*text-shadow: 1px 1px 0 rgba(39, 110, 204, .5);*/
     }
 
-    .buttonBlue:hover {
-        background-color: #44628d;
-    }
+
 
     /* Ripples container */
 
@@ -227,6 +279,10 @@
         height: 100%;
         overflow: hidden;
         background: transparent;
+    }
+
+    input[type="password"] {
+        font-family: monospace; /* 비밀번호 입력란에 모노스페이스 폰트 설정 */
     }
 
     input {
@@ -261,6 +317,21 @@
         animation: ripples .4s ease-in;
     }
 
+    .button_exists {
+        padding: 6px 12px;
+        border: none;
+        background-color: #5c80b7;
+        color: #fff;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+    }
+
+    .button_exists:hover {
+        background-color: #44628d;
+    }
+
 
     /* Ripples animation */
 
@@ -279,7 +350,6 @@
             opacity: 0;
         }
     }
-
 </style>
 <script>
     $(window, document, undefined).ready(function () {
@@ -321,44 +391,18 @@
 <body>
 <div class="page">
     <hgroup>
-        <h1 style="color: #2a2722">비밀번호 변경</h1>
+        <h1 style="color: #2a2722">닉네임 변경하기</h1>
     </hgroup>
     <form name="f" id="f">
-        <label for="password" style="color: #564F47"><strong>새로운 비밀번호</strong></label>
-        <input type="password" name="password" id="password" minlength="4"  maxlength="20" style="width:95%"/>
+        <label for="userName" style="color: #564F47; display:inline-block"><strong>새로운 닉네임</strong></label>&nbsp;&nbsp;&nbsp;
+        <button id="btnUserName" type="button" class="button_exists">중복체크</button>
+        <input type="text" name="userName" id="userName" style="width:95%;"/>
         <br>
-        <label for="password2" style="color: #564F47"><strong>검증을 위한 새로운 비밀번호</strong></label>
-        <input type="password" name="password2" id="password2" minlength="4"  maxlength="20" style="width:95%"/>
+        <label for="userName2" style="color: #564F47"><strong>검증을 위한 새로운 닉네임</strong></label>
+        <input type="text" name="userName2" id="userName2" style="width:95%"/>
         <br><br>
-        <button id="btnSend" type="button" class="button buttonBlue">비밀번호 변경
-            <div class="ripples buttonRipples"><span class="ripplesCircle"></span></div>
-        </button>
+        <button id="btnSend" type="button" class="button buttonBlue">닉네임 변경</button>
     </form>
 </div>
-<script th:inline="javascript">
-
-    window.onload = function() {
-        // Controller에서 설정한 userNotFound 속성을 확인
-        var userNotFound = [[${userNotFound}]]; // Thymeleaf 예시, 다른 템플릿 엔진을 사용한다면 적절히 수정
-        if (userNotFound) {
-            alert('비밀번호를 찾을 수 있는 사용자 정보가 없습니다.');
-        }
-    }
-
-    var userId = /*[[${rDTO.userId}]]*/ '';
-    var userName = /*[[${rDTO.userName}]]*/ '';
-    var email = /*[[${rDTO.email}]]*/ '';
-    var msg;
-
-    if (userId !== null && userName !== null && email !== null && userId.length > 0) {
-        // msg = userName + " 회원님의 정보가 확인되었습니다. 비밀번호 변경 페이지로 이동합니다.";
-        // alert(msg);
-    } else {
-        msg = "회원정보가 일치하지 않습니다.";
-        alert(msg);
-        location.href = "/user/searchPassword";
-    }
-
-</script>
 </body>
 </html>

@@ -289,15 +289,15 @@ public class UserInfoController {
     public String searchPassword(HttpSession session) {
         log.info(this.getClass().getName() + ".user/searchPassword Start!");
 
-        session.setAttribute("NEW_PASSWORD", "");
-        session.removeAttribute("NEW_PASSWORD");
+        session.setAttribute("USER_ID", "");
+        session.removeAttribute("USER_ID");
 
         log.info(this.getClass().getName() + ".user/searchPassword End!");
 
         return "/user/searchPassword";
     }
 
-    @PostMapping(value = "searchPasswordProc")
+    @PostMapping(value = "searchPasswordProc") // 비밀번호 찾기
     public String searchPasswordProc(HttpServletRequest request, ModelMap model, HttpSession session) throws Exception {
         log.info(this.getClass().getName() + ".user/searchPasswordProc start!");
 
@@ -327,5 +327,92 @@ public class UserInfoController {
         return "/user/newPassword";
     }
 
+    @GetMapping(value = "changeUserName")
+    public String changeUserName() throws Exception{
+        log.info(this.getClass().getName() + ".changeUserName Start!");
 
+        return "/user/changeUserName";
+    }
+
+    @ResponseBody
+    @PostMapping(value = "newUserNameProc")         // 닉네임 변경하기
+    public MsgDTO newUserNameProc(HttpServletRequest request, HttpSession session) throws Exception {
+
+        log.info(this.getClass().getName() + ".newUserNameProc Start!");
+
+        MsgDTO dto = null;
+        String msg = "";
+
+        try {
+            String userId = (String)session.getAttribute("SS_USER_ID");
+            String userName = request.getParameter("userName");
+            log.info("userId : " + userId);
+            log.info("userName : " + userName);
+            UserInfoDTO pDTO =  UserInfoDTO.builder()
+                    .userId(userId)
+                    .userName(userName)
+                    .build();
+
+            userInfoService.newUserNameProc(pDTO);
+
+            session.setAttribute("SS_USER_NAME", userName);
+
+            msg = "닉네임이 재설정되었습니다.";
+
+        } catch (Exception e) {
+            msg = "시스템 문제로 닉네임 변경이 실패하였습니다." + e.getMessage();
+            log.info(e.toString());
+            e.printStackTrace();
+        } finally {
+            // 결과 메시지 전달하기
+            dto = MsgDTO.builder().msg(msg).build();
+
+        }
+
+        log.info(this.getClass().getName() + ".newUserNameProc End!");
+
+        return dto;
+    }
+
+
+    @ResponseBody
+    @PostMapping(value = "newPasswordProc") // 비밀번호 변경
+    public MsgDTO newPasswordProc(HttpServletRequest request, HttpSession session) throws Exception {
+        log.info(this.getClass().getName() + ".user/newPasswordProc Start!");
+        String msg = "";
+        MsgDTO dto = null;
+
+        String userId = CmmUtil.nvl((String) session.getAttribute("USER_ID"));
+
+        if (userId.length() > 0) {
+            try {
+                String password = CmmUtil.nvl(request.getParameter("password"));
+
+                log.info("password : " + password);
+
+                UserInfoDTO pDTO = UserInfoDTO.builder()
+                        .userId(userId)
+                        .password(EncryptUtil.encHashSHA256(password))
+                        .build();
+
+                userInfoService.newPasswordProc(pDTO);
+
+                session.setAttribute("USER_ID", "");
+                session.removeAttribute("USER_ID");
+
+                msg = "비밀번호가 재설정되었습니다.";
+            } catch (Exception e) {
+                msg = "실패하였습니다. : " + e.getMessage();
+                log.info(e.toString());
+                e.printStackTrace();
+
+            } finally {
+                // 결과 메시지 전달하기
+                dto = MsgDTO.builder().msg(msg).build();
+
+                log.info(this.getClass().getName() + ".newPasswordProc End!");
+            }}
+
+        return dto;
+    }
 }

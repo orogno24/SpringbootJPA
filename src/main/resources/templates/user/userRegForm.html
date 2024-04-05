@@ -92,6 +92,19 @@
                 f.userId.focus();
                 return;
             }
+
+            if (f.userId.value.length < 4) {
+                alert("아이디는 4자리 이상이어야 합니다.");
+                f.userId.focus();
+                return;
+            }
+
+            if (f.userId.value.length > 16) {
+                alert("아이디는 16자리 미만이어야 합니다.");
+                f.userId.focus();
+                return;
+            }
+
             if (userIdCheck !== "N") {
                 alert("아이디 중복 체크 및 중복되지 않은 아이디로 가입 바랍니다.");
                 f.userId.focus();
@@ -102,8 +115,21 @@
                 f.password.focus();
                 return;
             }
+
+            if (f.password.value.length < 4) {
+                alert("비밀번호는 4자리 이상이어야 합니다.");
+                f.password.focus();
+                return;
+            }
+
+            if (f.password.value.length > 16) {
+                alert("비밀번호는 16자리 미만이어야 합니다.");
+                f.password.focus();
+                return;
+            }
+
             if (f.password2.value === "") {
-                alert("비밀번호확인을 입력하세요.");
+                alert("비밀번호를 확인해주세요.");
                 f.password2.focus();
                 return;
             }

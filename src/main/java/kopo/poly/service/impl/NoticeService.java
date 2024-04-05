@@ -77,7 +77,7 @@ public class NoticeService implements INoticeService {
         Long noticeSeq = pDTO.noticeSeq();
 
         String title = CmmUtil.nvl(pDTO.title());
-        String noticeYn = CmmUtil.nvl(pDTO.noticeYn());
+        String noticeYn = "N";
         String contents = CmmUtil.nvl(pDTO.contents());
         String userId = CmmUtil.nvl(pDTO.userId());
 
@@ -94,6 +94,8 @@ public class NoticeService implements INoticeService {
         NoticeEntity pEntity = NoticeEntity.builder()
                 .noticeSeq(noticeSeq).title(title).noticeYn(noticeYn).contents(contents).userId(userId)
                 .readCnt(rEntity.getReadCnt())
+                .regId(rEntity.getUserId()).regDt(rEntity.getRegDt())
+                .chgId(userId).chgDt(DateUtil.getDateTime("yyyy-MM-dd hh:mm:ss"))
                 .build();
 
         // 데이터 수정하기 (DB 반영)
