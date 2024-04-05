@@ -31,4 +31,11 @@ public interface IUserInfoService {
     // 아이디찾기
     String searchUserIdProc(UserInfoDTO pDTO) throws Exception;
 
+    // 이메일 중복체크
+    UserInfoDTO getEmailExists(UserInfoDTO pDTO) throws Exception;
+
+    // 비밀번호찾기
+    UserInfoDTO searchPasswordProc(UserInfoDTO pDTO) throws Exception;
+
+
 }

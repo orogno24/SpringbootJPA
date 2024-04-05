@@ -34,13 +34,6 @@ public class UserInfoEntity implements Serializable {
     @Column(name = "email",  nullable = false)
     private String email;
 
-    @NonNull
-    @Column(name = "addr1", nullable = false)
-    private String addr1;
-
-    @Column(name = "addr2", nullable = false)
-    private String addr2;
-
     @Column(name = "reg_id", nullable = false)
     private String regId;
 

@@ -11,13 +11,16 @@ public record UserInfoDTO(
         String userName, // 제목
         String password, // 비밀번호
         String email, // 이메일
-        String addr1, // 주소
-        String addr2, // 상세주소
         String regId, // 등록자아이디
         String regDt, // 등록일시
         String chgId, // 최근 수정자아이디
         String chgDt, // 최근 수정일시
-        String existsYn // 회원아이디 존재여부
+        String existsYn, // 회원아이디 존재여부
+
+        // 이메일 중복체크를 위한 인증번호
+        int authNumber,
+        int mailNumber
+
 ) {
 
 }

@@ -10,23 +10,6 @@
     <link rel="shortcut icon" href="/assets/img/logo.png" type="image/x-icon">
 
     <style>
-        #submit {
-            font-size: 30px;
-            color: #ffffff;
-            transition: color 300ms;
-            background: none;
-            border: none;
-            cursor: pointer;
-            margin-left: 15px;
-        }
-
-        @media (max-width: 767px) {
-            #submit {
-                margin-left: 0; /* 최대 767px 화면 너비에서는 margin-left를 해제합니다. 안녕하세요 */
-
-            }
-        }
-
         @font-face {
             font-family: 'NIXGONM-Vb';
             src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/NIXGONM-Vb.woff') format('woff');
@@ -81,7 +64,7 @@
         @media (max-width: 767px) {
             .container {
                 flex-direction: column;
-                height: 630px;
+                height: 700px;
                 width: 320px;
             }
         }
@@ -209,7 +192,11 @@
             border-radius: 5px;
             transition: background-color 0.3s ease;
         }
-
+        @media (max-width: 767px) {
+            button {
+                font-size: 13px;
+            }
+        }
 
         /* 버튼 사이 여백 추가 */
         button + button {

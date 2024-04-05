@@ -3,7 +3,6 @@ package kopo.poly.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import kopo.poly.dto.MsgDTO;
-import kopo.poly.dto.NoticeDTO;
 import kopo.poly.dto.UserInfoDTO;
 import kopo.poly.service.IUserInfoService;
 import kopo.poly.util.CmmUtil;
@@ -83,15 +82,11 @@ public class UserInfoController {
         String userName = CmmUtil.nvl(request.getParameter("userName"));
         String password = CmmUtil.nvl(request.getParameter("password"));
         String email = CmmUtil.nvl(request.getParameter("email"));
-        String addr1 = CmmUtil.nvl(request.getParameter("addr1"));
-        String addr2 = CmmUtil.nvl(request.getParameter("addr2"));
 
         log.info("userId : " + userId);
         log.info("userName : " + userName);
         log.info("password : " + password);
         log.info("email : " + email);
-        log.info("addr1 : " + addr1);
-        log.info("addr2 : " + addr2);
 
         // 웹 (회원정보 입력화면)에서 받는 정보를 저장할 변수를 메모리에 올리기
         UserInfoDTO pDTO = UserInfoDTO.builder()
@@ -99,8 +94,6 @@ public class UserInfoController {
                 .userName(userName)
                 .password(EncryptUtil.encHashSHA256(password))
                 .email(EncryptUtil.encAES128CBC(email))
-                .addr1(addr1)
-                .addr2(addr2)
                 .regId(userId)
                 .chgId(userId)
                 .build();
@@ -234,6 +227,7 @@ public class UserInfoController {
 
         return "/user/searchUserId";
     }
+
     @ResponseBody
     @PostMapping(value = "searchUserIdProc")        // 아이디 찾기 함수
     public MsgDTO searchUserIdProc(HttpServletRequest request, ModelMap model) throws Exception {
@@ -256,9 +250,9 @@ public class UserInfoController {
         String res = userInfoService.searchUserIdProc(pDTO);
 
         if (!Objects.equals(res, "")) {
-            msg = userName + "회원님의 아이디는 " + res + "입니다.";
+            msg = userName + " 회원님의 아이디는 " + res + "입니다.";
         } else {
-            msg = "회원정보가 올바르지 않습니다.";
+            msg = "회원정보가 일치하지 않습니다.";
         }
 
         MsgDTO dto = MsgDTO.builder().msg(msg).build();
@@ -270,6 +264,68 @@ public class UserInfoController {
         return dto;
     }
 
+    @ResponseBody
+    @PostMapping(value = "getEmailExists")          // 이메일 중복찾기
+    public UserInfoDTO getEmailExists(HttpServletRequest request) throws Exception {
+
+        log.info(this.getClass().getName() + ".getEmailExists Start!");
+
+        String email = CmmUtil.nvl(request.getParameter("email"));
+
+        log.info("email : " + email);
+        UserInfoDTO pDTO = UserInfoDTO.builder()
+                .email(EncryptUtil.encAES128CBC(email))
+                .build();
+
+        UserInfoDTO rDTO = Optional.ofNullable(userInfoService.getEmailExists(pDTO))
+                .orElseGet(() -> UserInfoDTO.builder().build());
+
+        log.info(this.getClass().getName() + ".getEmailExists End!");
+
+        return rDTO;
+    }
+
+    @GetMapping(value = "searchPassword")           // 비밀번호 찾기 페이지
+    public String searchPassword(HttpSession session) {
+        log.info(this.getClass().getName() + ".user/searchPassword Start!");
+
+        session.setAttribute("NEW_PASSWORD", "");
+        session.removeAttribute("NEW_PASSWORD");
+
+        log.info(this.getClass().getName() + ".user/searchPassword End!");
+
+        return "/user/searchPassword";
+    }
+
+    @PostMapping(value = "searchPasswordProc")
+    public String searchPasswordProc(HttpServletRequest request, ModelMap model, HttpSession session) throws Exception {
+        log.info(this.getClass().getName() + ".user/searchPasswordProc start!");
+
+        String userId = CmmUtil.nvl(request.getParameter("userId"));
+        String userName = CmmUtil.nvl(request.getParameter("userName"));
+        String email = CmmUtil.nvl(request.getParameter("email"));
+
+        log.info("userId : " + userId);
+        log.info("userName : " + userName);
+        log.info("email : " + email);
+
+        UserInfoDTO pDTO = UserInfoDTO.builder()
+                .userId(userId)
+                .userName(userName)
+                .email(EncryptUtil.encAES128CBC(email))
+                .build();
+
+        UserInfoDTO rDTO = Optional.ofNullable(userInfoService.searchPasswordProc(pDTO))
+                .orElseGet(() -> UserInfoDTO.builder().build());
+
+        model.addAttribute("rDTO", rDTO);
+
+        session.setAttribute("USER_ID", userId);
+
+        log.info(this.getClass().getName() + ".user/searchPasswordProc end!");
+
+        return "/user/newPassword";
+    }
 
 
 }

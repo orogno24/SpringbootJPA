@@ -22,4 +22,10 @@ public interface UserInfoRepository extends JpaRepository<UserInfoEntity, String
     // 아이디찾기
     Optional<UserInfoEntity> findByUserNameAndEmail(String userName, String email);
 
+    // 이메일 중복체크
+    Optional<UserInfoEntity> findByEmail(String email);
+
+    // 비밀번호찾기
+    UserInfoEntity findByUserIdAndEmailAndUserName(String userId, String email, String userName);
+
 }

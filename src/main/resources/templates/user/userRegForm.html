@@ -2,17 +2,23 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>회원가입 화면</title>
-    <link rel="stylesheet" href="/css/table.css"/>
-    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <link rel="icon" href="/assets/img/logo.png" type="image/x-icon">
+    <link rel="shortcut icon" href="/assets/img/logo.png" type="image/x-icon">
     <script type="text/javascript" src="/js/jquery-3.6.0.min.js"></script>
     <script type="text/javascript">
 
         // 아이디 중복체크여부 (중복 Y / 중복아님 : N)
         let userIdCheck = "Y";
 
+        let emailAuthNumber = "";
+
         // HTML로딩이 완료되고, 실행됨
         $(document).ready(function () {
+
             let f = document.getElementById("f"); // form 태그
 
             // 아이디 중복체크
@@ -20,15 +26,11 @@
                 userIdExists(f)
             })
 
-            // 우편번호 찾기
-            $("#btnAddr").on("click", function () { // 버튼 클릭했을때, 발생되는 이벤트 생성함(onclick 이벤트와 동일함)
-                kakaoPost(f);
+            // 이메일 중복체크
+            $("#btnEmail").on("click", function () { // 버튼 클릭했을때, 발생되는 이벤트 생성함(onclick 이벤트와 동일함)
+                emailExists(f)
             })
 
-            // 회원가입
-            $("#btnSend").on("click", function () { // 버튼 클릭했을때, 발생되는 이벤트 생성함(onclick 이벤트와 동일함)
-                doSubmit(f);
-            })
         })
 
         // 회원아이디 중복 체크
@@ -57,19 +59,30 @@
             )
         }
 
-        // 카카오 우편번호 조회 API 호출
-        function kakaoPost(f) {
-            new daum.Postcode({
-                oncomplete: function (data) {
-                    // Kakao에서 제공하는 data는 JSON구조로 주소 조회 결과값을 전달함
-                    // 주요 결과값
-                    // 주소 : data.address
-                    // 우편번호 : data.zonecode
-                    let address = data.address; // 주소
-                    let zonecode = data.zonecode; // 우편번호
-                    f.addr1.value = "(" + zonecode + ")" + address
+        // 이메일 중복 체크
+        function emailExists(f) {
+            if (f.email.value === "") {
+                alert("이메일을 입력하세요.");
+                f.email.focus();
+                return;
+            }
+
+            $.ajax({
+                    url: "/user/getEmailExists",
+                    type: "post", // 전송방식은 Post
+                    dataType: "JSON", // 전송 결과는 JSON으로 받기
+                    data: $("#f").serialize(), // form 태그 내 input 등 객체를 자동으로 전송할 형태로 변경하기
+                    success: function (json) { // 호출이 성공했다면..
+                        if (json.existsYn === "Y") {
+                            alert("이미 가입된 이메일 주소가 존재합니다.");
+                            f.email.focus();
+                        } else {
+                            alert("이메일로 인증번호가 발송되었습니다. \n받은 메일의 인증번호를 입력하기 바랍니다.");
+                            emailAuthNumber = json.authNumber;
+                        }
+                    }
                 }
-            }).open();
+            )
         }
 
         //회원가입 정보의 유효성 체크하기
@@ -82,11 +95,6 @@
             if (userIdCheck !== "N") {
                 alert("아이디 중복 체크 및 중복되지 않은 아이디로 가입 바랍니다.");
                 f.userId.focus();
-                return;
-            }
-            if (f.userName.value === "") {
-                alert("이름을 입력하세요.");
-                f.userName.focus();
                 return;
             }
             if (f.password.value === "") {
@@ -109,16 +117,27 @@
                 f.email.focus();
                 return;
             }
-            if (f.addr1.value === "") {
-                alert("주소를 입력하세요.");
-                f.addr1.focus();
-                return;
+
+            if (f.authNumber.value === "") {
+                alert("이메일 인증번호를 입력하세요.");
+                f.authNumber.focus();
+                return false;
             }
-            if (f.addr2.value === "") {
-                alert("상세주소를 입력하세요.");
-                f.addr2.focus();
-                return;
+
+            console.log("비교1" + f.authNumber.value);
+            console.log("비교2" + emailAuthNumber);
+            if (f.authNumber.value != emailAuthNumber) {
+                alert("이메일 인증번호가 일치하지 않습니다.");
+                f.authNumber.focus();
+                return false;
             }
+
+            if (f.userName.value === "") {
+                alert("닉네임을 입력하세요.");
+                f.userName.focus();
+                return false;
+            }
+
             // Ajax 호출해서 회원가입하기
             $.ajax({
                     url: "/user/insertUserInfo",
@@ -138,69 +157,265 @@
         }
     </script>
 </head>
+<style>
+    button {
+        padding: 6px 12px;
+        border: none;
+        background-color: #5c80b7;
+        color: #fff;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+        background-color: #44628d; /* 새로운 배경색 */;
+    }
+
+    @font-face {
+        font-family: 'NIXGONM-Vb';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/NIXGONM-Vb.woff') format('woff');
+        font-weight: normal;
+        font-style: normal;
+    }
+    *{
+        font-family: 'NIXGONM-Vb';
+    }
+
+    @import url("//fonts.googleapis.com/earlyaccess/nanumgothic.css" );
+    /* 비번 입력시 공백문자 뜨는 문제 해결 */
+    input[type=password]{
+        font-family:"Nanum Gothic", sans-serif !important;
+    }
+
+    @import url('https://rsms.me/inter/inter-ui.css');
+    ::selection {
+        background: #2D2F36;
+    }
+    ::-moz-selection {
+        background: #2D2F36;
+    }
+    body {
+        background: white;
+        margin: 0;
+        padding: 20px;
+    }
+    .page {
+        background: #d7f9ff;
+        display: flex;
+        flex-direction: column;
+        height: calc(100% - 40px);
+        position: absolute;
+        place-content: center;
+        width: calc(100% - 40px);
+    }
+    @media (max-width: 767px) {
+        .page {
+            height: 100%;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+        }
+    }
+    .container {
+        display: flex;
+        height: 680px;
+        margin: 0 auto;
+        width: 970px;
+    }
+    @media (max-width: 767px) {
+        .container {
+            flex-direction: column;
+            height: 630px;
+            width: 320px;
+        }
+    }
+    .left {
+        background: #c3eee6;
+        height: calc(100% - 40px);
+        top: 20px;
+        position: relative;
+        width: 70%;
+    }
+    @media (max-width: 767px) {
+        .left {
+            height: 100%;
+            left: 20px;
+            width: calc(100% - 40px);
+            max-height: 270px;
+        }
+    }
+    .login {
+        font-size: 25px;
+        color: #564F47;
+        margin: 50px 40px 40px;
+    }
+    .eula {
+        color: #656579;
+        font-size: 20px;
+        line-height: 1.5;
+        margin: 40px;
+    }
+    .right {
+        background: #7ea6e7;
+        box-shadow: 0px 0px 40px 16px rgba(159, 149, 149, 0.22);
+        color: #F1F1F2;
+        position: relative;
+        width: 70%;
+
+    }
+    @media (max-width: 767px) {
+        .right {
+            flex-shrink: 0;
+            height: 120%;
+            width: 100%;
+            max-height: 600px;
+        }
+    }
+    svg {
+        position: absolute;
+        width: 320px;
+    }
+    path {
+        fill: none;
+        stroke: url(#linearGradient);;
+        stroke-width: 4;
+        stroke-dasharray: 240 1386;
+    }
+    .form {
+        margin: 40px;
+        position: absolute;
+    }
+    label {
+        color: #fff;
+        display: block;
+        font-size: 15px;
+        height: 16px;
+        margin-top: 20px;
+        margin-bottom: 5px;
+    }
+    input {
+        background: transparent;
+        border: 0;
+        color: #f2f2f2;
+        font-size: 20px;
+        height: 30px;
+        line-height: 30px;
+        outline: none !important;
+        width: 120%;
+    }
+    input::-moz-focus-inner {
+        border: 0;
+    }
+
+    hr {
+        width: 100%; /* 화면 크기에 관계없이 부모 요소의 50% 크기를 유지 */
+        margin: auto; /* 가운데 정렬 */
+        border: none;
+        height: 1px;
+        background-color: #fff; /* 선의 색상 */
+    }
+
+</style>
+<script>
+    var current = null;
+    document.querySelector('#email').addEventListener('focus', function(e) {
+        if (current) current.pause();
+        current = anime({
+            targets: 'path',
+            strokeDashoffset: {
+                value: 0,
+                duration: 700,
+                easing: 'easeOutQuart'
+            },
+            strokeDasharray: {
+                value: '240 1386',
+                duration: 700,
+                easing: 'easeOutQuart'
+            }
+        });
+    });
+    document.querySelector('#password').addEventListener('focus', function(e) {
+        if (current) current.pause();
+        current = anime({
+            targets: 'path',
+            strokeDashoffset: {
+                value: -336,
+                duration: 700,
+                easing: 'easeOutQuart'
+            },
+            strokeDasharray: {
+                value: '240 1386',
+                duration: 700,
+                easing: 'easeOutQuart'
+            }
+        });
+    });
+    document.querySelector('#submit').addEventListener('focus', function(e) {
+        if (current) current.pause();
+        current = anime({
+            targets: 'path',
+            strokeDashoffset: {
+                value: -730,
+                duration: 700,
+                easing: 'easeOutQuart'
+            },
+            strokeDasharray: {
+                value: '530 1386',
+                duration: 700,
+                easing: 'easeOutQuart'
+            }
+        });
+    });
+</script>
 <body>
-<h2>회원 가입하기</h2>
-<hr/>
-<br/>
-<form id="f">
-    <div class="divTable minimalistBlack">
-        <div class="divTableBody">
-            <div class="divTableRow">
-                <div class="divTableCell">* 아이디
-                </div>
-                <div class="divTableCell">
-                    <input type="text" name="userId" style="width:80%" placeholder="아이디"/>
-                    <button id="btnUserId" type="button">아이디 중복체크</button>
-                </div>
-            </div>
-            <div class="divTableRow">
-                <div class="divTableCell">* 이름
-                </div>
-                <div class="divTableCell">
-                    <input type="text" name="userName" style="width:95%" placeholder="이름"/>
-                </div>
-            </div>
-            <div class="divTableRow">
-                <div class="divTableCell">* 비밀번호
-                </div>
-                <div class="divTableCell">
-                    <input type="password" name="password" style="width:95%" placeholder="비밀번호"/>
-                </div>
-            </div>
-            <div class="divTableRow">
-                <div class="divTableCell">* 비밀번호확인
-                </div>
-                <div class="divTableCell">
-                    <input type="password" name="password2" style="width:95%" placeholder="비밀번호 확인"/>
-                </div>
-            </div>
-            <div class="divTableRow">
-                <div class="divTableCell">* 이메일
-                </div>
-                <div class="divTableCell">
-                    <input type="email" name="email" style="width:95%" placeholder="이메일주소"/>
-                </div>
-            </div>
-            <div class="divTableRow">
-                <div class="divTableCell">* 주소
-                </div>
-                <div class="divTableCell">
-                    <input type="text" name="addr1" style="width:85%" placeholder="주소"/>
-                    <button id="btnAddr" type="button">우편번호</button>
-                </div>
-            </div>
-            <div class="divTableRow">
-                <div class="divTableCell">* 상세 주소
-                </div>
-                <div class="divTableCell">
-                    <input type="text" name="addr2" style="width:95%" placeholder="상세주소"/>
-                </div>
+<div class="page">
+    <div class="container">
+        <div class="left">
+            <div class="login">signUp</div>
+            <div class="eula"><br>
+                <img src="/assets/img/logo.png" alt="Your Image" class="square-image" style="width: 32%; height: 32%; margin-left: -6%; margin-top: -19%">
             </div>
         </div>
+        <div class="right">
+            <form class="register-form" action="/user/insertUserInfo" id="f">
+
+                <div class="form" style="padding-top: 7%;">
+
+                    <label for="userId" style="display: inline-block">아이디를 입력해주세요.</label>&nbsp;&nbsp;
+                    <button id="btnUserId" type="button">중복확인</button>
+                    <input type="text" name="userId" id="userId">
+                    <hr>
+
+                    <label for="password">비밀번호를 입력해주세요.</label>
+                    <input type="password" name="password" id="password" minlength="4"  maxlength="20" >
+                    <hr>
+
+                    <label for="password2">비밀번호를 확인해주세요.</label>
+                    <input type="password" name="password2" id="password2" minlength="4"  maxlength="20">
+                    <hr>
+
+                    <label for="email" style="display: inline-block">이메일을 입력해주세요.</label>&nbsp;&nbsp;
+                    <button id="btnEmail" type="button">인증번호</button>
+                    <input type="text" name="email" id="email">
+                    <hr>
+
+                    <label for="authNumber">인증번호를 입력해주세요.</label>
+                    <input type="text" name="authNumber" id="authNumber">
+                    <hr>
+
+                    <label for="userName">닉네임을 입력해주세요.</label>
+                    <input type="text" name="userName" id="userName">
+                    <hr>
+
+                    <button id="submit" type="button" style="margin-top: 20px; padding: 8px 14px;" onclick="doSubmit(this.form)">회원가입</button>
+
+                    <h5 style="color: #44628d">이미 계정이 있으신가요?&nbsp;<a href="/user/login"><strong>로그인하기</strong></a></h5>
+                </div>
+            </form>
+        </div>
     </div>
-    <div>
-        <button id="btnSend" type="button">회원가입</button>
-    </div>
-</form>
+</div>
+
 </body>
 </html>
