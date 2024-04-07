@@ -5,7 +5,7 @@
     position: relative;
     margin:0 auto;
     overflow: hidden;
-    background: transparent url(/assets/img/Slider.png) repeat-x 0% center; /* Replace with your background image*/
+    /*background: transparent url(/assets/img/Slider.png) repeat-x 0% center; !* Replace with your background image*!*/
     background-size:auto 100%;
     -webkit-transition: background-position 1s ease-out 0.3s;
     -moz-transition: background-position 1s ease-out 0.3s;
@@ -26,7 +26,7 @@
     left:0;
     width:100%;
     height:100%;
-    background: #2da42f;
+    background: url(/assets/img/page.png);
     opacity:0.85;
     filter: alpha(opacity=85);
 }
@@ -76,8 +76,7 @@
 
 .da-slide h2,
 .da-slide h4{
-    color: #181A1C;
-    text-transform:uppercase;
+    color: #517388;
     white-space: nowrap;
     z-index: 10;
 }
@@ -98,7 +97,7 @@
     width: 45%;
     padding:0px;
     top: 230px;
-    color: #fff;
+    color: #6791a9;
     height: 90px;
     overflow: hidden;
     font-weight: 400;

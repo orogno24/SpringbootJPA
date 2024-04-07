@@ -41,7 +41,7 @@ public class UserInfoService implements IUserInfoService {
         Optional<UserInfoEntity> rEntity = userInfoRepository.findByUserId(userId);
 
         if (rEntity.isPresent()) {
-            rDTO = UserInfoDTO.builder().existsYn("Y").build();
+            rDTO = UserInfoDTO.builder().userId(rEntity.get().getUserId()).userName(rEntity.get().getUserName()).existsYn("Y").build();
         } else {
             rDTO = UserInfoDTO.builder().existsYn("N").build();
         }

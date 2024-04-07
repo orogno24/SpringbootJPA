@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="/css/main.min.css"/>
+    <script type="text/javascript" src="/js/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="/js/main.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bPopup/0.11.0/jquery.bpopup.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                googleCalendarApiKey: 'AIzaSyAQu48iB46zx56uirTDLZTX61MG_W4J5NI',
+                events: {
+                    googleCalendarId: 'ff73aa1654a38c37fd1ef1007fd00b9a93ffc2d035f7f6c2fa7f9910e5ddea82@group.calendar.google.com',
+                    className: 'gcal-event' // an Option!
+                }
+            });
+            calendar.render();
+        });
+    </script>
+</head>
+<body>
+<div id="calendar"></div>
+</body>
+</html>

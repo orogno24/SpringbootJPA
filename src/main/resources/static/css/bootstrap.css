@@ -916,7 +916,6 @@ abbr[data-original-title] {
 
 abbr.initialism {
   font-size: 90%;
-  text-transform: uppercase;
 }
 
 blockquote {
@@ -3370,7 +3369,6 @@ input[type="submit"].btn.btn-mini {
   line-height: 20px;
   color: #999999;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
-  text-transform: uppercase;
 }
 
 .nav li + .nav-header {
@@ -4121,7 +4119,7 @@ input[type="submit"].btn.btn-mini {
 .navbar .nav li.dropdown.open > .dropdown-toggle,
 .navbar .nav li.dropdown.active > .dropdown-toggle,
 .navbar .nav li.dropdown.open.active > .dropdown-toggle {
-  background-color: #2b2b36;
+  background-color: #4a8293;
 }
 
 .navbar .nav li.dropdown > .dropdown-toggle .caret {
@@ -5542,6 +5540,6 @@ a.badge:focus {
 }
 
 .black-section {
-  background-color: #2b2b36; /* 검정색 배경 */
+  background-color: #4a8293; /* 검정색 배경 */
   height: 100px; /* 높이 지정, 필요에 따라 조정 */
 }

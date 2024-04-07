@@ -155,6 +155,8 @@ public class UserInfoController {
 
         // 로그인을 위해 아이디와 비밀번호가 일치하는지 확인하기 위한 usreInfoService 호춣하기
         int res = userInfoService.getUserLogin(pDTO);
+        UserInfoDTO rDTO = Optional.ofNullable(userInfoService.getUserIdExists(pDTO))
+                .orElseGet(() -> UserInfoDTO.builder().build());
 
         log.info("res : " + res);
 
@@ -174,7 +176,10 @@ public class UserInfoController {
              */
             msg = "로그인이 성공했습니다.";
             session.setAttribute("SS_USER_ID", userId);
+            session.setAttribute("SS_USER_NAME", rDTO.userName());
 
+            log.info("SS_USER_ID : " + rDTO.userId());
+            log.info("SS_USER_NAME : " + rDTO.userName());
         } else {
             msg = "아이디와 비밀번호가 올바르지 않습니다.";
 

@@ -54,7 +54,7 @@ p {
     color: #fff;
 }
 .navbar {
-    background: #b0d7d0;
+    background: #5da5bb;
     margin-bottom:0;
     min-height:65px;
 }
@@ -76,7 +76,6 @@ p {
     height:41px;
 }
 .navbar .nav > li > a {
-    text-transform:uppercase;
     vertical-align: middle;
     margin:10px 3px;
     -webkit-box-shadow: none;
@@ -176,7 +175,17 @@ p {
     text-align:center;
     width: 0;
     height: 0;
-    border-top: 30px solid #2b2b36;
+    border-top: 30px solid #5da5bb;
+    border-left: 585px outset transparent;
+    border-right: 585px outset transparent;
+    position: relative;
+}
+.triangle2 {
+    margin: 0 auto;
+    text-align:center;
+    width: 0;
+    height: 0;
+    border-top: 30px solid #52748a;
     border-left: 585px outset transparent;
     border-right: 585px outset transparent;
     position: relative;
@@ -206,8 +215,8 @@ p {
 **********/
 .button,  .button:visited, .button:focus {
     display:inline-block;
-    border:1px solid #2b2b36;
-    color:#2b2b36;
+    border:1px solid #4a8293;
+    color:#4a8293;
     background-color:transparent;
     padding:15px 30px;
     font-size:17px;
@@ -363,22 +372,22 @@ p {
     font-weight: lighter;
 }
 .primary-section {
-    background:#2b2b36;
+    background: #5d8198;
 }
 .primary-section .triangle {
     border-top: 40px solid #3be515;
 }
 .primary-section .title {
-    border-bottom: 1px solid #6FC9F3;
+    border-bottom: 1px solid #ccc;
 }
 .primary-section, .primary-section .title p, .primary-section h3 {
-    color: #3be515;
+    color: #fff;
 }
 .primary-section h1 {
     color:#FFF;
 }
 .secondary-section {
-    background:#2da42f;
+    background:#5da5bb;
 }
 .secondary-section .title {
     border-bottom: 1px solid #2b2b36;
@@ -624,7 +633,6 @@ p {
 }
 .price-column h3 {
     background-color:#2b2b36;
-    text-transform:uppercase;
     text-align: center;
     color:#3be515;
     padding:40px 0px;
