@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>문화행사 리스트</title>
+    <link rel="stylesheet" href="/css/table.css"/>
+    <script type="text/javascript" src="/js/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript">
+        function displayEvents() {
+            $.ajax({
+                url: '/event/filteredList', // 서버의 이벤트 필터링 URL
+                type: 'GET',
+                data: $('#searchForm').serialize(), // 폼 데이터를 직렬화하여 전송
+                success: function(data) {
+                    var container = document.getElementById('resultSection'); // 결과를 표시할 컨테이너 요소
+                    container.innerHTML = ''; // 컨테이너 초기화
+
+                    // 서버로부터 받은 데이터를 사용하여 결과 표시
+                    data.forEach(function (event) {
+                        var listItem = document.createElement('div');
+                        listItem.className = 'eventItem';
+                        listItem.innerHTML = '<div class="eventThumbnail">' +
+                            '<img src="' + event.eventImage + '" alt="Event Thumbnail" style="max-width:200px; max-height:200px;" />' +
+                            '</div>' +
+                            '<h3>' + event.eventName + '</h3>' + // 이벤트 이름
+                            '<p>' + event.eventTheme + '</p>'; // 이벤트 설명
+
+                        // 'h3' 요소(이벤트 이름)를 클릭하면 doDetail 함수를 호출하도록 설정
+                        listItem.querySelector('h3').onclick = function() {
+                            doDetail(event.eventSeq);
+                        };
+
+                        container.appendChild(listItem);
+                    });
+                },
+                error: function(error) {
+                    console.log('Error:', error);
+                }
+            });
+        }
+
+        // 상세 페이지로 이동하는 함수
+        function doDetail(seq) {
+            location.href = "/event/eventInfo?nSeq=" + seq;
+        }
+    </script>
+</head>
+<body>
+<h2>문화행사 검색</h2>
+<form id="searchForm">
+    <select name="region">
+        <option value="">시군구 선택</option>
+        <option value="강서구">강서구</option>
+        <option value="영등포구">영등포구</option>
+        <!-- 다른 지역 옵션 추가 -->
+    </select>
+    <select name="tourType">
+        <option value="">관광 타입 선택</option>
+        <option value="문화시설">문화시설</option>
+        <!-- 다른 관광 타입 옵션 추가 -->
+    </select>
+    <select name="tourDate">
+        <option value="">관광 일정 선택</option>
+        <option value="2024-04">2024년 4월</option>
+        <!-- 다른 일정 옵션 추가 -->
+    </select>
+    <button type="button" onclick="displayEvents()">Search</button>
+</form>
+<hr/>
+
+<div class="divTable minimalistBlack">
+    <div class="divTableBody" id="resultSection">
+        <!-- 검색 결과가 여기에 표시됩니다 -->
+    </div>
+</div>
+</body>
+</html>

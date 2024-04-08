@@ -113,7 +113,7 @@ p {
 
 .navbar .btn-navbar:hover, .navbar .btn-navbar {
     border-radius:0;
-    background:#3be515;
+    background:#5da5bb;
     color: #000;
 }
 /******
@@ -185,7 +185,7 @@ p {
     text-align:center;
     width: 0;
     height: 0;
-    border-top: 30px solid #52748a;
+    border-top: 30px solid #5d8198;
     border-left: 585px outset transparent;
     border-right: 585px outset transparent;
     position: relative;
@@ -290,7 +290,7 @@ p {
     z-index:4;
 }
 .thumbnail h3 {
-    color: #3be515;
+    color: #5da5bb;
     margin-top:10px;
     font-size:20px;
 }
@@ -390,7 +390,7 @@ p {
     background:#5da5bb;
 }
 .secondary-section .title {
-    border-bottom: 1px solid #2b2b36;
+    border-bottom: 1px solid #ccc;
 }
 .secondary-section h1, .secondary-section .title p {
     color: #2b2b36;
