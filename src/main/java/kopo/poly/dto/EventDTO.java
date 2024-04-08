@@ -12,6 +12,8 @@ public record EventDTO(
 
         String eventName,
 
+        String eventDate,
+
         String eventWhere,
 
         String eventWho,

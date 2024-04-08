@@ -33,6 +33,10 @@ public class EventEntity {
     private String eventName;
 
     @NonNull
+    @Column(name = "event_date", nullable = false)
+    private String eventDate;
+
+    @NonNull
     @Column(name = "event_where", nullable = false)
     private String eventWhere;
 

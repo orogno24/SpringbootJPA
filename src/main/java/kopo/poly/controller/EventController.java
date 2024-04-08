@@ -49,7 +49,7 @@ public class EventController {
 
         // 로그 찍기(추후 찍은 로그를 통해 이 함수에 접근했는지 파악하기 용이하다.)
         log.info(this.getClass().getName() + ".eventList Start!");
-        
+
         List<EventDTO> rList = Optional.ofNullable(eventService.getEventList())
                 .orElseGet(ArrayList::new);
 
@@ -63,7 +63,7 @@ public class EventController {
         // templates/event/eventList.html
         return "event/eventList";
     }
-    
+
     /**
      * 문화행사 상세보기
      */
@@ -84,7 +84,7 @@ public class EventController {
         // 조회된 리스트 결과값 넣어주기
         model.addAttribute("rDTO", rDTO);
 
-        log.info(this.getClass().getName() + ".noticeInfo End!");
+        log.info(this.getClass().getName() + ".eventInfo End!");
 
         return "event/eventInfo";
     }
@@ -99,25 +99,34 @@ public class EventController {
 
         return "event/eventSearch";
     }
+
     @ResponseBody
     @GetMapping(value = "filteredList")
-    public List<EventDTO> filteredList(HttpSession session, ModelMap model)
+    public List<EventDTO> filteredList(HttpSession session, ModelMap model, HttpServletRequest request)
             throws Exception {
 
         // 로그 찍기(추후 찍은 로그를 통해 이 함수에 접근했는지 파악하기 용이하다.)
         log.info(this.getClass().getName() + ".filteredList Start!");
 
-        List<EventDTO> rList = Optional.ofNullable(eventService.getEventList())
+        String eventPlace = CmmUtil.nvl(request.getParameter("region"));
+        String eventSort = CmmUtil.nvl(request.getParameter("tourType"));
+        String eventDate = CmmUtil.nvl(request.getParameter("tourDate"));
+
+        log.info("eventPlace : " + eventPlace);
+        log.info("eventSort : " + eventSort);
+        log.info("eventDate : " + eventDate);
+
+        EventDTO pDTO = EventDTO.builder().
+                eventPlace(eventPlace).
+                eventSort(eventSort).
+                eventDate(eventDate)
+                .build();
+
+        List<EventDTO> rList = Optional.ofNullable(eventService.getEventListSearch(pDTO))
                 .orElseGet(ArrayList::new);
 
-        // 조회된 리스트 결과값 넣어주기
-//        model.addAttribute("rList", rList);
-
-        // 로그 찍기(추후 찍은 로그를 통해 이 함수 호출이 끝났는지 파악하기 용이하다.)
         log.info(this.getClass().getName() + ".filteredList End!");
 
-        // 함수 처리가 끝나고 보여줄 HTML (Thymeleaf) 파일명
-        // templates/event/eventList.html
         return rList;
     }
 

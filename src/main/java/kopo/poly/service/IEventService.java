@@ -20,4 +20,9 @@ public interface IEventService {
      */
     EventDTO getEventInfo(EventDTO pDTO, boolean type) throws Exception;
 
+    /**
+     * 문화행사 검색
+     */
+    List<EventDTO> getEventListSearch(EventDTO pDTO);
+
 }
