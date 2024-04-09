@@ -1,0 +1,82 @@
+/* 전체 페이지 스타일링 */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+}
+
+h2 {
+    color: #333;
+}
+
+/* 검색 폼 스타일링 */
+#searchForm {
+    margin-bottom: 20px;
+}
+
+#searchForm select, #searchForm button {
+    padding: 10px;
+    margin-right: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: white;
+}
+
+#searchForm button {
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+}
+
+#searchForm button:hover {
+    background-color: #45a049;
+}
+
+/* 결과 섹션 스타일링 */
+.divTable {
+    width: 100%;
+    background-color: #fff;
+    border-collapse: collapse;
+}
+
+.divTable, .divTableBody, .eventItem {
+    border: 1px solid #ddd;
+    margin-top: 10px;
+}
+
+.eventItem {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+}
+
+.eventThumbnail img {
+    margin-right: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.eventItem h3 {
+    margin: 0;
+    color: #333;
+    cursor: pointer;
+}
+
+.eventItem p {
+    margin: 5px 0 0;
+    color: #666;
+}
+
+/* 최소주의 테이블 스타일 */
+.minimalistBlack {
+    border: 1px solid #ccc;
+    width: 100%;
+    text-align: left;
+    border-collapse: collapse;
+}
+
+.minimalistBlack .divTableBody, .minimalistBlack .divTableRow, .minimalistBlack .divTableCell {
+    border: 1px solid #ccc;
+    padding: 8px;
+}

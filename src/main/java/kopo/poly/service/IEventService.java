@@ -1,11 +1,14 @@
 package kopo.poly.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import kopo.poly.dto.EventDTO;
 import kopo.poly.dto.NoticeDTO;
 
 import java.util.List;
 
 public interface IEventService {
+
+    String apiURL = "http://openapi.seoul.go.kr:8088/";
 
     /**
      * 문화행사 전체 가져오기
@@ -24,5 +27,7 @@ public interface IEventService {
      * 문화행사 검색
      */
     List<EventDTO> getEventListSearch(EventDTO pDTO);
+
+    List<EventDTO> getList() throws JsonProcessingException;
 
 }

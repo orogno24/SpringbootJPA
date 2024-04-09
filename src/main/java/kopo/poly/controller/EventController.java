@@ -148,4 +148,18 @@ public class EventController {
         }
     }
 
+    @GetMapping(value = "getList")
+    public List<EventDTO> getList(HttpServletRequest request)
+            throws Exception {
+
+        log.info(this.getClass().getName() + ".getList start!");
+
+        List<EventDTO> rList = Optional.ofNullable(eventService.getList())
+                .orElseGet(ArrayList::new);
+
+        log.info(this.getClass().getName() + ".getList end!");
+
+        return rList;
+    }
+
 }

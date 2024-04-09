@@ -1,29 +1,25 @@
 package kopo.poly.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.querydsl.jpa.impl.JPAQueryFactory;
-import kopo.poly.dto.CommentDTO;
 import kopo.poly.dto.EventDTO;
-import kopo.poly.dto.NoticeDTO;
-import kopo.poly.repository.CommentRepository;
 import kopo.poly.repository.EventRespository;
-import kopo.poly.repository.NoticeRepository;
-import kopo.poly.repository.entity.*;
+import kopo.poly.repository.entity.EventEntity;
 import kopo.poly.service.IEventService;
-import kopo.poly.service.INoticeJoinService;
 import kopo.poly.specification.EventSpecification;
-import kopo.poly.util.CmmUtil;
-import kopo.poly.util.DateUtil;
+import kopo.poly.util.NetworkUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -31,6 +27,35 @@ import java.util.List;
 public class EventService implements IEventService  {
 
     private final EventRespository eventRepository;
+
+    @Value("${weather.api.key}")
+    private String apiKey;
+
+    @Override
+    public List<EventDTO> getList() throws JsonProcessingException {
+
+        String apiParam = apiKey + "/" + "json" + "/" + "culturalEventInfo" + "/" + "1" + "/" + "5" + "/";
+        log.info("apiParam : " + apiParam);
+
+        String json = NetworkUtil.get(IEventService.apiURL + apiParam);
+        log.info("json " + json);
+
+        Map<String, Object> rMap = new ObjectMapper().readValue(json, LinkedHashMap.class);
+
+        Map<String, Object> culturalEventInfo = (Map<String, Object>) rMap.get("culturalEventInfo");
+
+        List<Map<String, Object>> rContent = (List<Map<String, Object>>) rMap.get("row");
+
+
+
+
+
+
+
+
+
+        return null;
+    }
 
     @Override
     public List<EventDTO> getEventList() {
@@ -86,4 +111,5 @@ public class EventService implements IEventService  {
 
         return nList;
     }
+
 }
