@@ -1,6 +1,7 @@
 package kopo.poly.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import kopo.poly.dto.ApiDTO;
 import kopo.poly.dto.EventDTO;
 import kopo.poly.dto.NoticeDTO;
 
@@ -22,12 +23,15 @@ public interface IEventService {
      * @param type 조회수 증가여부(true : 증가, false : 증가안함
      */
     EventDTO getEventInfo(EventDTO pDTO, boolean type) throws Exception;
+    ApiDTO getApiInfo(String uniqueIdentifier) throws Exception;
 
     /**
      * 문화행사 검색
      */
     List<EventDTO> getEventListSearch(EventDTO pDTO);
 
-    List<EventDTO> getList() throws JsonProcessingException;
+    List<ApiDTO> getList(ApiDTO pDTO) throws JsonProcessingException;
+
+    //    ApiDTO parseUniqueIdentifierToDTO(String uniqueIdentifier) throws Exception;
 
 }

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+
+    <title>게시판 글보기</title>
+    <link rel="stylesheet" href="/css/table.css"/>
+    <script type="text/javascript" src="/js/jquery-3.6.0.min.js"></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const session_user_id = [[${session.SESSION_USER_ID}]];
+        const nSeq = [[${rDTO.place}]];
+
+        $(document).ready(function () {
+            $("#btnBookmark").on("click", function () {
+                addBookmark(); // 북마크 추가 함수 호출
+            });
+
+            $("#btnList").on("click", function () {
+                location.href = "/event/eventSearch";
+            })
+        });
+
+        function addBookmark() {
+            $.ajax({
+                type: "POST",
+                url: "/event/addBookmark", // 서버의 북마크 추가 엔드포인트
+                data: {
+                    eventSeq: nSeq // 현재 페이지의 문화행사 번호
+                },
+                success: function(response) {
+                    // 성공적으로 요청이 처리되면 실행
+                    alert("북마크에 추가되었습니다.");
+                },
+                error: function(xhr, status, error) {
+                    // 요청 처리 중 오류가 발생하면 실행
+                    alert("오류 발생: " + error);
+                }
+            });
+        }
+        /*]]>*/
+    </script>
+</head>
+<body>
+<h2>문화행사 상세보기</h2>
+<hr/>
+<br/>
+<div class="divTable minimalistBlack">
+    <div class="divTableBody">
+        <div class="divTableRow">
+            <div class="divTableCell">문화행사 이름
+            </div>
+            <div class="divTableCell" th:text="${rDTO.title}"></div>
+        </div>
+        <div class="divTableRow">
+            <div class="divTableCell">문화행사 번호</div>
+            <div class="divTableCell" th:text="${rDTO.startDate}"></div>
+        </div>
+        <div class="divTableRow">
+            <div class="divTableCell">문화행사 장소</div>
+            <div class="divTableCell" th:text="${rDTO.place}"></div>
+        </div>
+        <div class="divTableRow">
+            <div class="divTableCell">문화행사 상세주소</div>
+            <div class="divTableCell" th:text="${rDTO.codename}"></div>
+        </div>
+    </div>
+</div>
+<div>
+    <button id="btnBookmark" type="button">북마크 추가하기</button>
+    <button id="btnList" type="button">목록</button>
+</div>
+</body>
+</html>
+

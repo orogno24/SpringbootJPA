@@ -9,7 +9,7 @@
     <script type="text/javascript">
         function displayEvents() {
             $.ajax({
-                url: '/event/getList',
+                url: '/event/filteredList',
                 type: 'GET',
                 data: $('#searchForm').serialize(),
                 success: function(data) {

@@ -2,6 +2,7 @@ package kopo.poly.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import kopo.poly.dto.ApiDTO;
 import kopo.poly.dto.EventDTO;
 import kopo.poly.dto.MsgDTO;
 import kopo.poly.dto.EventDTO;
@@ -68,7 +69,7 @@ public class EventController {
      * 문화행사 상세보기
      */
     @GetMapping(value = "eventInfo")
-    public String noticeInfo(HttpServletRequest request, ModelMap model) throws Exception {
+    public String eventInfo(HttpServletRequest request, ModelMap model) throws Exception {
 
         log.info(this.getClass().getName() + ".eventInfo Start!");
 
@@ -100,9 +101,20 @@ public class EventController {
         return "event/eventSearch";
     }
 
+    @GetMapping(value = "apiSearch")
+    public String apiSearch(HttpSession session, ModelMap model)
+            throws Exception {
+
+        log.info(this.getClass().getName() + ".apiSearch Start!");
+
+        log.info(this.getClass().getName() + ".apiSearch End!");
+
+        return "event/apiSearch";
+    }
+
     @ResponseBody
     @GetMapping(value = "filteredList")
-    public List<EventDTO> filteredList(HttpSession session, ModelMap model, HttpServletRequest request)
+    public List<EventDTO> filteredList(HttpServletRequest request)
             throws Exception {
 
         // 로그 찍기(추후 찍은 로그를 통해 이 함수에 접근했는지 파악하기 용이하다.)
@@ -124,6 +136,8 @@ public class EventController {
 
         List<EventDTO> rList = Optional.ofNullable(eventService.getEventListSearch(pDTO))
                 .orElseGet(ArrayList::new);
+
+        log.info("rList : " + rList);
 
         log.info(this.getClass().getName() + ".filteredList End!");
 
@@ -148,18 +162,65 @@ public class EventController {
         }
     }
 
+    @ResponseBody
     @GetMapping(value = "getList")
-    public List<EventDTO> getList(HttpServletRequest request)
+    public List<ApiDTO> getList(HttpServletRequest request)
             throws Exception {
 
         log.info(this.getClass().getName() + ".getList start!");
 
-        List<EventDTO> rList = Optional.ofNullable(eventService.getList())
+        String guName = CmmUtil.nvl(request.getParameter("guName"));
+        String codename = CmmUtil.nvl(request.getParameter("codename"));
+        String themeCode = CmmUtil.nvl(request.getParameter("themeCode"));
+        String isFree = CmmUtil.nvl(request.getParameter("isFree"));
+        String startDate = CmmUtil.nvl(request.getParameter("startDate"));
+        String endDate = CmmUtil.nvl(request.getParameter("endDate"));
+
+        log.info("guName : " + guName);
+        log.info("codename : " + codename);
+        log.info("themeCode : " + themeCode);
+        log.info("isFree : " + isFree);
+        log.info("startDate : " + startDate);
+        log.info("endDate : " + endDate);
+
+        ApiDTO pDTO = ApiDTO.builder().
+                guName(guName).
+                codename(codename).
+                themeCode(themeCode).
+                isFree(isFree).
+                startDate(startDate).
+                endDate(endDate)
+                .build();
+
+        List<ApiDTO> rList = Optional.ofNullable(eventService.getList(pDTO))
                 .orElseGet(ArrayList::new);
 
         log.info(this.getClass().getName() + ".getList end!");
 
         return rList;
+    }
+
+    @GetMapping(value = "apiInfo")
+    public String apiInfo(HttpServletRequest request, ModelMap model) throws Exception {
+
+        log.info(this.getClass().getName() + ".apiInfo Start!");
+
+        // 고유 식별자를 받는 방식에 따라 변경 필요
+        String uniqueIdentifier = CmmUtil.nvl(request.getParameter("nSeq"), "");
+
+        log.info("Unique Identifier: " + uniqueIdentifier);
+
+        uniqueIdentifier = "https://culture.seoul.go.kr/cmmn/file/getImage.do?atchFileId=" + uniqueIdentifier + "&thumb=Y";
+
+        ApiDTO rDTO = Optional.ofNullable(eventService.getApiInfo(uniqueIdentifier))
+                .orElseGet(() -> ApiDTO.builder().build());
+
+        // 조회된 결과값 넣어주기
+        model.addAttribute("rDTO", rDTO);
+
+        log.info(this.getClass().getName() + ".apiInfo End!");
+
+        return "event/apiInfo";
     }
 
 }

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>문화행사 리스트</title>
+    <link rel="stylesheet" href="/css/table.css"/>
+    <link rel="stylesheet" href="/css/eventSearch.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script type="text/javascript" src="/js/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            // 현재 날짜를 기본값으로 설정
+            var currentDate = new Date();
+            var monthLaterDate = new Date(new Date().setMonth(currentDate.getMonth() + 1));
+
+            // 날짜를 YYYY-MM-DD 형식으로 포맷
+            var formattedCurrentDate = currentDate.toISOString().substring(0, 10);
+            var formattedMonthLaterDate = monthLaterDate.toISOString().substring(0, 10);
+
+            // 시작일과 종료일 입력 필드에 기본값 설정
+            document.getElementById('startDate').value = formattedCurrentDate;
+            document.getElementById('endDate').value = formattedMonthLaterDate;
+        });
+
+        function displayEvents() {
+            $.ajax({
+                url: '/event/getList',
+                type: 'GET',
+                data: $('#searchForm').serialize(),
+                success: function (data) {
+                    var container = document.getElementById('resultSection'); // 결과를 표시할 컨테이너 요소
+                    container.innerHTML = ''; // 컨테이너 초기화
+
+                    // 서버로부터 받은 데이터를 사용하여 결과 표시
+                    data.forEach(function (event) {
+                        var listItem = document.createElement('div');
+                        listItem.className = 'eventItem';
+
+                        var uniqueIdentifier = extractFileId(event.MAIN_IMG);
+
+                        listItem.innerHTML =
+                            '<div class="eventThumbnail">' +
+                            '<img src="' + event.MAIN_IMG + '" alt="Event Thumbnail" style="max-width:200px; max-height:200px;">' +
+                            '</div>' +
+                            '<div class="eventInfo">' +
+                            '<h3>' + event.TITLE + '</h3>' +
+                            '<p>' + event.CODENAME + '</p>' +
+                            '<p>' + event.GUNAME + '</p>' +
+                            '<p>' + event.DATE + '</p>' +
+                            '<p>' + event.PLACE + '</p>' +
+                            '<p><a href="' + event.ORG_LINK + '">More Info</a></p>' +
+                            '</div>';
+
+                        listItem.querySelector('h3').onclick = function () {
+                            doDetail(uniqueIdentifier);
+                        };
+
+                        container.appendChild(listItem);
+                    });
+                },
+                error: function (error) {
+                    console.log('Error:', error);
+                }
+            });
+        }
+
+        function extractFileId(url) {
+            const pattern = /FileId=([\d\w]+)/; // 숫자와 문자를 포함할 수 있도록 패턴 수정
+            const match = url.match(pattern);
+            return match ? match[1] : null;
+        }
+
+        function doDetail(uniqueIdentifier) {
+            location.href = "/event/apiInfo?nSeq=" + uniqueIdentifier;
+        }
+    </script>
+</head>
+<body>
+<h2>문화행사 검색</h2>
+<form id="searchForm">
+    <select name="guName">
+        <option value="">시군구 선택</option>
+        <option value="강서구">강서구</option>
+        <option value="영등포구">영등포구</option>
+    </select>
+    <select name="codename">
+        <option value="">행사 타입 선택</option>
+        <option value="콘서트">콘서트</option>
+        <option value="뮤지컬/오페라">뮤지컬/오페라</option>
+        <option value="국악">국악</option>
+        <option value="기타">기타</option>
+    </select>
+    <select name="themeCode">
+        <option value="">테마</option>
+        <option value="어린이/청소년 문화행사">어린이/청소년</option>
+        <option value="여성 문화행사">여성</option>
+        <option value="어르신 문화행사">어르신</option>
+        <option value="가족 문화행사">가족</option>
+    </select>
+    <select name="isFree">
+        <option value="">비용</option>
+        <option value="무료">무료</option>
+        <option value="유료">유료</option>
+    </select>
+    <input type="date" id="startDate" name="startDate" />
+    <input type="date" id="endDate" name="endDate" />
+    <button type="button" onclick="displayEvents()">검색</button>
+</form>
+<hr/>
+
+<div class="divTable minimalistBlack">
+    <div class="divTableBody" id="resultSection">
+
+    </div>
+</div>
+</body>
+</html>
