@@ -8,33 +8,76 @@
     <script type="text/javascript" src="/js/jquery-3.6.0.min.js"></script>
     <script th:inline="javascript">
         /*<![CDATA[*/
-        const session_user_id = [[${session.SESSION_USER_ID}]];
-        const nSeq = [[${rDTO.place}]];
+        var title = /*[[${rDTO.title}]]*/ 'defaultTitle';
+        const startDate = [[${rDTO.startDate}]];
+        const endDate = [[${rDTO.endDate}]];
+        var uniqueIdentifier = extractFileId([[${rDTO.mainImg}]]);
 
         $(document).ready(function () {
-            $("#btnBookmark").on("click", function () {
+            $("#btnAddBookmark").on("click", function () {
                 addBookmark(); // 북마크 추가 함수 호출
             });
 
+            $("#btnRemoveBookmark").on("click", function () {
+                removeBookmark();
+            });
+
             $("#btnList").on("click", function () {
-                location.href = "/event/eventSearch";
-            })
+                location.href = "/event/apiSearch";
+            });
+
+            updateBookmarkButton();
+
         });
+
+        function updateBookmarkButton() {
+            var existsYn = /*[[${hDTO.existsYn}]]*/ 'N';
+            if (existsYn === 'Y') {
+                $("#btnAddBookmark").hide();
+                $("#btnRemoveBookmark").show();
+            } else {
+                $("#btnAddBookmark").show();
+                $("#btnRemoveBookmark").hide();
+            }
+        }
+
+        function extractFileId(url) {
+            const pattern = /FileId=([\d\w]+)/; // 숫자와 문자를 포함할 수 있도록 패턴 수정
+            const match = url.match(pattern);
+            return match ? match[1] : null;
+        }
 
         function addBookmark() {
             $.ajax({
                 type: "POST",
                 url: "/event/addBookmark", // 서버의 북마크 추가 엔드포인트
+                dataType: "JSON",
                 data: {
-                    eventSeq: nSeq // 현재 페이지의 문화행사 번호
+                    eventSeq: uniqueIdentifier,
+                    title: title,
+                    startDate: startDate,
+                    endDate: endDate
                 },
-                success: function(response) {
-                    // 성공적으로 요청이 처리되면 실행
-                    alert("북마크에 추가되었습니다.");
+                success: function (json) {
+                    $("#btnAddBookmark").hide();
+                    $("#btnRemoveBookmark").show();
+                    alert(json.msg);
+                }
+            });
+        }
+
+        function removeBookmark() {
+            $.ajax({
+                type: "POST",
+                url: "/event/removeBookmark",
+                dataType: "JSON",
+                data: {
+                    eventSeq: uniqueIdentifier
                 },
-                error: function(xhr, status, error) {
-                    // 요청 처리 중 오류가 발생하면 실행
-                    alert("오류 발생: " + error);
+                success: function (json) {
+                    $("#btnAddBookmark").show();
+                    $("#btnRemoveBookmark").hide();
+                    alert(json.msg);
                 }
             });
         }
@@ -64,10 +107,15 @@
             <div class="divTableCell">문화행사 상세주소</div>
             <div class="divTableCell" th:text="${rDTO.codename}"></div>
         </div>
+        <div class="divTableRow">
+            <div class="divTableCell">북마크 여부</div>
+            <div class="divTableCell" th:text="${hDTO.existsYn}"></div>
+        </div>
     </div>
 </div>
 <div>
-    <button id="btnBookmark" type="button">북마크 추가하기</button>
+    <button id="btnAddBookmark" type="button">북마크 추가하기</button>
+    <button id="btnRemoveBookmark" type="button" style="display:none;">북마크 취소하기</button>
     <button id="btnList" type="button">목록</button>
 </div>
 </body>

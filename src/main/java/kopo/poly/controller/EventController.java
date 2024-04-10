@@ -2,9 +2,7 @@ package kopo.poly.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import kopo.poly.dto.ApiDTO;
-import kopo.poly.dto.EventDTO;
-import kopo.poly.dto.MsgDTO;
+import kopo.poly.dto.*;
 import kopo.poly.dto.EventDTO;
 import kopo.poly.service.IEventService;
 import kopo.poly.util.CmmUtil;
@@ -144,24 +142,6 @@ public class EventController {
         return rList;
     }
 
-    @PostMapping("/addBookmark")
-    @ResponseBody
-    public String addBookmark(HttpServletRequest request) {
-        try {
-            // HttpServletRequest를 통해 파라미터 값 추출
-            String eventSeqParam = request.getParameter("eventSeq");
-            long eventSeq = Long.parseLong(eventSeqParam);
-
-            log.info("eventSeq : " + eventSeq);
-
-            return "북마크에 추가되었습니다.";
-        } catch (NumberFormatException e) {
-            return "잘못된 번호 형식: " + e.getMessage();
-        } catch (Exception e) {
-            return "북마크 추가 실패: " + e.getMessage();
-        }
-    }
-
     @ResponseBody
     @GetMapping(value = "getList")
     public List<ApiDTO> getList(HttpServletRequest request)
@@ -201,26 +181,184 @@ public class EventController {
     }
 
     @GetMapping(value = "apiInfo")
-    public String apiInfo(HttpServletRequest request, ModelMap model) throws Exception {
+    public String apiInfo(HttpServletRequest request, ModelMap model, HttpSession session) throws Exception {
 
         log.info(this.getClass().getName() + ".apiInfo Start!");
 
         // 고유 식별자를 받는 방식에 따라 변경 필요
         String uniqueIdentifier = CmmUtil.nvl(request.getParameter("nSeq"), "");
+        String userId = (String) session.getAttribute("SS_USER_ID");
+        String eventSeq = uniqueIdentifier;
 
         log.info("Unique Identifier: " + uniqueIdentifier);
+        log.info("userId: " + userId);
+        log.info("eventSeq: " + eventSeq);
 
         uniqueIdentifier = "https://culture.seoul.go.kr/cmmn/file/getImage.do?atchFileId=" + uniqueIdentifier + "&thumb=Y";
 
         ApiDTO rDTO = Optional.ofNullable(eventService.getApiInfo(uniqueIdentifier))
                 .orElseGet(() -> ApiDTO.builder().build());
 
+        BookmarkDTO gDTO = BookmarkDTO.builder().userId(userId).eventSeq(eventSeq).build();
+
+        BookmarkDTO hDTO = Optional.ofNullable(eventService.getBookmarkExists(gDTO))
+                .orElseGet(() -> BookmarkDTO.builder().build());
+
         // 조회된 결과값 넣어주기
         model.addAttribute("rDTO", rDTO);
+        model.addAttribute("hDTO", hDTO);
 
         log.info(this.getClass().getName() + ".apiInfo End!");
 
         return "event/apiInfo";
     }
+
+    @GetMapping(value = "eventBookmarkList")
+    public String eventBookmarkList(HttpSession session, ModelMap model)
+            throws Exception {
+
+        // 로그 찍기(추후 찍은 로그를 통해 이 함수에 접근했는지 파악하기 용이하다.)
+        log.info(this.getClass().getName() + ".eventBookmarkList Start!");
+
+        List<EventDTO> rList = Optional.ofNullable(eventService.getEventList())
+                .orElseGet(ArrayList::new);
+
+        // 조회된 리스트 결과값 넣어주기
+        model.addAttribute("rList", rList);
+
+        // 로그 찍기(추후 찍은 로그를 통해 이 함수 호출이 끝났는지 파악하기 용이하다.)
+        log.info(this.getClass().getName() + ".eventBookmarkList End!");
+
+        // 함수 처리가 끝나고 보여줄 HTML (Thymeleaf) 파일명
+        // templates/event/eventList.html
+        return "event/eventList";
+    }
+
+    @GetMapping("/eventCalendar")
+    public String eventCalendar(HttpSession session, ModelMap model) throws Exception {
+
+        log.info(this.getClass().getName() + ".eventCalendar Start!");
+
+        log.info(this.getClass().getName() + ".eventCalendar End!");
+
+        return "event/eventCalendar";
+    }
+
+    @ResponseBody
+    @GetMapping("/getCalendarDate")
+    public List<BookmarkDTO> getCalendarDate(HttpSession session, ModelMap model) throws Exception {
+
+        log.info(this.getClass().getName() + ".getCalendarDate Start!");
+
+        String userId = CmmUtil.nvl((String) session.getAttribute("SS_USER_ID"));
+
+        BookmarkDTO pDTO = BookmarkDTO.builder().userId(userId).build();
+
+        List<BookmarkDTO> rList = Optional.ofNullable(eventService.getBookmarkDate(pDTO))
+                .orElseGet(ArrayList::new);
+
+        log.info("rList : " + rList);
+
+        log.info(this.getClass().getName() + ".getCalendarDate End!");
+
+        return rList;
+    }
+
+    @ResponseBody
+    @PostMapping("/addBookmark")
+    public MsgDTO addBookmark(HttpServletRequest request, HttpSession session) {
+
+        log.info(this.getClass().getName() + ".addBookmark Start!");
+
+
+        MsgDTO dto = null;
+        String msg = "";
+
+        try {
+            String userId = (String) session.getAttribute("SS_USER_ID");
+            String eventSeq = CmmUtil.nvl(request.getParameter("eventSeq"));
+            String eventTitle = CmmUtil.nvl(request.getParameter("title"));
+            String startDate = CmmUtil.nvl(request.getParameter("startDate"));
+            String endDate = CmmUtil.nvl(request.getParameter("endDate"));
+
+            log.info("userId : " + userId);
+            log.info("eventSeq : " + eventSeq);
+            log.info("eventTitle : " + eventTitle);
+            log.info("startDate : " + startDate);
+            log.info("endDate : " + endDate);
+
+            BookmarkDTO pDTO = BookmarkDTO.builder()
+                    .userId(userId)
+                    .eventSeq(eventSeq)
+                    .eventTitle(eventTitle)
+                    .startDate(startDate)
+                    .endDate(endDate)
+                    .build();
+
+            eventService.insertBookmark(pDTO);
+
+            msg = "북마크에 추가되었습니다.";
+
+        } catch (Exception e) {
+
+            msg = "실패하였습니다. : " + e.getMessage();
+            log.info(e.toString());
+            e.printStackTrace();
+
+        } finally {
+
+            dto = MsgDTO.builder().msg(msg).build();
+
+            log.info(this.getClass().getName() + ".addBookmark End!");
+
+        }
+
+        return dto;
+
+    }
+
+    @ResponseBody
+    @PostMapping(value = "removeBookmark")
+    public MsgDTO removeBookmark(HttpServletRequest request, HttpSession session) {
+
+        log.info(this.getClass().getName() + ".removeBookmark Start!");
+
+        String msg = ""; // 메시지 내용
+        MsgDTO dto = null; // 결과 메시지 구조
+
+        try {
+            String userId = (String) session.getAttribute("SS_USER_ID");
+            String eventSeq = CmmUtil.nvl(request.getParameter("eventSeq"));
+
+            log.info("userId : " + userId);
+            log.info("eventSeq : " + eventSeq);
+
+            /*
+             * 값 전달은 반드시 DTO 객체를 이용해서 처리함 전달 받은 값을 DTO 객체에 넣는다.
+             */
+            BookmarkDTO pDTO = BookmarkDTO.builder().userId(userId).eventSeq(eventSeq).build();
+
+            // 게시글 삭제하기 DB
+            eventService.removeBookmark(pDTO);
+
+            msg = "삭제되었습니다.";
+
+        } catch (Exception e) {
+            msg = "실패하였습니다. : " + e.getMessage();
+            log.info(e.toString());
+            e.printStackTrace();
+
+        } finally {
+
+            // 결과 메시지 전달하기
+            dto = MsgDTO.builder().msg(msg).build();
+
+            log.info(this.getClass().getName() + ".removeBookmark End!");
+
+        }
+
+        return dto;
+    }
+
 
 }

@@ -2,6 +2,7 @@ package kopo.poly.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import kopo.poly.dto.ApiDTO;
+import kopo.poly.dto.BookmarkDTO;
 import kopo.poly.dto.EventDTO;
 import kopo.poly.dto.NoticeDTO;
 
@@ -31,6 +32,16 @@ public interface IEventService {
     List<EventDTO> getEventListSearch(EventDTO pDTO);
 
     List<ApiDTO> getList(ApiDTO pDTO) throws JsonProcessingException;
+
+    List<ApiDTO> getBookmarkList(List<String> bookmarkedIdentifiersO) throws JsonProcessingException;
+
+    List<BookmarkDTO> getBookmarkDate(BookmarkDTO pDTO) throws Exception;
+
+    void insertBookmark(BookmarkDTO pDTO) throws Exception;
+
+    void removeBookmark(BookmarkDTO pDTO) throws Exception;
+
+    BookmarkDTO getBookmarkExists(BookmarkDTO pDTO) throws Exception;
 
     //    ApiDTO parseUniqueIdentifierToDTO(String uniqueIdentifier) throws Exception;
 

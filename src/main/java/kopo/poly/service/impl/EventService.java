@@ -4,11 +4,17 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kopo.poly.dto.ApiDTO;
+import kopo.poly.dto.BookmarkDTO;
 import kopo.poly.dto.EventDTO;
+import kopo.poly.dto.NoticeDTO;
+import kopo.poly.repository.BookmarkRepository;
 import kopo.poly.repository.EventRespository;
+import kopo.poly.repository.entity.BookmarkEntity;
 import kopo.poly.repository.entity.EventEntity;
 import kopo.poly.service.IEventService;
 import kopo.poly.specification.EventSpecification;
+import kopo.poly.util.CmmUtil;
+import kopo.poly.util.DateUtil;
 import kopo.poly.util.NetworkUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,9 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -33,12 +37,14 @@ import java.util.stream.Stream;
 public class EventService implements IEventService  {
 
     private final EventRespository eventRepository;
+    private final BookmarkRepository bookmarkRepository;
 
     @Value("${data.api.key}")
     private String apiKey;
 
     @Override
     public List<EventDTO> getEventList() {
+
         log.info(this.getClass().getName() + ".getEventList Start!");
 
         // 공지사항 전체 리스트 조회하기
@@ -184,6 +190,138 @@ public class EventService implements IEventService  {
         log.info(this.getClass().getName() + ".getList End!");
 
         return pList;
+    }
+
+    @Override
+    public List<ApiDTO> getBookmarkList(List<String> bookmarkedIdentifiers) throws JsonProcessingException {
+        List<ApiDTO> bookmarkedEvents = new ArrayList<>();
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        // API 호출을 통한 전체 문화행사 정보 조회
+        String apiParam = apiKey + "/" + "json" + "/" + "culturalEventInfo" + "/" + "1" + "/" + "500" + "/";
+        String json = NetworkUtil.get(apiURL + apiParam);
+        Map<String, Object> rMap = objectMapper.readValue(json, LinkedHashMap.class);
+        Map<String, Object> culturalEventInfo = (Map<String, Object>) rMap.get("culturalEventInfo");
+        List<Map<String, Object>> rContent = (List<Map<String, Object>>) culturalEventInfo.get("row");
+
+        if (rContent != null) {
+            for (Map<String, Object> content : rContent) {
+                // 북마크된 문화행사 정보만 필터링
+                if (bookmarkedIdentifiers.contains(content.get("MAIN_IMG").toString())) {
+                    ApiDTO rDTO = objectMapper.convertValue(content, ApiDTO.class);
+                    bookmarkedEvents.add(rDTO);
+                }
+            }
+        }
+
+        return bookmarkedEvents;
+    }
+
+    @Override
+    public List<BookmarkDTO> getBookmarkDate(BookmarkDTO pDTO) throws Exception {
+
+        log.info(this.getClass().getName() + ".getBookmarkDate Start!");
+
+        String userId = CmmUtil.nvl(pDTO.userId());
+
+        List<BookmarkEntity> rList = bookmarkRepository.findAllByUserId(userId);
+
+        List<BookmarkDTO> nList = new ObjectMapper().convertValue(rList,
+                new TypeReference<List<BookmarkDTO>>() {
+                });
+
+        log.info(this.getClass().getName() + ".getBookmarkDate Start!");
+
+        return nList;
+    }
+
+    @Override
+    public void insertBookmark(BookmarkDTO pDTO) throws Exception {
+
+        log.info(this.getClass().getName() + ".insertBookmark Start!");
+
+        String userId = CmmUtil.nvl(pDTO.userId());
+        String eventSeq = CmmUtil.nvl(pDTO.eventSeq());
+        String eventTitle = CmmUtil.nvl(pDTO.eventTitle());
+        String startDate = CmmUtil.nvl(pDTO.startDate());
+        String endDate = CmmUtil.nvl(pDTO.endDate());
+
+        startDate = startDate.split(" ")[0];
+        endDate = endDate.split(" ")[0];
+
+        LocalDate originalEndDate = LocalDate.parse(endDate, DateTimeFormatter.ISO_DATE);
+        endDate = originalEndDate.plusDays(1).toString();
+
+        log.info("userId : " + userId);
+        log.info("eventSeq : " + eventSeq);
+        log.info("eventTitle : " + eventTitle);
+        log.info("startDate : " + startDate);
+        log.info("endDate : " + endDate);
+
+        BookmarkEntity pEntity = BookmarkEntity.builder()
+                .userId(userId)
+                .regDt(DateUtil.getDateTime("yyyy-MM-dd hh:mm:ss"))
+                .eventSeq(eventSeq)
+                .eventTitle(eventTitle)
+                .startDate(startDate)
+                .endDate(endDate)
+                .build();
+
+        // 공지사항 저장하기
+        bookmarkRepository.save(pEntity);
+
+        log.info(this.getClass().getName() + ".insertBookmark End!");
+
+    }
+
+    @Override
+    public void removeBookmark(BookmarkDTO pDTO) throws Exception {
+
+        log.info(this.getClass().getName() + ".removeBookmark Start!");
+
+        String userId = pDTO.userId();
+        String eventSeq = pDTO.eventSeq();
+
+        log.info("userId : " + userId);
+        log.info("eventSeq : " + eventSeq);
+
+        Optional<BookmarkEntity> rEntity = bookmarkRepository.findByUserIdAndEventSeq(userId, eventSeq);
+
+        Long bookmarkSeq = rEntity.get().getBookmarkSeq();
+
+        log.info("bookmarkSeq : " + bookmarkSeq);
+
+        bookmarkRepository.deleteById(bookmarkSeq);
+
+        log.info(this.getClass().getName() + ".removeBookmark End!");
+
+    }
+
+    @Override
+    public BookmarkDTO getBookmarkExists(BookmarkDTO pDTO) throws Exception {
+
+        log.info(this.getClass().getName() + ".getBookmarkExists Start!");
+
+        BookmarkDTO rDTO;
+
+        String userId= CmmUtil.nvl(pDTO.userId());
+        String eventSeq= CmmUtil.nvl(pDTO.eventSeq());
+
+        log.info("userId : " + userId);
+        log.info("eventSeq : " + eventSeq);
+
+        Optional<BookmarkEntity> rEntity = bookmarkRepository.findByUserIdAndEventSeq(userId, eventSeq);
+
+        if (rEntity.isPresent()) {
+            rDTO = BookmarkDTO.builder().existsYn("Y").build();
+        } else {
+            rDTO = BookmarkDTO.builder().existsYn("N").build();
+        }
+
+        log.info(this.getClass().getName() + ".getBookmarkExists End!");
+
+        return rDTO;
+
     }
 
 
