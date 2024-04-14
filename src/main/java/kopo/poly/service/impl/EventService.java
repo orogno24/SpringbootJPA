@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import kopo.poly.dto.ApiDTO;
 import kopo.poly.dto.BookmarkDTO;
 import kopo.poly.dto.EventDTO;
-import kopo.poly.dto.NoticeDTO;
 import kopo.poly.repository.BookmarkRepository;
 import kopo.poly.repository.EventRespository;
 import kopo.poly.repository.entity.BookmarkEntity;
@@ -230,7 +229,7 @@ public class EventService implements IEventService  {
                 new TypeReference<List<BookmarkDTO>>() {
                 });
 
-        log.info(this.getClass().getName() + ".getBookmarkDate Start!");
+        log.info(this.getClass().getName() + ".getBookmarkDate End!");
 
         return nList;
     }

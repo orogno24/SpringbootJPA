@@ -181,7 +181,7 @@ public class UserInfoService implements IUserInfoService {
 
             // 인증번호 발송 로직
             MailDTO dto = MailDTO.builder()
-                    .title("거북목 자세교정 및 예방 시스템 인증번호 발송 메일")
+                    .title("인증번호 발송 메일")
                     .contents("인증번호는 " + authNumber + " 입니다.")
                     .toMail(EncryptUtil.decAES128CBC(email))
                     .build();
