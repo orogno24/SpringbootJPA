@@ -2,9 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-
     <title>게시판 글보기</title>
-    <link rel="stylesheet" href="/css/table.css"/>
     <script type="text/javascript" src="/js/jquery-3.6.0.min.js"></script>
     <script th:inline="javascript">
         /*<![CDATA[*/
@@ -81,42 +79,150 @@
                 }
             });
         }
+
+        function initMap() {
+            var latitude = parseFloat(document.getElementById('latitude').textContent); // 위도
+            var longitude = parseFloat(document.getElementById('longitude').textContent); // 경도
+            var mapContainer = document.getElementById('map'), // 지도를 표시할 div
+                mapOption = {
+                    center: new kakao.maps.LatLng(latitude, longitude), // 지도의 중심좌표
+                    level: 3 // 지도의 확대 레벨
+                };
+
+            // 지도를 생성합니다
+            var map = new kakao.maps.Map(mapContainer, mapOption);
+
+            // 마커가 표시될 위치입니다
+            var markerPosition  = new kakao.maps.LatLng(latitude, longitude);
+
+            // 마커를 생성합니다
+            var marker = new kakao.maps.Marker({
+                position: markerPosition
+            });
+
+            // 마커가 지도 위에 표시되도록 설정합니다
+            marker.setMap(map);
+        }
+
         /*]]>*/
     </script>
+    <style>
+        body {
+            font-family: 'Noto Sans', sans-serif;
+            background-color: #fafafa;
+            margin: 0;
+            padding: 20px;
+            color: #444;
+        }
+        .content {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            max-width: 960px;
+            margin: auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .image-container {
+            flex: 1 1 40%;
+            max-width: 40%;
+            margin-right: 20px;
+        }
+        .image-container img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+        .info-container {
+            flex: 1 1 60%;
+            display: flex;
+            flex-direction: column;
+        }
+        .info-title {
+            color: #5C5470;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .info-item {
+            background: #f0f0f0;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .info-item strong {
+            color: #333;
+            font-weight: bold;
+        }
+        .button-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        button {
+            background-color: #FF8882;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            margin: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-decoration: none;
+        }
+        button:hover, a:hover {
+            background-color: #FF6B6B;
+        }
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+            .image-container {
+                margin-right: 0;
+                margin-bottom: 20px;
+            }
+            .info-container {
+                width: 100%;
+            }
+        }
+
+    </style>
 </head>
-<body>
+<body onload="initMap()">
 <h2>문화행사 상세보기</h2>
-<hr/>
-<br/>
-<div class="divTable minimalistBlack">
-    <div class="divTableBody">
-        <div class="divTableRow">
-            <div class="divTableCell">문화행사 이름
+<div id="map"></div> <!-- 지도를 표시할 div 요소 -->
+<span id="latitude" style="display:none;">${rDTO.lot}</span>
+<span id="longitude" style="display:none;">${rDTO.lat}</span>
+<div class="content">
+    <div class="image-container">
+        <img src="" th:src="${rDTO.mainImg}" alt="문화행사 이미지">
+    </div>
+    <div class="info-container">
+        <h3 class="info-title" th:text="${rDTO.title}">문화행사 정보</h3>
+
+        <div class="info-item"><strong>장소:</strong> <span th:text="${rDTO.place}"></span></div>
+        <div class="info-item"><strong>분류:</strong> <span th:text="${rDTO.codename}"></span></div>
+        <div class="info-item"><strong>이용대상:</strong> <span th:text="${rDTO.useTrgt}"></span></div>
+        <div class="info-item"><strong>이용요금:</strong> <span th:text="${rDTO.useFee}"></span></div>
+        <div class="info-item"><strong>시간:</strong> <span th:text="${rDTO.date}"></span></div>
+
+        <div th:if="${!#strings.isEmpty(rDTO.program)}">
+            <div class="info-item">
+                <strong>프로그램 소개:</strong> <span th:text="${rDTO.program}"></span>
             </div>
-            <div class="divTableCell" th:text="${rDTO.title}"></div>
         </div>
-        <div class="divTableRow">
-            <div class="divTableCell">문화행사 번호</div>
-            <div class="divTableCell" th:text="${rDTO.startDate}"></div>
+
+        <div class="info-item">
+            <a href="#" th:href="${rDTO.orgLink}" target="_blank">더보기</a>
         </div>
-        <div class="divTableRow">
-            <div class="divTableCell">문화행사 장소</div>
-            <div class="divTableCell" th:text="${rDTO.place}"></div>
-        </div>
-        <div class="divTableRow">
-            <div class="divTableCell">문화행사 상세주소</div>
-            <div class="divTableCell" th:text="${rDTO.codename}"></div>
-        </div>
-        <div class="divTableRow">
-            <div class="divTableCell">북마크 여부</div>
-            <div class="divTableCell" th:text="${hDTO.existsYn}"></div>
+
+        <div class="button-container">
+            <button id="btnAddBookmark" type="button">북마크 추가하기</button>
+            <button id="btnRemoveBookmark" type="button" style="display:none;">북마크 취소하기</button>
+            <button id="btnList" type="button">목록</button>
         </div>
     </div>
-</div>
-<div>
-    <button id="btnAddBookmark" type="button">북마크 추가하기</button>
-    <button id="btnRemoveBookmark" type="button" style="display:none;">북마크 취소하기</button>
-    <button id="btnList" type="button">목록</button>
 </div>
 </body>
 </html>

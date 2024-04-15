@@ -83,7 +83,7 @@
             <div class="nav-collapse collapse pull-right">
                 <ul class="nav" id="top-navigation">
                     <li><a style="border: 1px solid #15c6e5;" href="/main">메인 페이지</a></li>
-                    <li><a href="/event/eventSearch">문화행사 찾기</a></li>
+                    <li><a href="/event/apiSearch">문화행사 찾기</a></li>
                     <li><a href="/redirect9">문화시설 찾기</a></li>
                     <li><a href="/notice/noticeListUsingQueryDSL">커뮤니티</a></li>
                     <li class="dropdown">
@@ -162,7 +162,7 @@
             <div class="container" style="margin-top: -40px">
                 <div class="feature-grid">
 
-                    <div class="feature" id="div1" onclick="location.href='/event/eventSearch';"
+                    <div class="feature" id="div1" onclick="location.href='/event/apiSearch';"
                          style="position: relative; overflow: hidden; transition: transform 0.3s ease; cursor: pointer;">
 <!--                        <img class="icon" src="/assets/img/icon1.png" style="position: absolute; width: 14%" alt="">-->
                         <h2 style="font-size: 22px; text-align: center; padding-top: 40px;">
@@ -172,7 +172,7 @@
                             정도에 따른 등급을 확인할 수 있습니다.</p>
                         <br><br>
                     </div>
-                    <div class="feature" id="div2" onclick="location.href='/redirect7';"
+                    <div class="feature" id="div2" onclick="location.href='/event/eventCalendar';"
                          style="position: relative; overflow: hidden; transition: transform 0.3s ease; cursor: pointer;">
 <!--                        <img class="icon" src="/assets/img/icon2.png" style="position: absolute; width: 14%" alt="">-->
                         <h2 style="font-size: 22px; text-align: center; padding-top: 40px; transition: transform 0.3s ease;">
@@ -321,7 +321,7 @@
 
     // 페이지 로드 시 기본 검색어로 유튜브 검색 실행
     window.onload = function () {
-        searchYouTube('문화공간');
+        searchYouTube('비버');
     };
 </script>
 

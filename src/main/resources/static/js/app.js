@@ -38,7 +38,17 @@
             "border-right": containerWidth / 2 + 'px outset transparent'
         });
     });
-
+     $(".triangle2").css({
+         "border-left": containerWidth / 2 + 'px outset transparent',
+         "border-right": containerWidth / 2 + 'px outset transparent'
+     });
+     $(window).resize(function () {
+         containerWidth = $('.container').width();
+         $(".triangle2").css({
+             "border-left": containerWidth / 2 + 'px outset transparent',
+             "border-right": containerWidth / 2 + 'px outset transparent'
+         });
+     });
 
     //Initialize header slider.
     $('#da-slider').cslider();
