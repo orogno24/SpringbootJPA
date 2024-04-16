@@ -1,6 +1,12 @@
-/* 전체 페이지 스타일링 */
+@font-face {
+    font-family: 'NIXGONM-Vb';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/NIXGONM-Vb.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
 body {
-    font-family: 'Arial', sans-serif;
+    font-family: 'NIXGONM-Vb';
     background-color: #f4f4f4;
     margin: 0;
     padding: 20px;
@@ -42,17 +48,14 @@ h2 {
     width: 100%;
     background-color: #fff;
     border-collapse: collapse;
-}
-
-.divTable, .divTableBody, .eventItem {
-    border: 1px solid #ddd;
-    margin-top: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .eventItem {
     display: flex;
     align-items: center;
     padding: 10px;
+    border-bottom: 1px solid #d0d0d0;
 }
 
 .eventThumbnail img {

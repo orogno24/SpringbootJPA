@@ -1,5 +1,12 @@
+@font-face {
+    font-family: 'NIXGONM-Vb';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/NIXGONM-Vb.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
 body {
-    font-family: 'Noto Sans', sans-serif;
+    font-family: 'NIXGONM-Vb';
     background-color: #fafafa;
     margin: 0;
     padding: 20px;
@@ -52,7 +59,7 @@ body {
     margin-top: 20px;
 }
 button {
-    background-color: #FF8882;
+    background-color: #5da5bb;
     color: white;
     border: none;
     padding: 10px 20px;
@@ -62,8 +69,8 @@ button {
     transition: background-color 0.3s;
     text-decoration: none;
 }
-button:hover, a:hover {
-    background-color: #FF6B6B;
+button:hover {
+    background-color: #4c8698;
 }
 @media (max-width: 768px) {
     .content {

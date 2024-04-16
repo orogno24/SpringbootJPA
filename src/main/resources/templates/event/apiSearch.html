@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script type="text/javascript" src="/js/jquery-3.6.0.min.js"></script>
     <script type="text/javascript">
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // 현재 날짜를 기본값으로 설정
             var currentDate = new Date();
             var monthLaterDate = new Date(new Date().setMonth(currentDate.getMonth() + 1));
@@ -128,8 +128,8 @@
         <option value="무료">무료</option>
         <option value="유료">유료</option>
     </select>
-    <input type="date" id="startDate" name="startDate" />
-    <input type="date" id="endDate" name="endDate" />
+    <input type="date" id="startDate" name="startDate"/>
+    <input type="date" id="endDate" name="endDate"/>
     <button type="button" onclick="displayEvents()">검색</button>
 </form>
 
@@ -137,11 +137,8 @@
     <div class="spinner"></div>
 </div>
 
-<hr/>
-
 <div class="divTable minimalistBlack">
     <div class="divTableBody" id="resultSection">
-
     </div>
 </div>
 </body>

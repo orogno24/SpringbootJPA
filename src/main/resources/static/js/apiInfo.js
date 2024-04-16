@@ -33,7 +33,7 @@ function searchPlacesByCategory() {
             var listStr = '';
             var count = Math.min(5, data.length);
             for (var i = 0; i < count; i++) {
-                listStr += '<li><a href="' + data[i].place_url + '" target="_blank">' + data[i].place_name + '</a> - ' + data[i].address_name + ' ' + data[i].category_name + '</li>';
+                listStr += '<li><a href="' + data[i].place_url + '" target="_blank">' + data[i].place_name + '</a> - ' + data[i].address_name + '<br>' + data[i].category_name + '</li>';
             }
             placesList.innerHTML = listStr;
         } else {
