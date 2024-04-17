@@ -192,34 +192,9 @@ public class EventService implements IEventService  {
     }
 
     @Override
-    public List<ApiDTO> getBookmarkList(List<String> bookmarkedIdentifiers) throws JsonProcessingException {
-        List<ApiDTO> bookmarkedEvents = new ArrayList<>();
-        ObjectMapper objectMapper = new ObjectMapper();
+    public List<BookmarkDTO> getBookmarkSeq(BookmarkDTO pDTO) throws Exception {
 
-        // API 호출을 통한 전체 문화행사 정보 조회
-        String apiParam = apiKey + "/" + "json" + "/" + "culturalEventInfo" + "/" + "1" + "/" + "500" + "/";
-        String json = NetworkUtil.get(apiURL + apiParam);
-        Map<String, Object> rMap = objectMapper.readValue(json, LinkedHashMap.class);
-        Map<String, Object> culturalEventInfo = (Map<String, Object>) rMap.get("culturalEventInfo");
-        List<Map<String, Object>> rContent = (List<Map<String, Object>>) culturalEventInfo.get("row");
-
-        if (rContent != null) {
-            for (Map<String, Object> content : rContent) {
-                // 북마크된 문화행사 정보만 필터링
-                if (bookmarkedIdentifiers.contains(content.get("MAIN_IMG").toString())) {
-                    ApiDTO rDTO = objectMapper.convertValue(content, ApiDTO.class);
-                    bookmarkedEvents.add(rDTO);
-                }
-            }
-        }
-
-        return bookmarkedEvents;
-    }
-
-    @Override
-    public List<BookmarkDTO> getBookmarkDate(BookmarkDTO pDTO) throws Exception {
-
-        log.info(this.getClass().getName() + ".getBookmarkDate Start!");
+        log.info(this.getClass().getName() + ".getBookmarkSeq Start!");
 
         String userId = CmmUtil.nvl(pDTO.userId());
 
@@ -229,10 +204,64 @@ public class EventService implements IEventService  {
                 new TypeReference<List<BookmarkDTO>>() {
                 });
 
-        log.info(this.getClass().getName() + ".getBookmarkDate End!");
+        log.info(this.getClass().getName() + ".getBookmarkSeq End!");
 
         return nList;
     }
+
+    @Override
+    public List<BookmarkDTO> getBookmarkDateList(List<String> BookMarkSeqList) throws JsonProcessingException {
+        // API 호출을 위한 파라미터 설정
+        String apiParam = apiKey + "/" + "json" + "/" + "culturalEventInfo" + "/" + "1" + "/" + "500" + "/";
+        String json = NetworkUtil.get(IEventService.apiURL + apiParam);
+
+        // JSON 응답을 객체로 변환
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> rMap = objectMapper.readValue(json, LinkedHashMap.class);
+
+        // "culturalEventInfo" 객체 내 "row" 배열 추출
+        Map<String, Object> culturalEventInfo = (Map<String, Object>) rMap.get("culturalEventInfo");
+        List<Map<String, Object>> rContent = (List<Map<String, Object>>) culturalEventInfo.get("row");
+
+        // 필터링된 이벤트 정보를 담을 리스트
+        List<BookmarkDTO> filteredEvents = new ArrayList<>();
+        for (Map<String, Object> event : rContent) {
+            String mainImgUrl = (String) event.get("MAIN_IMG");
+            String extractedId = extractImageId(mainImgUrl);
+
+            // 북마크된 이벤트 ID와 일치하는 이벤트만 선택
+            if (BookMarkSeqList.contains(extractedId)) {
+                String startDate = (String) event.get("STRTDATE");
+                String endDate = (String) event.get("END_DATE");
+
+                // 날짜 데이터 가공
+                startDate = startDate.split(" ")[0];
+                endDate = endDate.split(" ")[0];
+
+                LocalDate originalEndDate = LocalDate.parse(endDate, DateTimeFormatter.ISO_DATE);
+                endDate = originalEndDate.plusDays(1).toString();
+
+                BookmarkDTO dto = BookmarkDTO.builder()
+                        .eventTitle(String.valueOf(event.get("TITLE")))
+                        .startDate(startDate)
+                        .endDate(endDate)
+                        .nSeq(extractedId)
+                        .build();
+
+                filteredEvents.add(dto);
+            }
+        }
+
+        return filteredEvents;
+    }
+
+    // 이미지 URL에서 파일 ID를 추출하는 메소드
+    private String extractImageId(String url) {
+        String[] parts = url.split("atchFileId=");
+        return parts.length > 1 ? parts[1].split("&")[0] : "";
+    }
+
+
 
     @Override
     public void insertBookmark(BookmarkDTO pDTO) throws Exception {

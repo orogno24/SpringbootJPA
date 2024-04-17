@@ -33,9 +33,17 @@ public interface IEventService {
 
     List<ApiDTO> getList(ApiDTO pDTO) throws JsonProcessingException;
 
-    List<ApiDTO> getBookmarkList(List<String> bookmarkedIdentifiersO) throws JsonProcessingException;
+    /**
+     * 유저가 북마크한 데이터중에서 BookmarkSeq만 추출 후 List에 담기
+     * @param pDTO 유저아이디
+     */
+    List<BookmarkDTO> getBookmarkSeq(BookmarkDTO pDTO) throws Exception;
 
-    List<BookmarkDTO> getBookmarkDate(BookmarkDTO pDTO) throws Exception;
+    /**
+     * BookmarkSeq List를 기준으로 전체 데이터 필터링
+     * @param rList BookmarkSeq 목록
+     */
+    List<BookmarkDTO> getBookmarkDateList(List<String> rList) throws JsonProcessingException;
 
     void insertBookmark(BookmarkDTO pDTO) throws Exception;
 

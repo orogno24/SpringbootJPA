@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 /*
@@ -244,6 +245,16 @@ public class EventController {
         return "event/eventCalendar";
     }
 
+    @GetMapping("/eventCalendarList")
+    public String eventCalendarList(HttpSession session, ModelMap model) throws Exception {
+
+        log.info(this.getClass().getName() + ".eventCalendarList Start!");
+
+        log.info(this.getClass().getName() + ".eventCalendarList End!");
+
+        return "event/eventCalendarList";
+    }
+
     @ResponseBody
     @GetMapping("/getCalendarDate")
     public List<BookmarkDTO> getCalendarDate(HttpSession session, ModelMap model) throws Exception {
@@ -254,7 +265,7 @@ public class EventController {
 
         BookmarkDTO pDTO = BookmarkDTO.builder().userId(userId).build();
 
-        List<BookmarkDTO> rList = Optional.ofNullable(eventService.getBookmarkDate(pDTO))
+        List<BookmarkDTO> rList = Optional.ofNullable(eventService.getBookmarkSeq(pDTO))
                 .orElseGet(ArrayList::new);
 
         log.info("rList : " + rList);
@@ -262,6 +273,35 @@ public class EventController {
         log.info(this.getClass().getName() + ".getCalendarDate End!");
 
         return rList;
+    }
+
+    @ResponseBody
+    @GetMapping("/getCalendarDateList")
+    public List<BookmarkDTO> getCalendarDateList(HttpSession session, ModelMap model) throws Exception {
+
+        log.info(this.getClass().getName() + ".getCalendarDateList Start!");
+
+        String userId = CmmUtil.nvl((String) session.getAttribute("SS_USER_ID"));
+        BookmarkDTO pDTO = BookmarkDTO.builder().userId(userId).build();
+
+        List<BookmarkDTO> rList = Optional.ofNullable(eventService.getBookmarkSeq(pDTO))
+                .orElseGet(ArrayList::new);
+
+        List<String> BookMarkSeqList = rList.stream()
+                .map(BookmarkDTO::eventSeq)  // eventSeq 추출하는 과정
+                .collect(Collectors.toList());
+
+        log.info("rList : " + rList);
+        log.info("eventIds : " + BookMarkSeqList);
+
+        List<BookmarkDTO> eventDetails = Optional.ofNullable(eventService.getBookmarkDateList(BookMarkSeqList))
+                .orElseGet(ArrayList::new);
+
+        log.info("eventDetails : " + eventDetails);
+
+        log.info(this.getClass().getName() + ".getCalendarDateList End!");
+
+        return eventDetails;
     }
 
     @ResponseBody
