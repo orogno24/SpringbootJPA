@@ -44,7 +44,7 @@ public class EventController {
      * GetMapping(value = "event/eventList") =>  GET방식을 통해 접속되는 URL이 event/eventList 경우 아래 함수를 실행함
      */
     @GetMapping(value = "eventList")
-    public String eventList(HttpSession session, ModelMap model)
+    public String eventList(ModelMap model)
             throws Exception {
 
         // 로그 찍기(추후 찍은 로그를 통해 이 함수에 접근했는지 파악하기 용이하다.)
@@ -90,7 +90,7 @@ public class EventController {
     }
 
     @GetMapping(value = "eventSearch")
-    public String eventSearch(HttpSession session, ModelMap model)
+    public String eventSearch()
             throws Exception {
 
         log.info(this.getClass().getName() + ".eventSearch Start!");
@@ -101,7 +101,7 @@ public class EventController {
     }
 
     @GetMapping(value = "apiSearch")
-    public String apiSearch(HttpSession session, ModelMap model)
+    public String apiSearch()
             throws Exception {
 
         log.info(this.getClass().getName() + ".apiSearch Start!");
@@ -215,7 +215,7 @@ public class EventController {
     }
 
     @GetMapping(value = "eventBookmarkList")
-    public String eventBookmarkList(HttpSession session, ModelMap model)
+    public String eventBookmarkList(ModelMap model)
             throws Exception {
 
         // 로그 찍기(추후 찍은 로그를 통해 이 함수에 접근했는지 파악하기 용이하다.)
@@ -236,7 +236,7 @@ public class EventController {
     }
 
     @GetMapping("/eventCalendar")
-    public String eventCalendar(HttpSession session, ModelMap model) throws Exception {
+    public String eventCalendar() throws Exception {
 
         log.info(this.getClass().getName() + ".eventCalendar Start!");
 
@@ -246,7 +246,7 @@ public class EventController {
     }
 
     @GetMapping("/eventCalendarList")
-    public String eventCalendarList(HttpSession session, ModelMap model) throws Exception {
+    public String eventCalendarList() throws Exception {
 
         log.info(this.getClass().getName() + ".eventCalendarList Start!");
 
@@ -277,24 +277,24 @@ public class EventController {
 
     @ResponseBody
     @GetMapping("/getCalendarDateList")
-    public List<BookmarkDTO> getCalendarDateList(HttpSession session, ModelMap model) throws Exception {
+    public List<BookmarkDTO> getCalendarDateList(HttpSession session) throws Exception {
 
         log.info(this.getClass().getName() + ".getCalendarDateList Start!");
 
         String userId = CmmUtil.nvl((String) session.getAttribute("SS_USER_ID"));
         BookmarkDTO pDTO = BookmarkDTO.builder().userId(userId).build();
 
-        List<BookmarkDTO> rList = Optional.ofNullable(eventService.getBookmarkSeq(pDTO))
+        List<BookmarkDTO> rList = Optional.ofNullable(eventService.getBookmarkSeq(pDTO)) // 해당 유저아이디의 전체 북마크 데이터 불러옴
                 .orElseGet(ArrayList::new);
 
-        List<String> BookMarkSeqList = rList.stream()
-                .map(BookmarkDTO::eventSeq)  // eventSeq 추출하는 과정
+        List<String> BookMarkSeqList = rList.stream() // 북마크 데이터에서 eventSeq들만 추출하는 과정
+                .map(BookmarkDTO::eventSeq)
                 .collect(Collectors.toList());
 
         log.info("rList : " + rList);
         log.info("eventIds : " + BookMarkSeqList);
 
-        List<BookmarkDTO> eventDetails = Optional.ofNullable(eventService.getBookmarkDateList(BookMarkSeqList))
+        List<BookmarkDTO> eventDetails = Optional.ofNullable(eventService.getBookmarkDateList(BookMarkSeqList)) // 추출한 eventSeq 리스트를 요청인자로 해서 전체 문화행사 데이터에서 북마크된것만 필터링함
                 .orElseGet(ArrayList::new);
 
         log.info("eventDetails : " + eventDetails);

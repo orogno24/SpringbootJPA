@@ -222,7 +222,7 @@ p {
     font-size:17px;
 }
 .button:hover, .button:active{
-    background-color:#2b2b36;
+    background-color: #447685;
     color:#fff;
 }
 .button-sp, .button-sp:visited, .button-sp:focus {

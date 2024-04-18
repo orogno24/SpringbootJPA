@@ -14,6 +14,7 @@ import kopo.poly.service.IEventService;
 import kopo.poly.specification.EventSpecification;
 import kopo.poly.util.CmmUtil;
 import kopo.poly.util.DateUtil;
+import kopo.poly.util.ExtractImageUtil;
 import kopo.poly.util.NetworkUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -225,9 +226,10 @@ public class EventService implements IEventService  {
 
         // 필터링된 이벤트 정보를 담을 리스트
         List<BookmarkDTO> filteredEvents = new ArrayList<>();
+
         for (Map<String, Object> event : rContent) {
             String mainImgUrl = (String) event.get("MAIN_IMG");
-            String extractedId = extractImageId(mainImgUrl);
+            String extractedId = ExtractImageUtil.extractImageId(mainImgUrl);
 
             // 북마크된 이벤트 ID와 일치하는 이벤트만 선택
             if (BookMarkSeqList.contains(extractedId)) {
@@ -236,8 +238,8 @@ public class EventService implements IEventService  {
 
                 // 날짜 데이터 가공
                 startDate = startDate.split(" ")[0];
-                endDate = endDate.split(" ")[0];
 
+                endDate = endDate.split(" ")[0];
                 LocalDate originalEndDate = LocalDate.parse(endDate, DateTimeFormatter.ISO_DATE);
                 endDate = originalEndDate.plusDays(1).toString();
 
@@ -254,14 +256,6 @@ public class EventService implements IEventService  {
 
         return filteredEvents;
     }
-
-    // 이미지 URL에서 파일 ID를 추출하는 메소드
-    private String extractImageId(String url) {
-        String[] parts = url.split("atchFileId=");
-        return parts.length > 1 ? parts[1].split("&")[0] : "";
-    }
-
-
 
     @Override
     public void insertBookmark(BookmarkDTO pDTO) throws Exception {

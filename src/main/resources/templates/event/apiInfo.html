@@ -100,7 +100,11 @@
         <div class="info-item"><strong>장소:</strong> <span th:text="${rDTO.place}"></span></div>
         <div class="info-item"><strong>분류:</strong> <span th:text="${rDTO.codename}"></span></div>
         <div class="info-item"><strong>이용대상:</strong> <span th:text="${rDTO.useTrgt}"></span></div>
-        <div class="info-item"><strong>이용요금:</strong> <span th:text="${rDTO.useFee}"></span></div>
+
+        <div th:if="${!#strings.isEmpty(rDTO.useFee)}">
+            <div class="info-item"><strong>이용요금:</strong> <span th:text="${rDTO.useFee}"></span></div>
+        </div>
+
         <div class="info-item"><strong>시간:</strong> <span th:text="${rDTO.date}"></span></div>
 
         <div th:if="${!#strings.isEmpty(rDTO.program)}">
