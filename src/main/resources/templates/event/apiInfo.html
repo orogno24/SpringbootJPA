@@ -28,6 +28,10 @@
                 location.href = "/event/apiSearch";
             });
 
+            $("#btnMain").on("click", function () {
+                location.href = "/main";
+            });
+
             updateBookmarkButton();
 
         });
@@ -124,6 +128,7 @@
             <button id="btnAddBookmark" type="button">북마크 추가하기</button>
             <button id="btnRemoveBookmark" type="button" style="display:none;">북마크 취소하기</button>
             <button id="btnList" type="button">목록</button>
+            <button id="btnMain" type="button">메인화면으로</button>
         </div>
     </div>
 </div>

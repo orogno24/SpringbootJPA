@@ -193,6 +193,61 @@ public class EventService implements IEventService  {
     }
 
     @Override
+    public List<ApiDTO> getTodayEventList(ApiDTO pDTO) throws JsonProcessingException {
+
+        log.info(this.getClass().getName() + ".getTodayEventList Start!");
+
+        String apiParam = apiKey + "/" + "json" + "/" + "culturalEventInfo" + "/" + "1" + "/" + "500" + "/";
+        String json = NetworkUtil.get(IEventService.apiURL + apiParam);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> rMap = objectMapper.readValue(json, LinkedHashMap.class);
+
+        Map<String, Object> culturalEventInfo = (Map<String, Object>) rMap.get("culturalEventInfo");
+        List<Map<String, Object>> rContent = (List<Map<String, Object>>) culturalEventInfo.get("row");
+
+        // 날짜 및 시간을 처리할 수 있는 Formatter 정의
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
+
+        // 조건에 맞는 데이터만 필터링
+        Stream<ApiDTO> stream = rContent.stream().map(content -> objectMapper.convertValue(content, ApiDTO.class));
+
+        // startDate가 설정되어 있다면, 해당 날짜 이전의 이벤트는 제외
+        if (pDTO.startDate() != null && !pDTO.startDate().isEmpty()) {
+            LocalDate startDate = LocalDate.parse(pDTO.startDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            stream = stream.filter(e -> {
+                LocalDateTime eventDateTime = LocalDateTime.parse(e.startDate(), formatter);
+                return !eventDateTime.toLocalDate().isBefore(startDate);
+            });
+        }
+
+        // endDate가 설정되어 있다면, 해당 날짜 이후의 이벤트는 제외
+        if (pDTO.endDate() != null && !pDTO.endDate().isEmpty()) {
+            LocalDate endDate = LocalDate.parse(pDTO.endDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            stream = stream.filter(e -> {
+                LocalDateTime eventDateTime = LocalDateTime.parse(e.endDate(), formatter);
+                return !eventDateTime.toLocalDate().isAfter(endDate);
+            });
+        }
+
+        // 필터링된 결과를 리스트로 수집
+        List<ApiDTO> filteredList = stream.collect(Collectors.toList());
+        log.info("FilteredList size: " + filteredList.size());
+
+        // 리스트를 랜덤하게 섞음
+        Collections.shuffle(filteredList);
+
+        // 최대 3개의 요소만 가질 수 있도록 리스트를 재조정
+        List<ApiDTO> pList = filteredList.stream().limit(3).collect(Collectors.toList());
+        log.info("pList size: " + pList.size());
+
+        log.info(this.getClass().getName() + ".getTodayEventList End!");
+
+        return pList;
+
+    }
+
+    @Override
     public List<BookmarkDTO> getBookmarkSeq(BookmarkDTO pDTO) throws Exception {
 
         log.info(this.getClass().getName() + ".getBookmarkSeq Start!");

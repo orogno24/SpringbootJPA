@@ -1,6 +1,10 @@
 package kopo.poly.controller;
 
+import kopo.poly.dto.ApiDTO;
+import kopo.poly.dto.EventDTO;
+import kopo.poly.service.IEventService;
 import kopo.poly.util.CmmUtil;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -10,16 +14,48 @@ import org.springframework.web.bind.annotation.PostMapping;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 @Slf4j
 @Controller
+@RequiredArgsConstructor
 public class MainController {
+
+    private final IEventService eventService;
 
     @GetMapping("/main")
     public String main(HttpSession session, ModelMap model) throws Exception {
-        log.info(this.getClass().getName() + ".main 함수 실행");
+
+        log.info(this.getClass().getName() + ".main Start!");
+
         String userName = (String) session.getAttribute("SS_USER_NAME");
         log.info("userName : " + userName);
         model.addAttribute("userName", userName);
+
+        // 현재 날짜를 yyyy-MM-dd 포맷으로 가져오기
+        String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        log.info("startDate : " + currentDate);
+        log.info("endDate : " + currentDate);
+
+        ApiDTO pDTO = ApiDTO.builder().
+                startDate(currentDate).
+                endDate(currentDate)
+                .build();
+
+        List<ApiDTO> rList = Optional.ofNullable(eventService.getTodayEventList(pDTO))
+                .orElseGet(ArrayList::new);
+
+        log.info("rList : " + rList);
+
+        // 조회된 리스트 결과값 넣어주기
+        model.addAttribute("rList", rList);
+
+        log.info(this.getClass().getName() + ".main End!");
+
         return "main";
     }
 

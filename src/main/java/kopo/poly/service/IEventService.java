@@ -34,6 +34,11 @@ public interface IEventService {
     List<ApiDTO> getList(ApiDTO pDTO) throws JsonProcessingException;
 
     /**
+     * 오늘의 문화행사 검색
+     */
+    List<ApiDTO> getTodayEventList(ApiDTO pDTO) throws JsonProcessingException;
+
+    /**
      * 유저가 북마크한 데이터중에서 BookmarkSeq만 추출 후 List에 담기
      * @param pDTO 유저아이디
      */
