@@ -1,0 +1,68 @@
+.header {
+    background-color: #5da5bb;
+    color: white;
+    padding: 4px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    opacity: 0.95;
+}
+
+.logo {
+    margin-left: 16%;
+}
+
+.header img {
+    height: 40px;
+}
+
+.header ul {
+    margin-right: 20%;
+}
+
+.header li {
+    font-size: 15px;
+    display: inline;
+    margin-left: 42px;
+}
+
+.header a {
+    color: white;
+    text-decoration: none;
+    transition: color 0.3s;
+    font-family: 'NIXGONM-Vb', sans-serif;
+}
+
+.header a:hover, .header a:focus {
+    color: #4feeeb;
+}
+
+@media (max-width: 768px) {
+    .header ul {
+        list-style: none;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-right: 40px;
+    }
+    .header {
+        padding: 10px;
+        flex-direction: column;
+        align-items: center; /* 모바일에서 중앙 정렬 */
+    }
+
+    .header img {
+        margin-bottom: 10px; /* 모바일에서 이미지 아래 마진 추가 */
+    }
+
+    .header ul {
+        justify-content: center;
+        margin: 0;
+    }
+
+    .header li {
+        margin-left: 10px; /* 모바일에서 링크 간 간격 줄임 */
+    }
+}

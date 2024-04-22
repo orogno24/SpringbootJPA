@@ -5,6 +5,7 @@
     <title>문화행사 리스트</title>
     <link rel="stylesheet" href="/css/table.css"/>
     <link rel="stylesheet" href="/css/eventSearch.css"/>
+    <link rel="stylesheet" href="/css/header.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script type="text/javascript" src="/js/jquery-3.6.0.min.js"></script>
     <script type="text/javascript">
@@ -79,6 +80,19 @@
     </script>
 </head>
 <body>
+
+<div class="header">
+    <a href="/main" class="logo">
+        <img src="/assets/img/logo3.png" alt="Main Logo">
+    </a>
+    <ul class="nav" id="top-navigation">
+        <li><a href="/main">메인 페이지</a></li>
+        <li><a href="/event/apiSearch">문화행사 찾기</a></li>
+        <li><a href="/map">문화시설 찾기</a></li>
+        <li><a href="/notice/noticeListUsingQueryDSL">커뮤니티</a></li>
+    </ul>
+</div>
+
 <h2>문화행사 찾기</h2>
 <form id="searchForm">
     <select name="guName">

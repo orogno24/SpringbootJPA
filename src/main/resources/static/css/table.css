@@ -1,8 +1,5 @@
 div.minimalistBlack {
     border: 2px solid #6b6b6b;
-    width: 100%;
-    text-align: left;
-    border-collapse: collapse;
 }
 .divTable.minimalistBlack .divTableCell, .divTable.minimalistBlack .divTableHead {
     border: 1px solid #000000;

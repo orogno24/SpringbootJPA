@@ -9,15 +9,17 @@ body {
     font-family: 'NIXGONM-Vb';
     background-color: #f4f4f4;
     margin: 0;
-    padding: 20px;
+    padding: 0;
 }
 
 h2 {
+    margin-left: 3%;
     color: #333;
+    margin-top: 36px;
 }
 
-/* 검색 폼 스타일링 */
 #searchForm {
+    margin-left: 3%;
     margin-bottom: 20px;
 }
 
@@ -43,9 +45,9 @@ h2 {
     background-color: #4e899a;
 }
 
-/* 결과 섹션 스타일링 */
 .divTable {
-    width: 100%;
+    width: 94%; /* 너비를 100%에서 조정하여 중앙 정렬 효과를 더 명확하게 함 */
+    margin: 0 auto; /* 상하 마진 0, 좌우 마진 auto로 설정하여 중앙 정렬 */
     background-color: #fff;
     border-collapse: collapse;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -73,14 +75,6 @@ h2 {
 .eventItem p {
     margin: 5px 0 0;
     color: #666;
-}
-
-/* 최소주의 테이블 스타일 */
-.minimalistBlack {
-    border: 1px solid #ccc;
-    width: 100%;
-    text-align: left;
-    border-collapse: collapse;
 }
 
 .minimalistBlack .divTableBody, .minimalistBlack .divTableRow, .minimalistBlack .divTableCell {

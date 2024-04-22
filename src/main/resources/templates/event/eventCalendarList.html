@@ -8,19 +8,45 @@
   <script src='https://cdn.jsdelivr.net/npm/@popperjs/core@2/dist/umd/popper.min.js'></script>
   <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5/main.min.js'></script>
   <script src='https://code.jquery.com/jquery-3.5.1.min.js'></script>
+  <link rel="stylesheet" href="/css/header.css"/>
   <style>
+    @font-face {
+      font-family: 'NIXGONM-Vb';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/NIXGONM-Vb.woff') format('woff');
+      font-weight: normal;
+      font-style: normal;
+    }
+    .event-link {
+      cursor: pointer;
+    }
     body {
-      margin: 40px 10px;
+      font-family: 'NIXGONM-Vb';
+      margin: 0;
       padding: 0;
-      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
     }
     #calendar {
       max-width: 1100px;
-      margin: 0 auto;
+      margin: 20px auto;
+      padding: 20px;
+      background: white;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
     }
   </style>
 </head>
 <body>
+
+<div class="header">
+  <a href="/main" class="logo">
+    <img src="/assets/img/logo3.png" alt="Main Logo">
+  </a>
+  <ul class="nav" id="top-navigation">
+    <li><a href="/main">메인 페이지</a></li>
+    <li><a href="/event/apiSearch">문화행사 찾기</a></li>
+    <li><a href="/map">문화시설 찾기</a></li>
+    <li><a href="/notice/noticeListUsingQueryDSL">커뮤니티</a></li>
+  </ul>
+</div>
 
 <div id='calendar'></div>
 
@@ -28,33 +54,40 @@
   document.addEventListener('DOMContentLoaded', function() {
     var calendarEl = document.getElementById('calendar');
 
-    // 서버로부터 데이터를 비동기적으로 로드
     fetch('/event/getCalendarDateList')
             .then(response => response.json())
             .then(data => {
-              // 로드된 데이터를 FullCalendar 형식으로 매핑
               var events = data.map(event => ({
                 title: event.eventTitle,
                 start: event.startDate,
                 end: event.endDate,
-                id: event.nSeq // 이벤트 식별자 추가
+                id: event.nSeq,
+                classNames: ['event-link'],
+                color: getRandomColor()
               }));
 
-              // FullCalendar 초기화 및 설정
               var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
                 locale: 'ko',
                 events: events,
                 eventClick: function(info) {
-                  // 이벤트 클릭시 해당 이벤트의 상세 페이지 URL로 리디렉션
                   window.location.href = `http://localhost:11000/event/apiInfo?nSeq=${info.event.id}`;
                 }
               });
 
               calendar.render();
             });
+
+    function getRandomColor() {
+      var letters = '0123456789ABCDEF';
+      var color = '#';
+      for (var i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    }
+
   });
 </script>
-
 </body>
 </html>
