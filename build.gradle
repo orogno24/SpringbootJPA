@@ -2,10 +2,13 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.2.4'
     id 'io.spring.dependency-management' version '1.1.4'
+    id 'war'
+    id 'application'
 }
 
 group = 'kopo'
 version = '0.0.1-SNAPSHOT'
+description = 'SpringbootJPA'
 
 java {
     sourceCompatibility = '17'
@@ -22,7 +25,8 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.jsoup:jsoup:1.17.1'
+    providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+    implementation 'org.apache.tomcat.embed:tomcat-embed-jasper'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
@@ -33,14 +37,33 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-databind'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.0'
     implementation 'org.jsoup:jsoup:1.17.2'
+    implementation 'com.google.code.findbugs:jsr305:3.0.2'
     annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'
     annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
     annotationProcessor 'jakarta.persistence:jakarta.persistence-api'
-    compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+// War 플러그인 구성
+war {
+    enabled = true
+    // 필요한 경우 추가 WAR 설정을 여기에 기입하세요.
+}
+
+application {
+    mainClass = 'kopo.poly.SpringbootJpaApplication'
+}
+
+bootWar {
+    archiveFileName = 'JPA-0.0.1.war'
+    launchScript()  // 스크립트를 추가하여 실행 가능한 WAR 파일을 생성
+}
+
+jar {
+    enabled = false
 }
 
 tasks.named('test') {
