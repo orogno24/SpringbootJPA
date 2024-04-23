@@ -9,10 +9,10 @@
 <!--    <link href="https://cdn-icons-pkg.bringhub.com/bootstrap-icons-font/v1.10.0/bootstrap-icons-font.css"-->
 <!--          rel="stylesheet">-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="/css/header.css"/>
     <link rel="icon" href="/assets/img/logo.png" type="image/x-icon">
     <link rel="shortcut icon" href="/assets/img/logo.png" type="image/x-icon">
     <style>
-
         @font-face {
             font-family: 'NIXGONM-Vb';
             src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/NIXGONM-Vb.woff') format('woff');
@@ -46,14 +46,6 @@
             background-color: #508da1; /* 새로운 배경색 */;
         }
 
-        header {
-            z-index: 10;
-            background-color: #5da5bb;
-            color: white;
-            padding: 20px;
-            border-bottom: 3px solid #b0d7d0;
-        }
-
         .card {
             z-index: 10;
             cursor: pointer;
@@ -70,13 +62,6 @@
             background-color: rgba(251, 251, 251, 1); /* Solid color on hover */
         }
 
-        footer {
-            background-color: #d7f9ff;
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-
         h2 {
             color: #000000;
             font-size: 2.2rem; /* 폰트 크기 증가 */
@@ -90,13 +75,18 @@
     <link rel="stylesheet" type="text/css" href="/css/noticeInfo.css"/>
 </head>
 <body style="background-color: #d7f9ff">
-<header class="p-3">
-    <div class="container d-flex justify-content-between align-items-center">
-        <a style="z-index: 10;" href="/main">
-            <img src="/assets/img/logo3.png" width="155" height="40" alt="Logo">
-        </a>
-    </div>
-</header>
+
+<div class="header">
+    <a href="/main" class="logo">
+        <img src="/assets/img/logo3.png" alt="Main Logo">
+    </a>
+    <ul class="nav" id="top-navigation">
+        <li><a href="/main">메인 페이지</a></li>
+        <li><a href="/event/apiSearch">문화행사 찾기</a></li>
+        <li><a href="/map">문화시설 찾기</a></li>
+        <li><a href="/notice/noticeListUsingQueryDSL">커뮤니티</a></li>
+    </ul>
+</div>
 
 <main class="container my-5">
     <div class="title" style="border-bottom: 1px solid #FFF;">

@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="/css/apiInfo.css"/>
     <script type="text/javascript" src="/js/apiInfo.js"></script>
     <script type="text/javascript" src="/js/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="/css/header.css"/>
     <script type="text/javascript"
             src="//dapi.kakao.com/v2/maps/sdk.js?appkey=cdd7525d620bba7f274e368acf8f2962&libraries=services"></script>
     <script th:inline="javascript">
@@ -22,6 +23,10 @@
 
             $("#btnRemoveBookmark").on("click", function () {
                 removeBookmark();
+            });
+
+            $("#btnBookmark").on("click", function () {
+                location.href = "/event/eventCalendarList";
             });
 
             $("#btnList").on("click", function () {
@@ -90,8 +95,18 @@
         /*]]>*/
     </script>
 </head>
-<body onload="initMap()">
-<h2>문화행사 상세보기</h2>
+<body onload="initMap()" style="background-color: #d7f9ff">
+<div class="header">
+    <a href="/main" class="logo">
+        <img src="/assets/img/logo3.png" alt="Main Logo">
+    </a>
+    <ul class="nav" id="top-navigation">
+        <li><a href="/main">메인 페이지</a></li>
+        <li><a href="/event/apiSearch">문화행사 찾기</a></li>
+        <li><a href="/map">문화시설 찾기</a></li>
+        <li><a href="/notice/noticeListUsingQueryDSL">커뮤니티</a></li>
+    </ul>
+</div>
 <span id="latitude" th:text="${rDTO.lot}" style="display:none;"></span>
 <span id="longitude" th:text="${rDTO.lat}" style="display:none;"></span>
 <div class="content">
@@ -127,6 +142,7 @@
         <div class="button-container">
             <button id="btnAddBookmark" type="button">북마크 추가하기</button>
             <button id="btnRemoveBookmark" type="button" style="display:none;">북마크 취소하기</button>
+            <button id="btnBookmark" type="button">북마크 페이지</button>
             <button id="btnList" type="button">목록</button>
             <button id="btnMain" type="button">메인화면으로</button>
         </div>
