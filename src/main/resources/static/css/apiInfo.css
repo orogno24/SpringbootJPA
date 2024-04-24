@@ -13,39 +13,43 @@ body {
     color: #444;
 }
 .content {
-    display: flex;
     align-items: flex-start;
     justify-content: center;
     max-width: 960px;
-    margin: 50px auto auto;
+    margin: 30px auto 20px;
     padding: 20px;
     background: white;
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+.bookmark {
+    align-self: flex-end;
+    margin-right: -12px;
 }
 .image-container {
-    flex: 1 1 40%;
     max-width: 40%;
     margin-right: 20px;
 }
 .image-container img {
-    width: 100%;
-    height: auto;
+    max-height: 400px;
+    max-width: 400px;
+    width: auto;
     border-radius: 8px;
 }
 .info-container {
+    margin-top: -20px;
     flex: 1 1 60%;
     display: flex;
     flex-direction: column;
 }
 .info-title {
-    color: #5C5470;
+    color: #444444;
     font-size: 24px;
     margin-bottom: 20px;
 }
 .info-item {
     background: #f0f0f0;
-    margin-bottom: 10px;
+    margin-top: 10px;
     padding: 10px;
     border-radius: 5px;
     font-size: 16px;
@@ -89,3 +93,146 @@ button:hover {
     width: 100%;
     height: 400px; /* 적절한 높이 지정 */
 }
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+.pulse-animation {
+    animation: pulse 0.6s;
+}
+
+div:where(.swal2-container) button:where(.swal2-styled).swal2-confirm {
+    border: 0;
+    border-radius: .25em;
+    background: initial;
+    background-color: #5da5bb;
+    color: #fff;
+    font-size: 1em;
+    font-family: 'NIXGONM-Vb';
+}
+.header-container {
+    margin-left: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: -10px;
+    margin-bottom: 20px;
+}
+
+.tab-container {
+    display: flex;
+    justify-content: space-around;
+    background-color: #f0f0f0;
+}
+
+.tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    color: #333;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.tab:hover {
+    background-color: #ddd; /* 마우스 호버 효과 */
+    color: #000;
+}
+
+.tab-active {
+    background-color: #fff;
+    color: #000;
+    border-bottom: none; /* 활성 탭은 하단 테두리 없음 */
+}
+
+ul {
+    list-style-type: none; /* 불릿 제거 */
+    padding-left: 0; /* 왼쪽 패딩 제거, 필요에 따라 조정 */
+}
+
+.places-list-item {
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-bottom: 10px;
+    padding: 15px;
+    border-radius: 5px;
+    transition: box-shadow 0.3s ease;
+}
+
+.places-list-item:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+
+.places-list-item a {
+    color: #007BFF;
+    text-decoration: none;
+}
+
+.places-list-item a:hover {
+    text-decoration: underline;
+}
+
+.places-list-item .place-name {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.places-list-item .place-address {
+    font-size: 14px;
+    color: #666;
+}
+
+.places-list-item .place-category {
+    font-size: 14px;
+    color: #666;
+    font-style: italic;
+}
+
+.place-detail-link {
+    color: #007bff;
+    cursor: pointer;
+    padding: 5px;
+    margin-top: 5px;
+    display: inline-block;
+}
+
+.place-detail-link:hover {
+    text-decoration: underline;
+    background-color: #f8f9fa;
+}
+.place-info {
+    display: flex;
+    align-items: center; /* 세로 중앙 정렬 */
+    justify-content: space-between; /* 요소들 사이에 공간을 균등하게 분배 */
+}
+
+.place-name {
+    flex-grow: 1; /* 제목이 가능한 많은 공간을 차지하도록 설정 */
+}
+
+.place-detail-link {
+    color: #007bff;
+    cursor: pointer;
+    padding: 5px;
+    margin-left: 20px; /* 제목과의 간격 설정 */
+}
+
+.place-detail-link:hover {
+    text-decoration: underline;
+    background-color: #f8f9fa;
+}
+
+.custom-hr {
+    border: 0;
+    height: 1px;
+    background-color: #e0e0e0; /* 원하는 색상으로 변경 */
+}
+

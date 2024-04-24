@@ -2,11 +2,13 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>게시판 글보기</title>
+    <title>문화행사 상세보기</title>
     <link rel="stylesheet" href="/css/apiInfo.css"/>
     <script type="text/javascript" src="/js/apiInfo.js"></script>
     <script type="text/javascript" src="/js/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="/css/header.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="text/javascript"
             src="//dapi.kakao.com/v2/maps/sdk.js?appkey=cdd7525d620bba7f274e368acf8f2962&libraries=services"></script>
     <script th:inline="javascript">
@@ -18,23 +20,25 @@
 
         $(document).ready(function () {
             $("#btnAddBookmark").on("click", function () {
+                $(this).find('i').addClass('pulse-animation').one('animationend', function() {
+                    $(this).removeClass('pulse-animation');
+                });
                 addBookmark(); // 북마크 추가 함수 호출
             });
 
             $("#btnRemoveBookmark").on("click", function () {
+                $(this).find('i').addClass('pulse-animation').one('animationend', function() {
+                    $(this).removeClass('pulse-animation');
+                });
                 removeBookmark();
-            });
-
-            $("#btnBookmark").on("click", function () {
-                location.href = "/event/eventCalendarList";
             });
 
             $("#btnList").on("click", function () {
                 location.href = "/event/apiSearch";
             });
 
-            $("#btnMain").on("click", function () {
-                location.href = "/main";
+            $("#btnBookmark").on("click", function () {
+                location.href = "/event/eventCalendarList";
             });
 
             updateBookmarkButton();
@@ -53,7 +57,7 @@
         }
 
         function extractFileId(url) {
-            const pattern = /FileId=([\d\w]+)/; // 숫자와 문자를 포함할 수 있도록 패턴 수정
+            const pattern = /FileId=([\d\w]+)/;
             const match = url.match(pattern);
             return match ? match[1] : null;
         }
@@ -61,7 +65,7 @@
         function addBookmark() {
             $.ajax({
                 type: "POST",
-                url: "/event/addBookmark", // 서버의 북마크 추가 엔드포인트
+                url: "/event/addBookmark",
                 dataType: "JSON",
                 data: {
                     eventSeq: uniqueIdentifier,
@@ -72,7 +76,17 @@
                 success: function (json) {
                     $("#btnAddBookmark").hide();
                     $("#btnRemoveBookmark").show();
-                    alert(json.msg);
+                    Swal.fire({
+                        title: '북마크 추가 완료!',
+                        text: json.msg,
+                        imageUrl: '/assets/img/heart.gif',
+                        imageWidth: 400,
+                        imageHeight: 200,
+                        imageAlt: 'Custom image',
+                        html: '<p>이벤트를 북마크에 추가했습니다!</p>',
+                        confirmButtonText: '확인',
+                        confirmButtonColor: '#5da5bb'
+                    });
                 }
             });
         }
@@ -88,33 +102,58 @@
                 success: function (json) {
                     $("#btnAddBookmark").show();
                     $("#btnRemoveBookmark").hide();
-                    alert(json.msg);
+                    Swal.fire({
+                        title: '북마크 해제 완료!',
+                        text: json.msg,
+                        imageUrl: '/assets/img/heart2.png',
+                        imageWidth: 400,
+                        imageHeight: 200,
+                        imageAlt: 'Custom image',
+                        html: '<p>이벤트를 북마크에서 해제했습니다!</p>',
+                        confirmButtonText: '확인',
+                        confirmButtonColor: '#5da5bb'
+                    });
                 }
             });
         }
         /*]]>*/
     </script>
+
 </head>
 <body onload="initMap()" style="background-color: #d7f9ff">
-<div class="header">
+<div class="header" style="padding: 0 16px;">
     <a href="/main" class="logo">
         <img src="/assets/img/logo3.png" alt="Main Logo">
     </a>
     <ul class="nav" id="top-navigation">
         <li><a href="/main">메인 페이지</a></li>
         <li><a href="/event/apiSearch">문화행사 찾기</a></li>
-        <li><a href="/map">문화시설 찾기</a></li>
+        <li><a href="/event/apiSearch">문화시설 찾기</a></li>
         <li><a href="/notice/noticeListUsingQueryDSL">커뮤니티</a></li>
     </ul>
 </div>
 <span id="latitude" th:text="${rDTO.lot}" style="display:none;"></span>
 <span id="longitude" th:text="${rDTO.lat}" style="display:none;"></span>
 <div class="content">
+
+    <div class="header-container">
+        <h2>문화행사 상세보기</h2>
+        <div class="bookmark">
+            <button id="btnAddBookmark" type="button" style="background:none; border:none; font-size:30px; color:#ffc3fa;">
+                <i class="far fa-heart"></i>
+            </button>
+            <button id="btnRemoveBookmark" type="button" style="display:none; background:none; border:none; font-size:30px; color:#ffc3fa;">
+                <i class="fas fa-heart"></i>
+            </button>
+        </div>
+    </div>
+
+    <div style="display: flex;">
     <div class="image-container">
         <img src="" th:src="${rDTO.mainImg}" alt="문화행사 이미지">
     </div>
     <div class="info-container">
-        <h3 class="info-title" th:text="${rDTO.title}">문화행사 정보</h3>
+        <h3 class="info-title" th:text="${rDTO.title}"></h3>
 
         <div class="info-item"><strong>장소:</strong> <span th:text="${rDTO.place}"></span></div>
         <div class="info-item"><strong>분류:</strong> <span th:text="${rDTO.codename}"></span></div>
@@ -133,20 +172,27 @@
         </div>
 
         <div class="info-item">
-            <a href="#" th:href="${rDTO.orgLink}" target="_blank">더보기</a>
-        </div>
-
-        <div id="map"></div>
-        <ul id="placesList"></ul>
-
-        <div class="button-container">
-            <button id="btnAddBookmark" type="button">북마크 추가하기</button>
-            <button id="btnRemoveBookmark" type="button" style="display:none;">북마크 취소하기</button>
-            <button id="btnBookmark" type="button">북마크 페이지</button>
-            <button id="btnList" type="button">목록</button>
-            <button id="btnMain" type="button">메인화면으로</button>
+            <a href="#" th:href="${rDTO.orgLink}" target="_blank">홈페이지 바로가기</a>
         </div>
     </div>
+    </div>
+    <br>
+    <hr class="custom-hr">
+    <br>
+    <h2 style="margin-top: 4px; text-align: center">위치안내</h2>
+    <div id="map"></div>
+    <div class="tab-container">
+        <div class="tab" onclick="searchPlacesByCategory('FD6', event)">근처 음식점 안내</div>
+        <div class="tab" onclick="searchPlacesByCategory('AT4', event)">근처 관광명소 안내</div>
+        <div class="tab" onclick="searchPlacesByCategory('MT1', event)">근처 시장 안내</div>
+    </div>
+    <ul id="placesList"></ul>
+
+    <div class="button-container">
+        <button id="btnList" type="button">문화행사 목록으로 이동</button>
+        <button id="btnBookmark" type="button">북마크 페이지로 이동</button>
+    </div>
+
 </div>
 </body>
 </html>

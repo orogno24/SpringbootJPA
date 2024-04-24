@@ -81,18 +81,19 @@
 </head>
 <body style="background-color: #d7f9ff">
 
-<div class="header">
+<div class="header" style="padding: 0 16px;">
     <a href="/main" class="logo">
         <img src="/assets/img/logo3.png" alt="Main Logo">
     </a>
     <ul class="nav" id="top-navigation">
         <li><a href="/main">메인 페이지</a></li>
         <li><a href="/event/apiSearch">문화행사 찾기</a></li>
-        <li><a href="/map">문화시설 찾기</a></li>
+        <li><a href="/event/apiSearch">문화시설 찾기</a></li>
         <li><a href="/notice/noticeListUsingQueryDSL">커뮤니티</a></li>
     </ul>
 </div>
 
+<div class="header-container" style="margin-left: 5%">
 <h2>문화행사 찾기</h2>
 <form id="searchForm">
     <select name="guName">
@@ -146,6 +147,7 @@
     <input type="date" style="font-family: 'NIXGONM-Vb'" id="endDate" name="endDate"/>
     <button type="button" onclick="displayEvents()">검색</button>
 </form>
+</div>
 
 <div id="loadingSpinner" style="display:none;">
     <div class="spinner"></div>

@@ -51,7 +51,7 @@ select {
 }
 
 .divTable {
-    width: 94%; /* 너비를 100%에서 조정하여 중앙 정렬 효과를 더 명확하게 함 */
+    width: 86%; /* 너비를 100%에서 조정하여 중앙 정렬 효과를 더 명확하게 함 */
     margin: 0 auto; /* 상하 마진 0, 좌우 마진 auto로 설정하여 중앙 정렬 */
     background-color: #fff;
     border-collapse: collapse;
