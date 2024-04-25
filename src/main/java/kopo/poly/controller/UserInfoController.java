@@ -230,7 +230,7 @@ public class UserInfoController {
 
         log.info(this.getClass().getName() + ".user/searchUserId End!");
 
-        return "/user/searchUserId";
+        return "user/searchUserId";
     }
 
     @ResponseBody
@@ -299,7 +299,7 @@ public class UserInfoController {
 
         log.info(this.getClass().getName() + ".user/searchPassword End!");
 
-        return "/user/searchPassword";
+        return "user/searchPassword";
     }
 
     @PostMapping(value = "searchPasswordProc") // 비밀번호 찾기
@@ -329,14 +329,14 @@ public class UserInfoController {
 
         log.info(this.getClass().getName() + ".user/searchPasswordProc end!");
 
-        return "/user/newPassword";
+        return "user/newPassword";
     }
 
     @GetMapping(value = "changeUserName")
     public String changeUserName() throws Exception{
         log.info(this.getClass().getName() + ".changeUserName Start!");
 
-        return "/user/changeUserName";
+        return "user/changeUserName";
     }
 
     @ResponseBody

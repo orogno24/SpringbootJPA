@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>닉네임 변경</title>
+    <link rel="stylesheet" href="/css/header.css"/>
     <link rel="icon" href="/assets/img/logo.png" type="image/x-icon">
     <link rel="shortcut icon" href="/assets/img/logo.png" type="image/x-icon">
     <script type="text/javascript" src="/js/jquery-3.6.0.min.js"></script>
@@ -68,10 +69,6 @@
                 return;
             }
 
-            // if (userNameCheck === "Y") {
-            //     alert("중복 검사를 진행해주세요");
-            //     return;
-            // }
             // Ajax 호출해서 닉네임 수정하기
             $.ajax({
                     url: "/user/newUserNameProc",
@@ -80,7 +77,7 @@
                     data: $("#f").serialize(), // form 태그 내 input 등 객체를 자동으로 전송할 형태로 변경하기
                     success: function (json) { // /user/newUserNameProc 호출이 성공했다면..
                         alert(json.msg); // 메시지 띄우기
-                        location.href = "/html/index.html"; //  로그인 페이지 이동
+                        location.href = "/main";
                     }
                 }
             )
@@ -134,9 +131,8 @@
     body {
         background: white;
         margin: 0;
-        padding: 20px;
+        padding: 0;
     }
-
 
     .buttonBlue {
         background-color: #5c80b7;
@@ -153,9 +149,9 @@
         background: #d7f9ff;
         display: flex;
         flex-direction: column;
-        height: calc(100% - 40px);
+        height: calc(100%);
         position: absolute;
-        width: calc(100% - 40px);
+        width: calc(100%);
     }
 
     hgroup {
@@ -232,7 +228,6 @@
         }
     }
 
-
     /* Button */
 
     .button {
@@ -259,15 +254,12 @@
         outline: 0;
     }
 
-
     /* Button modifiers */
 
     .buttonBlue {
         background: #5c80b7;
         /*text-shadow: 1px 1px 0 rgba(39, 110, 204, .5);*/
     }
-
-
 
     /* Ripples container */
 
@@ -351,44 +343,20 @@
         }
     }
 </style>
-<script>
-    $(window, document, undefined).ready(function () {
-
-        $('input').blur(function () {
-            var $this = $(this);
-            if ($this.val())
-                $this.addClass('used');
-            else
-                $this.removeClass('used');
-        });
-
-        var $ripples = $('.ripples');
-
-        $ripples.on('click.Ripples', function (e) {
-
-            var $this = $(this);
-            var $offset = $this.parent().offset();
-            var $circle = $this.find('.ripplesCircle');
-
-            var x = e.pageX - $offset.left;
-            var y = e.pageY - $offset.top;
-
-            $circle.css({
-                top: y + 'px',
-                left: x + 'px'
-            });
-
-            $this.addClass('is-active');
-
-        });
-
-        $ripples.on('animationend webkitAnimationEnd mozAnimationEnd oanimationend MSAnimationEnd', function (e) {
-            $(this).removeClass('is-active');
-        });
-
-    });
-</script>
 <body>
+
+<div class="header">
+    <a href="/main" class="logo">
+        <img src="/assets/img/logo3.png" alt="Main Logo">
+    </a>
+    <ul class="nav" id="top-navigation">
+        <li><a href="/main">메인 페이지</a></li>
+        <li><a href="/event/apiSearch">문화행사 찾기</a></li>
+        <li><a href="/event/apiSearch">문화시설 찾기</a></li>
+        <li><a href="/notice/noticeListUsingQueryDSL">커뮤니티</a></li>
+    </ul>
+</div>
+
 <div class="page">
     <hgroup>
         <h1 style="color: #2a2722">닉네임 변경하기</h1>

@@ -72,7 +72,7 @@
         .da-slide h4 {
             white-space: normal; /* 긴 제목의 자동 줄바꿈을 허용 */
             word-wrap: break-word; /* 긴 단어도 줄바꿈 */
-            max-width: 360px; /* 최대 너비 설정 */
+            max-width: 400px; /* 최대 너비 설정 */
             margin-bottom: 10px;
         }
         .da-img img {
@@ -159,9 +159,9 @@
                 <h4 style="font-size: 20px; color: #5d8198; font-weight: normal; top:220px">
                     <strong style="color: #3b5260">행사제목 :</strong> <span th:text="${item.title}">행사제목</span>
                 </h4>
-                <p style="font-size: 20px; color: #5d8198; font-weight: normal; top:280px">
+                <h4 style="font-size: 20px; color: #5d8198; font-weight: normal; top:280px">
                     <strong style="color: #3b5260">장소 :</strong> <span th:text="${item.place}">장소</span>
-                </p>
+                </h4>
                 <a href="#" class="da-link button">상세보기</a>
                 <div class="da-img">
                     <img style="max-height: 400px; width: auto" src="" th:src="${item.mainImg}" alt="문화행사 이미지">
