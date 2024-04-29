@@ -224,6 +224,28 @@ public class UserInfoController {
         return dto;
     }
 
+    /**
+     * 유저 프로필 설정
+     */
+    @GetMapping(value = "userProfile")
+    public String userProfile(HttpSession session, ModelMap model) throws Exception {
+        log.info(this.getClass().getName() + ".user/userProfile Start!");
+
+        String userId = (String) session.getAttribute("SS_USER_ID");
+
+        UserInfoDTO pDTO = UserInfoDTO.builder().userId(userId).build();
+
+        String imageUrl = userInfoService.getProfilePath(pDTO);
+
+        log.info("imageUrl : " + imageUrl);
+
+        model.addAttribute("profileImageUrl", imageUrl);
+
+        log.info(this.getClass().getName() + ".user/userProfile End!");
+
+        return "user/userProfile";
+    }
+
     @GetMapping(value = "searchUserId")         // 아이디 찾기
     public String searchUserId() {
         log.info(this.getClass().getName() + ".user/searchUserId Start!");
@@ -416,7 +438,8 @@ public class UserInfoController {
                 dto = MsgDTO.builder().msg(msg).build();
 
                 log.info(this.getClass().getName() + ".newPasswordProc End!");
-            }}
+            }
+        }
 
         return dto;
     }

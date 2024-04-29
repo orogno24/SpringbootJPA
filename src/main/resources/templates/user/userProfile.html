@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>프로필 수정</title>
+  <link rel="stylesheet" href="/css/userProfile.css"/>
+  <link rel="icon" href="/assets/img/logo.png" type="image/x-icon">
+  <link rel="shortcut icon" href="/assets/img/logo.png" type="image/x-icon">
+  <link rel="stylesheet" href="/css/header.css"/>
+</head>
+<body style="background-color: #d7f9ff">
+
+<div class="header" style="padding: 0 16px;">
+  <a href="/main" class="logo">
+    <img src="/assets/img/logo3.png" alt="Main Logo">
+  </a>
+  <ul class="nav" id="top-navigation">
+    <li><a href="/main">메인 페이지</a></li>
+    <li><a href="/event/apiSearch">문화행사 찾기</a></li>
+    <li><a href="/event/apiSearch">문화시설 찾기</a></li>
+    <li><a href="/notice/noticeListUsingQueryDSL">커뮤니티</a></li>
+  </ul>
+</div>
+
+<div class="container">
+  <h1>프로필 수정</h1>
+  <div class="profile-image">
+    <img id="profileImg" th:src="${profileImageUrl}" onerror="this.src='/assets/img/profile.png'" alt="Profile Image" />
+  </div>
+  <form id="uploadForm" enctype="multipart/form-data">
+    <input type="file" id="profileImage" name="file" accept="image/*" required onchange="previewProfileImage(this);">
+    <label for="profileImage" class="file-label">파일 선택</label>
+    <button type="button" onclick="uploadImage()">업로드</button>
+  </form>
+  <div style="height: 60px;"></div>
+</div>
+
+<script type="text/javascript" src="/js/uploadScript.js"></script>
+</body>
+</html>

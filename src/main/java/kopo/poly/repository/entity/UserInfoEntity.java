@@ -45,4 +45,7 @@ public class UserInfoEntity implements Serializable {
 
     @Column(name = "chg_dt", nullable = false)
     private String chgDt;
+
+    @Column(name = "profile_path", nullable = false)
+    private String profilePath;
 }

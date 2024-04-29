@@ -59,10 +59,10 @@ public class MainController {
         return "main";
     }
 
-    @GetMapping("/index_google")
-    public String index_google() throws Exception {
-        log.info(this.getClass().getName() + ".index_google 함수 실행");
-        return "index_google";
+    @GetMapping("/awsUpload")
+    public String awsUpload() throws Exception {
+        log.info(this.getClass().getName() + ".awsUpload 함수 실행");
+        return "awsUpload";
     }
 
     @GetMapping("/pose")

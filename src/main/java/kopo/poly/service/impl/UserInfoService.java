@@ -34,7 +34,7 @@ public class UserInfoService implements IUserInfoService {
 
         UserInfoDTO rDTO;
 
-        String userId= CmmUtil.nvl(pDTO.userId());
+        String userId = CmmUtil.nvl(pDTO.userId());
 
         log.info("userId : " + userId);
 
@@ -173,7 +173,7 @@ public class UserInfoService implements IUserInfoService {
         if (existsYn.equals("N")) {
 
             // 6자리 랜덤 숫자 생성하기
-           int authNumber = ThreadLocalRandom.current().nextInt(100000, 1000000);
+            int authNumber = ThreadLocalRandom.current().nextInt(100000, 1000000);
 
             log.info("authNumber : " + authNumber);
 
@@ -295,5 +295,69 @@ public class UserInfoService implements IUserInfoService {
 
         log.info(this.getClass().getName() + "newPasswordProc End!");
     }
+
+    @Transactional
+    @Override
+    public void profilePathProc(UserInfoDTO pDTO) throws Exception {
+
+        log.info(this.getClass().getName() + "profilePathProc start!");
+
+        String userId = CmmUtil.nvl(pDTO.userId());
+
+        // 사용자 ID로 사용자 엔티티 조회
+        Optional<UserInfoEntity> uEntity = userInfoRepository.findByUserId(userId);
+
+        if (uEntity.isPresent()) {
+
+            UserInfoEntity rEntity = uEntity.get();
+
+            UserInfoEntity pEntity = UserInfoEntity.builder()
+                    .userId(rEntity.getUserId()).userName(rEntity.getUserName())
+                    .password(rEntity.getPassword())
+                    .email(rEntity.getEmail())
+                    .regId(rEntity.getUserId()).regDt(rEntity.getRegDt())
+                    .chgId(rEntity.getUserId()).chgDt(DateUtil.getDateTime("yyyy-MM-dd hh:mm:ss"))
+                    .profilePath(pDTO.profilePath())
+                    .build();
+
+            userInfoRepository.save(pEntity);
+
+        } else {
+            log.error("No user found with ID: " + userId);
+            throw new RuntimeException("User not found");
+        }
+
+        log.info(this.getClass().getName() + "profilePathProc End!");
+
+    }
+
+    @Override
+    public String getProfilePath(UserInfoDTO pDTO) throws Exception {
+
+        log.info(this.getClass().getName() + ".getProfilePath Start!");
+
+        String res = "";
+
+        String userId = CmmUtil.nvl(pDTO.userId());
+        String defaultImageUrl = "/assets/img/profile.png";
+
+        log.info("pDTO userId : " + userId);
+
+        Optional<UserInfoEntity> rEntity = userInfoRepository.findByUserId(userId);
+
+        log.info("rEntity : " + rEntity);
+
+        if (rEntity.isPresent()) {
+            UserInfoEntity pEntity = rEntity.get();
+            res = pEntity.getProfilePath() != null ? pEntity.getProfilePath() : defaultImageUrl;
+        } else {
+            res = defaultImageUrl;
+        }
+
+        log.info(this.getClass().getName() + ".getProfilePath End!");
+
+        return res;
+    }
+
 
 }

@@ -43,4 +43,10 @@ public interface IUserInfoService {
     // 비밀번호변경
     void newPasswordProc(UserInfoDTO pDTO) throws Exception;
 
+    // 프로필 사진 등록
+    void profilePathProc(UserInfoDTO pDTO) throws Exception;
+
+    // 프로필 사진 URL 가져오기
+    String getProfilePath(UserInfoDTO pDTO) throws Exception;
+
 }
