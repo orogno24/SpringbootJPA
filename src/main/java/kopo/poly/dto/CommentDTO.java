@@ -9,6 +9,7 @@ public record CommentDTO(
         String userId,
         String contents,
         String regDt,
-        String userName
+        String userName,
+        String profilePath
 ) {
 }

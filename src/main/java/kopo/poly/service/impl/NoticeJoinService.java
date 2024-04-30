@@ -97,6 +97,7 @@ public class NoticeJoinService implements INoticeJoinService {
                 .userId(rEntity.getUserId())
                 .readCnt(rEntity.getReadCnt())
                 .userName(rEntity.getUserInfo().getUserName())
+                .profilePath(rEntity.getUserInfo().getProfilePath())
                 .contents(rEntity.getContents()).build();
 
         log.info(this.getClass().getName() + ".getNoticeInfoForQueryDSL End!");
@@ -127,7 +128,9 @@ public class NoticeJoinService implements INoticeJoinService {
             CommentDTO rDTO = CommentDTO.builder().
                     commentSeq(e.getCommentSeq()).noticeSeq(e.getNoticeSeq()).userId(e.getUserId())
                     .contents(e.getContents()).regDt(e.getRegDt())
-                    .userName(e.getUserInfo().getUserName()).build();
+                    .userName(e.getUserInfo().getUserName())
+                    .profilePath(e.getUserInfo().getProfilePath())
+                    .build();
             nList.add(rDTO);
         });
 

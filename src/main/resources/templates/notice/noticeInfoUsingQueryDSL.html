@@ -44,8 +44,13 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
-        .card-header, .card-footer {
+        .card-header {
+            border-bottom: none;
+        }
+
+        .card-footer {
             background-color: white;
+            border-bottom: none;
         }
 
         .btn {
@@ -92,8 +97,43 @@
             height: 20px;
         }
 
+        .profile-image {
+            width: 40px; /* 이미지 크기 조정 */
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            display: inline-block;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .comment-image {
+            width: 36px; /* 이미지 크기 조정 */
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+            display: inline-block;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .author-info {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .content {
+            margin-top: 20px;
+        }
+
+        .date-views {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
     </style>
-    <link rel="stylesheet" type="text/css" href="/css/noticeInfo.css"/>
     <script src="/js/jquery-3.6.0.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script th:inline="javascript">
@@ -136,7 +176,7 @@
                         data: {"nSeq": nSeq},
                         success: function (json) {
                             alert(json.msg);
-                            location.href = "/notice/noticeList";
+                            location.href = "/notice/noticeListUsingQueryDSL";
                         }
                     });
                 }
@@ -175,7 +215,6 @@
 
         /*]]>*/
     </script>
-
     <script type="text/javascript">
         $(document).ready(function () {
             $("#btnSend").on("click", function () {
@@ -222,35 +261,33 @@
 </div>
 
 <div class="container">
-    <div style="z-index: 10" class="card">
-        <div class="card-header">
-            <h2><i class="fa fa-search" aria-hidden="true"></i> 게시글 상세보기</h2>
+    <div class="card">
+        <div class="card-header" style="font-size: 20px">
+            <span th:text="${rDTO.title}">게시글 제목</span>
         </div>
         <div class="card-body">
-            <table class="table table-borderless">
-                <tr>
-                    <th>제목</th>
-                    <td th:text="${rDTO.title}"></td>
-                </tr>
-                <tr>
-                    <th>작성자</th>
-                    <td th:text="${rDTO.userName}"></td>
-                </tr>
-                <tr>
-                    <th>작성일</th>
-                    <td th:text="${rDTO.regDt}"></td>
-                </tr>
-                <tr>
-                    <th>조회수</th>
-                    <td th:text="${rDTO.readCnt}"></td>
-                </tr>
-                <tr>
-                    <th>내용</th>
-                    <td style="white-space: pre-line; max-width: 1000px;  overflow: hidden; word-wrap: break-word; overflow-wrap: break-word;" th:text="${rDTO.contents}"></td>
-                </tr>
-            </table>
+            <div class="post-container">
+                <div class="author-info">
+                    <img class="profile-image" th:src="${rDTO.profilePath}" onerror="this.src='/assets/img/profile.png'"
+                         alt="Profile Image"/>
+                    <div>
+                        <span th:text=" ${rDTO.userName}" style="font-weight: bolder">작성자 이름</span>
+                        <div class="date-views" style="color: #8c8c8c; font-size: 14px; margin-top: -3px">
+                            <span class="date" th:text="|작성일: ${rDTO.regDt}|">2023-04-02</span>
+                            <span class="views" th:text="|조회수: ${rDTO.readCnt}|">조회수: 100</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content"
+                     style="white-space: pre-line; max-width: 1000px; overflow: hidden; word-wrap: break-word; overflow-wrap: break-word;"
+                     th:text="${rDTO.contents}">게시글 내용
+                </div>
+            </div>
         </div>
+
         <hr>
+
         <div class="card my-4" style="box-shadow: none; margin-top: -0.7rem!important;">
             <form name="f" id="f">
                 <div class="card-body">
@@ -258,17 +295,31 @@
                     <div id="comments">
                         <div th:each="dto : ${cList}" class="mt-4" style="margin-top: 0.1rem!important">
                             <div class="d-flex justify-content-between">
+
                                 <div>
-                                    <h5 th:text="${dto.userName}">작성자 이름</h5>
-                                    <p style="white-space: pre" th:text="${dto.contents}">댓글 내용</p>
+
+                                    <div class="author-info">
+                                        <img class="comment-image" th:src="${dto.profilePath}"
+                                             onerror="this.src='/assets/img/profile.png'"
+                                             alt="Comment Image"/>
+
+                                        <div style="display: flex; flex-direction: column;">
+                                            <span th:text="${dto.userName}" style="font-weight: bolder">작성자 이름</span>
+                                            <div style="display: flex; align-items: center; gap: 6px; margin-top: -4px">
+                                            <span th:text="|작성일: ${dto.regDt}|" style="color: #8c8c8c; font-size: 14px;">작성일</span>
+                                            <i class="fa-solid fa-square-xmark"
+                                               style="color: #6c6c6c; cursor: pointer; margin-bottom: 1px;"
+                                               th:data-comment-seq="${dto.commentSeq}"
+                                               th:data-user-id="${dto.userId}"
+                                               onclick="sendCommentSeq(this)"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <p th:text="${dto.contents}" style="white-space: pre; margin-top: 12px">댓글 내용</p>
                                 </div>
 
-                                <span><p th:text="${dto.regDt}">작성 시간 </span>
-                                <i class="fa-solid fa-square-xmark"
-                                   style="color: #858585; cursor: pointer"
-                                   th:data-comment-seq="${dto.commentSeq}"
-                                   th:data-user-id="${dto.userId}"
-                                   onclick="sendCommentSeq(this)"></i>
+
                             </div>
                             <hr>
                         </div>
@@ -295,18 +346,5 @@
     </div>
 </div>
 <br>
-
-<!--<ul class="circles">-->
-<!--    <li></li>-->
-<!--    <li></li>-->
-<!--    <li></li>-->
-<!--    <li></li>-->
-<!--    <li></li>-->
-<!--    <li></li>-->
-<!--    <li></li>-->
-<!--    <li></li>-->
-<!--    <li></li>-->
-<!--    <li></li>-->
-<!--</ul>-->
 </body>
 </html>

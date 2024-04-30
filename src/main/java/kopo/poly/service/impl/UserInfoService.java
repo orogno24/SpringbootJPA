@@ -251,6 +251,7 @@ public class UserInfoService implements IUserInfoService {
                     .email(rEntity.getEmail())
                     .regId(rEntity.getUserId()).regDt(rEntity.getRegDt())
                     .chgId(rEntity.getUserId()).chgDt(DateUtil.getDateTime("yyyy-MM-dd hh:mm:ss"))
+                    .profilePath(rEntity.getProfilePath())
                     .build();
 
             userInfoRepository.save(pEntity);
