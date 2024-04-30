@@ -16,10 +16,10 @@ function uploadImage() {
     xhr.onreadystatechange = function() {
         if (xhr.readyState == 4) {
             if (xhr.status == 200) {
-                alert('Image uploaded successfully!');
+                alert('프로필 등록에 성공했습니다.');
                 previewProfileImage(fileInput); // 이 부분을 수정했습니다
             } else {
-                alert('Failed to upload image.');
+                alert('프로필 등록에 실패했습니다.');
             }
         }
     };

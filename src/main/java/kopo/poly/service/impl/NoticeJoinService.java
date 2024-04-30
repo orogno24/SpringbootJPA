@@ -53,7 +53,9 @@ public class NoticeJoinService implements INoticeJoinService {
                     .readCnt(e.getReadCnt()).userId(e.getUserId())
                     .regDt(e.getRegDt())
                     .chgDt(e.getChgDt())
-                    .userName(e.getUserInfo().getUserName()).build();
+                    .userName(e.getUserInfo().getUserName())
+                    .profilePath(e.getUserInfo().getProfilePath())
+                    .build();
             nList.add(rDTO);
         });
 

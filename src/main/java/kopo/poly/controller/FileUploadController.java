@@ -50,26 +50,26 @@ public class FileUploadController {
             UserInfoDTO pDTO = UserInfoDTO.builder().userId(userId).profilePath(imageUrl).build();
             userInfoService.profilePathProc(pDTO);
 
-            return ResponseEntity.ok("이미지 등록에 성공했습니다.");
+            return ResponseEntity.ok("프로필 등록에 성공했습니다.");
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("이미지 등록에 실패했습니다.");
+            return ResponseEntity.badRequest().body("프로필 등록에 실패했습니다.");
         }
     }
 
     // 연습용 코드
-    @PostMapping("/upload")
-    public String uploadFile(@RequestParam("file") MultipartFile file) {
-        if (file.isEmpty()) {
-            return "No file selected";
-        }
-
-        try {
-            String fileName = file.getOriginalFilename();
-            s3Client.putObject(bucketName, fileName, file.getInputStream(), null);
-            return "File uploaded: " + fileName;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "Upload failed";
-        }
-    }
+//    @PostMapping("/upload")
+//    public String uploadFile(@RequestParam("file") MultipartFile file) {
+//        if (file.isEmpty()) {
+//            return "No file selected";
+//        }
+//
+//        try {
+//            String fileName = file.getOriginalFilename();
+//            s3Client.putObject(bucketName, fileName, file.getInputStream(), null);
+//            return "File uploaded: " + fileName;
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return "Upload failed";
+//        }
+//    }
 }
