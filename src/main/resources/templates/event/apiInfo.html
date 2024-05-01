@@ -40,7 +40,7 @@
             });
 
             $("#btnBookmark").on("click", function () {
-                location.href = "/redirect2";
+                location.href = "/event/eventCalendarList";
             });
 
             updateBookmarkButton();
@@ -70,10 +70,10 @@
                 url: "/event/addBookmark",
                 dataType: "JSON",
                 data: {
-                    eventSeq: uniqueIdentifier,
-                    title: title,
-                    startDate: startDate,
-                    endDate: endDate
+                    eventSeq: uniqueIdentifier
+                    // title: title,
+                    // startDate: startDate,
+                    // endDate: endDate
                 },
                 success: function (json) {
                     $("#btnAddBookmark").hide();
@@ -131,7 +131,7 @@
         <li><a href="/main">메인 페이지</a></li>
         <li><a href="/event/apiSearch">문화행사 찾기</a></li>
         <li><a href="/event/apiSearch">문화시설 찾기</a></li>
-        <li><a href="/notice/noticeListUsingQueryDSL">커뮤니티</a></li>
+        <li><a href="/notice/noticeListUsingNativeQuery">커뮤니티</a></li>
     </ul>
 </div>
 <span id="latitude" th:text="${rDTO.lot}" style="display:none;"></span>

@@ -6,30 +6,25 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 @Getter
-@NoArgsConstructor(force = true)
+@NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "USER_BOOKMARK")
+@Table(name = "NOTICE_IMAGE")
 @DynamicInsert // 값이 NULL이 아닌것만 INSERT함
 @DynamicUpdate // 값이 NULL이 아닌것만 UPDATE함
 @Builder
-@Cacheable
+//@Cacheable
 @Entity
-public class BookmarkEntity {
+public class NoticeImageEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // Autoincrement와 같음
-    @Column(name = "bookmark_seq")
-    private Long bookmarkSeq;
+    @Column(name = "image_seq")
+    private Long imageSeq;
 
     @NonNull
-    @Column(name = "user_id", nullable = false)
-    private String userId;
+    @Column(name = "notice_seq", length = 500, nullable = false)
+    private Long noticeSeq;
 
-    @Column(name = "reg_dt", updatable = false)
-    private String regDt;
-
-    @NonNull
-    @Column(name = "event_seq", nullable = false)
-    private String eventSeq;
-
+    @Column(name = "image_path", nullable = false)
+    private String imagePath;
 }

@@ -1,5 +1,5 @@
 var currentPage = 1; // 현재 페이지
-var cardsPerPage = 10; // 한 페이지당 보여질 카드 수
+var cardsPerPage = 6; // 한 페이지당 보여질 카드 수
 var totalCards = 500;
 var currentCardsCount = 0;
 
@@ -23,7 +23,7 @@ function prevPage() {
 
 // 다음 페이지로 이동
 function nextPage() {
-    if(currentCardsCount <= 9) {
+    if(currentCardsCount <= 5) {
         return;
     }
 

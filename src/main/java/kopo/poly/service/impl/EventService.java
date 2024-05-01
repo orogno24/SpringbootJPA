@@ -319,29 +319,26 @@ public class EventService implements IEventService  {
 
         String userId = CmmUtil.nvl(pDTO.userId());
         String eventSeq = CmmUtil.nvl(pDTO.eventSeq());
-        String eventTitle = CmmUtil.nvl(pDTO.eventTitle());
-        String startDate = CmmUtil.nvl(pDTO.startDate());
-        String endDate = CmmUtil.nvl(pDTO.endDate());
+//        String eventTitle = CmmUtil.nvl(pDTO.eventTitle());
+//        String startDate = CmmUtil.nvl(pDTO.startDate());
+//        String endDate = CmmUtil.nvl(pDTO.endDate());
+//
+//        startDate = startDate.split(" ")[0];
+//        endDate = endDate.split(" ")[0];
 
-        startDate = startDate.split(" ")[0];
-        endDate = endDate.split(" ")[0];
-
-        LocalDate originalEndDate = LocalDate.parse(endDate, DateTimeFormatter.ISO_DATE);
-        endDate = originalEndDate.plusDays(1).toString();
+//        LocalDate originalEndDate = LocalDate.parse(endDate, DateTimeFormatter.ISO_DATE);
+//        endDate = originalEndDate.plusDays(1).toString();
 
         log.info("userId : " + userId);
         log.info("eventSeq : " + eventSeq);
-        log.info("eventTitle : " + eventTitle);
-        log.info("startDate : " + startDate);
-        log.info("endDate : " + endDate);
+//        log.info("eventTitle : " + eventTitle);
+//        log.info("startDate : " + startDate);
+//        log.info("endDate : " + endDate);
 
         BookmarkEntity pEntity = BookmarkEntity.builder()
                 .userId(userId)
                 .regDt(DateUtil.getDateTime("yyyy-MM-dd hh:mm:ss"))
                 .eventSeq(eventSeq)
-                .eventTitle(eventTitle)
-                .startDate(startDate)
-                .endDate(endDate)
                 .build();
 
         // 공지사항 저장하기

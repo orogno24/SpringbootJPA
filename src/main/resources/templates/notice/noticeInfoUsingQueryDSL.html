@@ -41,6 +41,7 @@
 
         .card {
             border: none;
+            margin-top: -26px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
@@ -268,17 +269,20 @@
         <div class="card-body">
             <div class="post-container">
                 <div class="author-info">
-                    <img class="profile-image" th:src="${rDTO.profilePath}" onerror="this.src='/assets/img/profile.png'"
-                         alt="Profile Image"/>
+                    <img class="profile-image" th:src="${rDTO.profilePath}" onerror="this.src='/assets/img/profile.png'" alt="Profile Image"/>
                     <div>
-                        <span th:text=" ${rDTO.userName}" style="font-weight: bolder">작성자 이름</span>
+                        <span th:text="${rDTO.userName}" style="font-weight: bolder">작성자 이름</span>
                         <div class="date-views" style="color: #8c8c8c; font-size: 14px; margin-top: -3px">
                             <span class="date" th:text="|작성일: ${rDTO.regDt}|">2023-04-02</span>
                             <span class="views" th:text="|조회수: ${rDTO.readCnt}|">조회수: 100</span>
                         </div>
                     </div>
                 </div>
-
+                <div class="image-gallery" style="margin-top: 10px">
+                    <th:block th:each="iList : ${iList}">
+                        <img th:src="${iList.imagePath}" class="post-image" style="max-width: 100%; margin-top: 10px;" alt="Post Image"/>
+                    </th:block>
+                </div>
                 <div class="content"
                      style="white-space: pre-line; max-width: 1000px; overflow: hidden; word-wrap: break-word; overflow-wrap: break-word;"
                      th:text="${rDTO.contents}">게시글 내용

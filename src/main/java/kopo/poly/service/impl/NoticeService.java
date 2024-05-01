@@ -3,8 +3,11 @@ package kopo.poly.service.impl;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kopo.poly.dto.NoticeDTO;
+import kopo.poly.dto.NoticeImageDTO;
+import kopo.poly.repository.NoticeImageRepository;
 import kopo.poly.repository.NoticeRepository;
 import kopo.poly.repository.entity.NoticeEntity;
+import kopo.poly.repository.entity.NoticeImageEntity;
 import kopo.poly.service.INoticeService;
 import kopo.poly.util.CmmUtil;
 import kopo.poly.util.DateUtil;
@@ -14,6 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -24,6 +30,7 @@ public class NoticeService implements INoticeService {
     // noticeRepository 변수에 이미 메모리에 올라간 NoticeRepository 객체를 넣어줌
     // 예전에는 autowired 어노테이션를 통해 설정했었지만, 이젠 생성자를 통해 객체 주입함
     private final NoticeRepository noticeRepository;
+    private final NoticeImageRepository noticeImageRepository;
 
     @Override
     public List<NoticeDTO> getNoticeList() {
@@ -68,8 +75,8 @@ public class NoticeService implements INoticeService {
         return rDTO;
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void updateNoticeInfo(NoticeDTO pDTO) {
 
         log.info(this.getClass().getName() + ".updateNoticeInfo Start!");
@@ -117,17 +124,17 @@ public class NoticeService implements INoticeService {
         // 데이터 수정하기
         noticeRepository.deleteById(noticeSeq);
 
-
         log.info(this.getClass().getName() + ".deleteNoticeInfo End!");
     }
 
     @Override
-    public void insertNoticeInfo(NoticeDTO pDTO) throws Exception {
+    @Transactional
+    public Long insertNoticeInfo(NoticeDTO pDTO) throws Exception {
 
         log.info(this.getClass().getName() + ".InsertNoticeInfo Start!");
 
         String title = CmmUtil.nvl(pDTO.title());
-        String noticeYn = CmmUtil.nvl(pDTO.noticeYn());
+        String noticeYn = "N";
         String contents = CmmUtil.nvl(pDTO.contents());
         String userId = CmmUtil.nvl(pDTO.userId());
 
@@ -149,5 +156,80 @@ public class NoticeService implements INoticeService {
 
         log.info(this.getClass().getName() + ".InsertNoticeInfo End!");
 
+        return pEntity.getNoticeSeq();
+    }
+
+    @Override
+    @Transactional
+    public void updateNoticeImages(Long noticeSeq, List<NoticeImageDTO> imageDTOs) throws Exception {
+
+        log.info(this.getClass().getName() + ".updateNoticeImages Start!");
+
+        // 기존 이미지 목록을 가져옵니다.
+        List<NoticeImageEntity> existingImages = noticeImageRepository.findByNoticeSeq(noticeSeq);
+
+        // 데이터베이스에 이미 있는 이미지들의 처리
+        Set<Long> existingImageIds = existingImages.stream()
+                .map(NoticeImageEntity::getImageSeq)
+                .collect(Collectors.toSet());
+
+        // 새 이미지 추가 또는 기존 이미지 업데이트
+        List<NoticeImageEntity> imagesToSave = imageDTOs.stream()
+                .map(dto -> {
+                    // 기존 이미지 엔티티 업데이트 또는 새 엔티티 생성
+                    NoticeImageEntity imageEntity = existingImages.stream()
+                            .filter(img -> img.getImageSeq() != null && img.getImageSeq().equals(dto.imageSeq()))
+                            .findFirst()
+                            .orElseGet(() -> NoticeImageEntity.builder()
+                                    .noticeSeq(noticeSeq) // 새 이미지의 경우 noticeSeq 설정
+                                    .build());
+
+                    // 빌더를 통해 imagePath 설정
+                    return NoticeImageEntity.builder()
+                            .imageSeq(imageEntity.getImageSeq()) // 기존 ID 유지, null이면 자동 생성
+                            .noticeSeq(noticeSeq)
+                            .imagePath(dto.imagePath())
+                            .build();
+                })
+                .collect(Collectors.toList());
+
+        noticeImageRepository.saveAll(imagesToSave);
+
+        existingImages.stream()
+                .filter(image -> !existingImageIds.contains(image.getImageSeq()))
+                .forEach(noticeImageRepository::delete);
+
+        log.info(this.getClass().getName() + ".updateNoticeImages End!");
+
+    }
+
+    @Override
+    @Transactional
+    public List<NoticeImageDTO> getImageList(NoticeDTO pDTO) throws Exception {
+
+        log.info(this.getClass().getName() + ".updateNoticeImages Start!");
+
+        Long noticeSeq = pDTO.noticeSeq();
+        log.info("noticeSeq : " + noticeSeq);
+
+        List<NoticeImageEntity> rList = noticeImageRepository.findByNoticeSeq(noticeSeq);
+
+        List<NoticeImageDTO> nList = new ObjectMapper().convertValue(rList,
+                new TypeReference<List<NoticeImageDTO>>() {
+                });
+
+        log.info(this.getClass().getName() + ".updateNoticeImages Start!");
+
+        return nList;
+    }
+
+    @Override
+    @Transactional
+    public void deleteImageById(Long imageId) throws Exception {
+        NoticeImageEntity imageEntity = noticeImageRepository.findById(imageId)
+                .orElseThrow(() -> new Exception("Image not found with ID: " + imageId));
+
+        // 데이터베이스에서 이미지 레코드 삭제
+        noticeImageRepository.delete(imageEntity);
     }
 }

@@ -1,6 +1,7 @@
 package kopo.poly.service;
 
 import kopo.poly.dto.NoticeDTO;
+import kopo.poly.dto.NoticeImageDTO;
 
 import java.util.List;
 
@@ -38,6 +39,21 @@ public interface INoticeService {
      *
      * @param pDTO 공지사항 저장하기 위한 정보
      */
-    void insertNoticeInfo(NoticeDTO pDTO) throws Exception;
+    Long insertNoticeInfo(NoticeDTO pDTO) throws Exception;
+
+    /**
+     * 이미지 리스트 저장
+     *
+     * @param noticeSeq 공지사항 번호
+     * @param imageDTOs 이미지 리스트
+     */
+    void updateNoticeImages(Long noticeSeq, List<NoticeImageDTO> imageDTOs) throws Exception;
+
+    /**
+     * 해당 게시글의 이미지 리스트 가져오기
+     */
+    List<NoticeImageDTO> getImageList(NoticeDTO pDTO) throws Exception;
+
+    public void deleteImageById(Long imageId) throws Exception;
 
 }

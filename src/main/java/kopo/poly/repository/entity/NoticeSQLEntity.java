@@ -6,7 +6,7 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 @Getter
-@NoArgsConstructor(force = true)
+@NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "NOTICE")
 @DynamicInsert // 값이 NULL이 아닌것만 INSERT함
@@ -30,10 +30,6 @@ public class NoticeSQLEntity {
     private String noticeYn;
 
     @NonNull
-    @Column(name = "contents", nullable = false)
-    private String contents;
-
-    @NonNull
     @Column(name = "user_id", nullable = false)
     private String userId;
 
@@ -54,4 +50,10 @@ public class NoticeSQLEntity {
 
     @Column(name = "user_name") // NativeQuery 결과를 저장하기 위한 변수
     private String userName;
+
+    @Column(name = "profile_path") // NativeQuery 결과를 저장하기 위한 변수
+    private String profilePath;
+
+    @Column(name = "image_path") // NativeQuery 결과를 저장하기 위한 변수
+    private String imagePath;
 }

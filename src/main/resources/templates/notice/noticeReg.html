@@ -33,13 +33,13 @@
 
         .container {
             max-width: 700px;
-            margin-top: 50px;
+            margin-top: 20px;
         }
 
         .card {
             border: none;
             border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         .btn {
@@ -52,13 +52,48 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script type="text/javascript">
 
+        let currentFiles = [];
+
         // HTML로딩이 완료되고, 실행됨
         $(document).ready(function () {
+
+            $('#image').on('change', function() {
+                // 선택된 파일들을 배열에 추가
+                Array.from(this.files).forEach(file => {
+                    currentFiles.push(file);
+                });
+                displayFileList(); // 파일 리스트 업데이트
+            });
+
             // 버튼 클릭했을때, 발생되는 이벤트 생성함(onclick 이벤트와 동일함)
             $("#btnSend").on("click", function () {
                 doSubmit(); // 공지사항 등록하기 실행
             })
+
+            $("button[type='reset']").on("click", function () {
+                currentFiles = [];
+                displayFileList(); // 파일 리스트 업데이트
+            });
         })
+
+        function displayFileList() {
+            const fileList = document.getElementById('fileList');
+            fileList.innerHTML = '';
+            currentFiles.forEach((file, index) => {
+                const fileEntry = document.createElement('div');
+                fileEntry.textContent = file.name;
+                const removeBtn = document.createElement('button');
+                removeBtn.textContent = 'Remove';
+                removeBtn.onclick = function() { removeFile(index); };
+                fileEntry.appendChild(removeBtn);
+                fileList.appendChild(fileEntry);
+            });
+        }
+
+        function removeFile(index) {
+            currentFiles.splice(index, 1);
+            displayFileList();
+        }
 
         //글자 길이 바이트 단위로 체크하기(바이트값 전달)
         function calBytes(str) {
@@ -77,58 +112,70 @@
             return tcount;
         }
 
-        // 공지사항 저장하기
         function doSubmit() {
 
-            let f = document.getElementById("f"); // form 태그
+            const form  = document.getElementById("f");
+            const formData = new FormData(form);
 
-            if (f.title.value === "") {
-                alert("제목을 입력하시기 바랍니다.");
-                f.title.focus();
-                return;
-            }
-            if (calBytes(f.title.value) > 200) {
-                alert("최대 200Bytes까지 입력 가능합니다.");
-                f.title.focus();
-                return;
+            formData.delete('images');
+
+            // 현재 파일 배열에 있는 모든 파일을 FormData에 추가
+            if (currentFiles.length > 0) {
+                currentFiles.forEach(file => {
+                    formData.append('images', file);
+                });
+            } else {
+                formData.append('images', new Blob(), '');
             }
 
-            // let noticeCheck = false; //체크 여부 확인 변수
-            // for (let i = 0; i < f.noticeYn.length; i++) {
-            //     if (f.noticeYn[i].checked) {
-            //         noticeCheck = true;
-            //         break;
-            //     }
-            // }
-            // if (noticeCheck === false) {
-            //     alert("공지글 여부를 선택하시기 바랍니다.");
-            //     f.noticeYn[0].focus();
-            //     return;
-            // }
+            // 기타 폼 데이터 추가
+            formData.append('title', form.title.value);
+            formData.append('contents', form.contents.value);
 
-            if (f.contents.value === "") {
-                alert("내용을 입력하시기 바랍니다.");
-                f.contents.focus();
-                return;
-            }
-            if (calBytes(f.contents.value) > 4000) {
-                alert("최대 4000Bytes까지 입력 가능합니다.");
-                f.contents.focus();
+            if (!validateForm(form)) {
                 return;
             }
 
-            // Ajax 호출해서 글 등록하기
             $.ajax({
-                    url: "/notice/noticeInsert",
-                    type: "post",
-                    dataType: "JSON",
-                    data: $("#f").serialize(),
-                    success: function (json) {
-                        alert(json.msg);
-                        location.href = "/notice/noticeListUsingQueryDSL";
-                    }
+                url: "/notice/noticeInsert",
+                type: "POST",
+                data: formData,
+                processData: false,  // 필수: FormData를 사용할 때 false로 설정
+                contentType: false,  // 필수: FormData를 사용할 때 false로 설정
+                success: function (response) {
+                    alert(response);
+                    window.location.href = "/notice/noticeListUsingNativeQuery";
+                },
+                error: function (xhr, status, error) {
+                    alert("Error: " + xhr.responseText);
                 }
-            )
+            });
+        }
+
+        function validateForm(form) {
+            if (form.title.value === "") {
+                alert("제목을 입력하시기 바랍니다.");
+                form.title.focus();
+                return false;
+            }
+            if (calBytes(form.title.value) > 200) {
+                alert("최대 200Bytes까지 입력 가능합니다.");
+                form.title.focus();
+                return false;
+            }
+
+            if (form.contents.value === "") {
+                alert("내용을 입력하시기 바랍니다.");
+                form.contents.focus();
+                return false;
+            }
+            if (calBytes(form.contents.value) > 4000) {
+                alert("최대 4000Bytes까지 입력 가능합니다.");
+                form.contents.focus();
+                return false;
+            }
+
+            return true;
         }
     </script>
 </head>
@@ -142,7 +189,7 @@
         <li><a href="/main">메인 페이지</a></li>
         <li><a href="/event/apiSearch">문화행사 찾기</a></li>
         <li><a href="/event/apiSearch">문화시설 찾기</a></li>
-        <li><a href="/notice/noticeListUsingQueryDSL">커뮤니티</a></li>
+        <li><a href="/notice/noticeListUsingNativeQuery">커뮤니티</a></li>
     </ul>
 </div>
 
@@ -152,21 +199,24 @@
             <h2><i class="fas fa-edit"></i> 게시글 등록하기</h2>
         </div>
         <div class="card-body">
-            <form name="f" id="f">
+            <form name="f" id="f" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="title">제목</label>
                     <input type="text" name="title" id="title" class="form-control" maxlength="100" required>
                 </div>
-
-                <!--                <div class="form-group">-->
-                <!--                    <label for="noticeYn">공지글 여부</label><br>-->
-                <!--                    예 <input type="radio" name="noticeYn" value="Y" required>-->
-                <!--                    아니오 <input type="radio" name="noticeYn" value="N" required>-->
-                <!--                </div>-->
-
                 <div class="form-group">
                     <label for="contents">내용</label>
-                    <textarea name="contents" id="contents" class="form-control" style="height: 400px" required></textarea>
+                    <textarea name="contents" id="contents" class="form-control" style="height: 400px"
+                              required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="image">이미지 파일 추가</label>
+                    <input type="file" name="images" id="image" class="form-control-file" multiple>
+                    <small class="form-text text-muted">파일을 선택하고 나서 다시 선택하면 추가로 파일을 업로드할 수 있습니다.</small>
+                </div>
+                <div class="form-group">
+                    <strong>선택된 파일 목록:</strong>
+                    <div id="fileList" style="margin-top: 10px;"></div>
                 </div>
                 <button id="btnSend" type="button" class="btn btn-primary"><i class="fas fa-save"></i> 등록</button>
                 <button type="reset" class="btn btn-danger"><i class="fas fa-undo"></i> 다시 작성</button>
@@ -177,17 +227,6 @@
         </div>
     </div>
 </div>
-<!--<ul class="circles">-->
-<!--    <li></li>-->
-<!--    <li></li>-->
-<!--    <li></li>-->
-<!--    <li></li>-->
-<!--    <li></li>-->
-<!--    <li></li>-->
-<!--    <li></li>-->
-<!--    <li></li>-->
-<!--    <li></li>-->
-<!--    <li></li>-->
-<!--</ul>-->
+<div style="height: 20px"></div>
 </body>
 </html>

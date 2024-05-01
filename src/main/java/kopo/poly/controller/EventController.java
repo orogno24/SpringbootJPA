@@ -317,22 +317,16 @@ public class EventController {
         try {
             String userId = (String) session.getAttribute("SS_USER_ID");
             String eventSeq = CmmUtil.nvl(request.getParameter("eventSeq"));
-            String eventTitle = CmmUtil.nvl(request.getParameter("title"));
-            String startDate = CmmUtil.nvl(request.getParameter("startDate"));
-            String endDate = CmmUtil.nvl(request.getParameter("endDate"));
+//            String eventTitle = CmmUtil.nvl(request.getParameter("title"));
+//            String startDate = CmmUtil.nvl(request.getParameter("startDate"));
+//            String endDate = CmmUtil.nvl(request.getParameter("endDate"));
 
             log.info("userId : " + userId);
             log.info("eventSeq : " + eventSeq);
-            log.info("eventTitle : " + eventTitle);
-            log.info("startDate : " + startDate);
-            log.info("endDate : " + endDate);
 
             BookmarkDTO pDTO = BookmarkDTO.builder()
                     .userId(userId)
                     .eventSeq(eventSeq)
-                    .eventTitle(eventTitle)
-                    .startDate(startDate)
-                    .endDate(endDate)
                     .build();
 
             eventService.insertBookmark(pDTO);

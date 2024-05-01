@@ -4,6 +4,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import jakarta.servlet.http.HttpSession;
+import kopo.poly.dto.NoticeDTO;
 import kopo.poly.dto.UserInfoDTO;
 import kopo.poly.service.IUserInfoService;
 import lombok.extern.slf4j.Slf4j;
@@ -56,20 +57,32 @@ public class FileUploadController {
         }
     }
 
-    // 연습용 코드
-//    @PostMapping("/upload")
-//    public String uploadFile(@RequestParam("file") MultipartFile file) {
-//        if (file.isEmpty()) {
-//            return "No file selected";
-//        }
-//
-//        try {
-//            String fileName = file.getOriginalFilename();
-//            s3Client.putObject(bucketName, fileName, file.getInputStream(), null);
-//            return "File uploaded: " + fileName;
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return "Upload failed";
-//        }
-//    }
+    @PostMapping("/uploadNoticeImage")
+    public ResponseEntity<?> uploadNoticeImage(@RequestParam("file") MultipartFile file, @RequestParam("noticeSeq") Long noticeSeq, HttpSession session) {
+        log.info(this.getClass().getName() + ".uploadNoticeImage Start!");
+
+        try {
+            String userId = (String) session.getAttribute("SS_USER_ID");
+            String extension = FilenameUtils.getExtension(file.getOriginalFilename());
+            String fileName = "notices/" + userId + "_" + noticeSeq + "_" + UUID.randomUUID().toString() + "." + extension;
+
+            s3Client.putObject(new PutObjectRequest(bucketName, fileName, file.getInputStream(), null)
+                    .withCannedAcl(CannedAccessControlList.PublicRead));
+            String imageUrl = s3Client.getUrl(bucketName, fileName).toString();
+
+            // NoticeDTO 업데이트 로직
+            NoticeDTO nDTO = NoticeDTO.builder()
+                    .noticeSeq(noticeSeq)
+                    .imagePath(imageUrl)
+                    .build();
+//            noticeService.updateNoticeImage(nDTO);
+
+            return ResponseEntity.ok("게시글 이미지 등록에 성공했습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("게시글 이미지 등록에 실패했습니다.");
+        }
+    }
+
+
+
 }

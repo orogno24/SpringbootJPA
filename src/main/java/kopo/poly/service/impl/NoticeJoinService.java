@@ -1,11 +1,14 @@
 package kopo.poly.service.impl;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.transaction.Transactional;
 import kopo.poly.dto.CommentDTO;
 import kopo.poly.dto.NoticeDTO;
 import kopo.poly.repository.CommentRepository;
 import kopo.poly.repository.NoticeRepository;
+import kopo.poly.repository.NoticeSQLRepository;
 import kopo.poly.repository.entity.*;
 import kopo.poly.service.INoticeJoinService;
 import kopo.poly.util.CmmUtil;
@@ -23,6 +26,7 @@ import java.util.List;
 public class NoticeJoinService implements INoticeJoinService {
 
     private final NoticeRepository noticeRepository;
+    private final NoticeSQLRepository noticeSQLRepository;
     private final CommentRepository commentRepository;
 
     private final JPAQueryFactory queryFactory;
@@ -60,6 +64,24 @@ public class NoticeJoinService implements INoticeJoinService {
         });
 
         log.info(this.getClass().getName() + ".getNoticeListForQueryDSL End!");
+
+        return nList;
+    }
+
+    @Override
+    public List<NoticeDTO> getNoticeListUsingNativeQuery() {
+
+        log.info(this.getClass().getName() + ".getNoticeListUsingNativeQuery Start!");
+
+        List<NoticeSQLEntity> rList = noticeSQLRepository.getNoticeListUsingSQL();
+
+        log.info("rList : " + rList);
+
+        List<NoticeDTO> nList = new ObjectMapper().convertValue(rList,
+                new TypeReference<List<NoticeDTO>>() {
+                });
+
+        log.info(this.getClass().getName() + ".getNoticeListUsingNativeQuery End!");
 
         return nList;
     }

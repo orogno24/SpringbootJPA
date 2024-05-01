@@ -5,7 +5,9 @@ import jakarta.servlet.http.HttpSession;
 import kopo.poly.dto.CommentDTO;
 import kopo.poly.dto.MsgDTO;
 import kopo.poly.dto.NoticeDTO;
+import kopo.poly.dto.NoticeImageDTO;
 import kopo.poly.service.INoticeJoinService;
+import kopo.poly.service.INoticeService;
 import kopo.poly.util.CmmUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +38,7 @@ import java.util.Optional;
 public class NoticeJoinController {
 
     // @RequiredArgsConstructor 를 통해 메모리에 올라간 서비스 객체를 Controller에서 사용할 수 있게 주입함
+    private final INoticeService noticeService;
     private final INoticeJoinService noticeJoinService;
 
     @GetMapping(value = "noticeListUsingQueryDSL")
@@ -52,6 +55,22 @@ public class NoticeJoinController {
         log.info(this.getClass().getName() + ".noticeListUsingQueryDSL End!");
 
         return "notice/noticeListUsingQueryDSL";
+    }
+
+    @GetMapping(value = "noticeListUsingNativeQuery")
+    public String noticeListUsingNativeQuery(HttpSession session, ModelMap model)
+            throws Exception {
+
+        log.info(this.getClass().getName() + ".noticeListUsingNativeQuery Start!");
+
+        List<NoticeDTO> rList = Optional.ofNullable(noticeJoinService.getNoticeListUsingNativeQuery())
+                .orElseGet(ArrayList::new);
+
+        model.addAttribute("rList", rList);
+
+        log.info(this.getClass().getName() + ".noticeListUsingNativeQuery End!");
+
+        return "notice/noticeListUsingNativeQuery";
     }
 
     @GetMapping(value = "noticeInfoUsingQueryDSL")
@@ -71,11 +90,15 @@ public class NoticeJoinController {
         NoticeDTO rDTO = Optional.ofNullable(noticeJoinService.getNoticeInfoForQueryDSL(pDTO, true))
                 .orElseGet(() -> NoticeDTO.builder().build());
 
+        List<NoticeImageDTO> iList = Optional.ofNullable(noticeService.getImageList(pDTO))
+                .orElseGet(ArrayList::new);
+
         List<CommentDTO> cList = Optional.ofNullable(noticeJoinService.getCommentForQueryDSL(cDTO))
                 .orElseGet(ArrayList::new);
 
         // 조회된 리스트 결과값 넣어주기
         model.addAttribute("rDTO", rDTO);
+        model.addAttribute("iList", iList);
         model.addAttribute("cList", cList);
 
         log.info(this.getClass().getName() + ".NoticeInfoUsingQueryDSL End!");
