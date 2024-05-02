@@ -23,6 +23,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -283,37 +284,40 @@ public class NoticeController {
 
         log.info(this.getClass().getName() + ".noticeDelete Start!");
 
-        String msg = ""; // 메시지 내용
-        MsgDTO dto = null; // 결과 메시지 구조
+        String msg = "";
+        MsgDTO dto = null;
 
         try {
-            String nSeq = CmmUtil.nvl(request.getParameter("nSeq")); // 글번호(PK)
 
-            /*
-             * ####################################################################################
-             * 반드시, 값을 받았으면, 꼭 로그를 찍어서 값이 제대로 들어오는지 파악해야함 반드시 작성할 것
-             * ####################################################################################
-             */
+            String nSeq = CmmUtil.nvl(request.getParameter("nSeq"));
+
             log.info("nSeq : " + nSeq);
 
-            /*
-             * 값 전달은 반드시 DTO 객체를 이용해서 처리함 전달 받은 값을 DTO 객체에 넣는다.
-             */
+            List<NoticeImageDTO> imagePathList = noticeService.getImagePathList(Long.parseLong(nSeq));
+
+            for (NoticeImageDTO noticeImageDTO : imagePathList) {
+                if (noticeImageDTO.imagePath() != null && !noticeImageDTO.imagePath().isEmpty()) {
+                    URL url = new URL(noticeImageDTO.imagePath());
+                    String s3ImagePath = url.getPath().substring(1); // URL에서 객체 키 추출 (앞의 '/' 제거)
+                    log.info("s3ImagePath: " + s3ImagePath);
+                    s3Client.deleteObject(bucketName, s3ImagePath);
+                }
+            }
+
             NoticeDTO pDTO = NoticeDTO.builder().noticeSeq(Long.parseLong(nSeq)).build();
 
-            // 게시글 삭제하기 DB
             noticeService.deleteNoticeInfo(pDTO);
 
             msg = "삭제되었습니다.";
 
         } catch (Exception e) {
+
             msg = "실패하였습니다. : " + e.getMessage();
             log.info(e.toString());
             e.printStackTrace();
 
         } finally {
 
-            // 결과 메시지 전달하기
             dto = MsgDTO.builder().msg(msg).build();
 
             log.info(this.getClass().getName() + ".noticeDelete End!");
@@ -323,9 +327,22 @@ public class NoticeController {
         return dto;
     }
 
+    /**
+     * 게시글 수정 (각 이미지 삭제)
+     */
     @DeleteMapping("deleteImage/{imageSeq}")
     public ResponseEntity<?> deleteImage(@PathVariable("imageSeq") Long imageSeq) {
         try {
+
+            String imagePath = noticeService.getImagePath(imageSeq);
+
+            if (imagePath != null && !imagePath.isEmpty()) {
+                URL oldimagePath = new URL(imagePath);
+                String substringedimagePath = oldimagePath.getPath().substring(1); // URL에서 객체 키 추출 (앞의 '/' 제거)
+                log.info("substringedimagePath: " + substringedimagePath);
+                s3Client.deleteObject(bucketName, substringedimagePath);
+            }
+
             log.info("imageSeq : " + imageSeq);
             noticeService.deleteImageById(imageSeq);
             return ResponseEntity.ok().body("이미지 삭제 성공");

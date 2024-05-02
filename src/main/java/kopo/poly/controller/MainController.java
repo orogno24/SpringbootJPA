@@ -2,7 +2,9 @@ package kopo.poly.controller;
 
 import kopo.poly.dto.ApiDTO;
 import kopo.poly.dto.EventDTO;
+import kopo.poly.dto.UserInfoDTO;
 import kopo.poly.service.IEventService;
+import kopo.poly.service.IUserInfoService;
 import kopo.poly.util.CmmUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,15 +28,18 @@ import java.util.Optional;
 public class MainController {
 
     private final IEventService eventService;
+    private final IUserInfoService userInfoService;
 
     @GetMapping("/main")
     public String main(HttpSession session, ModelMap model) throws Exception {
 
         log.info(this.getClass().getName() + ".main Start!");
 
-        String userName = (String) session.getAttribute("SS_USER_NAME");
-        log.info("userName : " + userName);
-        model.addAttribute("userName", userName);
+        String userId = (String) session.getAttribute("SS_USER_ID");
+
+        UserInfoDTO dto = userInfoService.getUserInfo(userId);
+
+        model.addAttribute("userName", dto.userName());
 
         // 현재 날짜를 yyyy-MM-dd 포맷으로 가져오기
         String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -63,14 +68,6 @@ public class MainController {
     public String awsUpload() throws Exception {
         log.info(this.getClass().getName() + ".awsUpload 함수 실행");
         return "awsUpload";
-    }
-
-    @GetMapping("/pose")
-    public String pose(HttpSession session, ModelMap model) throws Exception {
-        String userName = (String) session.getAttribute("SS_USER_NAME");
-        model.addAttribute("userName", userName);
-        log.info(this.getClass().getName() + ".pose 함수 실행");
-        return "pose";
     }
 
     @GetMapping("/alert")

@@ -28,6 +28,9 @@ public interface IUserInfoService {
      */
     int getUserLogin(UserInfoDTO pDTO) throws Exception;
 
+    // 특정 유저 전체 정보 조회 코드
+    UserInfoDTO getUserInfo(String userId) throws Exception;
+
     // 아이디찾기
     String searchUserIdProc(UserInfoDTO pDTO) throws Exception;
 
@@ -45,8 +48,5 @@ public interface IUserInfoService {
 
     // 프로필 사진 등록
     void profilePathProc(UserInfoDTO pDTO) throws Exception;
-
-    // 프로필 사진 URL 가져오기
-    String getProfilePath(UserInfoDTO pDTO) throws Exception;
 
 }

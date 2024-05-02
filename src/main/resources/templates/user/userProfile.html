@@ -1,41 +1,142 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>프로필 수정</title>
-  <link rel="stylesheet" href="/css/userProfile.css"/>
-  <link rel="icon" href="/assets/img/logo.png" type="image/x-icon">
-  <link rel="shortcut icon" href="/assets/img/logo.png" type="image/x-icon">
-  <link rel="stylesheet" href="/css/header.css"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>프로필 수정</title>
+    <link rel="stylesheet" href="/css/userProfile.css"/>
+    <link rel="icon" href="/assets/img/logo.png" type="image/x-icon">
+    <link rel="shortcut icon" href="/assets/img/logo.png" type="image/x-icon">
+    <link rel="stylesheet" href="/css/header.css"/>
+    <script type="text/javascript" src="/js/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript">
+        function profileChange() {
+            var fileInput = document.getElementById('profileImage');
+            var file = fileInput.files[0];
+            var userName = document.getElementById('userName').value;
+
+            if (!userName) {
+                alert('닉네임을 입력해주세요.');
+                document.getElementById('userName').focus();
+                return;
+            }
+
+            var formData = new FormData();
+            formData.append('userName', userName);
+
+            // 파일이 선택되었는지 확인
+            if (file) {
+                formData.append('file', file);
+            }
+
+            // AJAX 요청 생성
+            $.ajax({
+                url: '/profileChange',
+                type: 'POST',
+                data: formData,
+                contentType: false, // 필수: contentType을 false로 설정
+                processData: false, // 필수: processData를 false로 설정
+                success: function (response) {
+                    alert(response);
+                    if (file) {
+                        previewProfileImage(fileInput); // 파일이 선택되었다면 미리보기 갱신
+                    }
+                },
+                error: function (xhr, status, error) {
+                    alert('프로필 등록에 실패했습니다.');
+                }
+            });
+        }
+
+        function previewProfileImage(input) {
+            var file = input.files[0];
+            if (file) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('profileImg').src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
+    <style>
+
+        .form-row {
+            margin-bottom: 20px;
+        }
+
+        .form-row input[type="text"] {
+            width: 40%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .form-row input[type="file"],
+        .form-row button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .form-row input[type="file"] {
+            padding: 12px 10px; /* 조금 더 큰 여백 */
+        }
+
+        .form-row button {
+            background-color: #007bff;
+            color: #fff;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .form-row button:hover {
+            background-color: #0056b3;
+        }
+
+        .change-photo {
+            text-align: center;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body style="background-color: #d7f9ff">
 
 <div class="header" style="padding: 0 16px;">
-  <a href="/main" class="logo">
-    <img src="/assets/img/logo3.png" alt="Main Logo">
-  </a>
-  <ul class="nav" id="top-navigation">
-    <li><a href="/main">메인 페이지</a></li>
-    <li><a href="/event/apiSearch">문화행사 찾기</a></li>
-    <li><a href="/event/apiSearch">문화시설 찾기</a></li>
-    <li><a href="/notice/noticeListUsingNativeQuery">커뮤니티</a></li>
-  </ul>
+    <a href="/main" class="logo">
+        <img src="/assets/img/logo3.png" alt="Main Logo">
+    </a>
+    <ul class="nav" id="top-navigation">
+        <li><a href="/main">메인 페이지</a></li>
+        <li><a href="/event/apiSearch">문화행사 찾기</a></li>
+        <li><a href="/event/apiSearch">문화시설 찾기</a></li>
+        <li><a href="/notice/noticeListUsingNativeQuery">커뮤니티</a></li>
+    </ul>
 </div>
-
 <div class="container">
-  <h1>프로필 수정</h1>
-  <div class="profile-image">
-    <img id="profileImg" th:src="${profileImageUrl}" onerror="this.src='/assets/img/profile.png'" alt="Profile Image" />
-  </div>
-  <form id="uploadForm" enctype="multipart/form-data">
-    <input type="file" id="profileImage" name="file" accept="image/*" required onchange="previewProfileImage(this);">
-    <label for="profileImage" class="file-label">파일 선택</label>
-    <button type="button" onclick="uploadImage()">업로드</button>
-  </form>
-  <div style="height: 60px;"></div>
+    <h1>프로필 수정</h1>
+    <div class="profile-image">
+        <img id="profileImg" th:src="${profilePath}" onerror="this.src='/assets/img/profile.png'" alt="Profile Image"/>
+    </div>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <div class="form-row">
+            <label for="profileImage" class="change-photo">사진 올리기</label>
+            <input type="file" id="profileImage" name="file" accept="image/*" required
+                   onchange="previewProfileImage(this);">
+        </div>
+        <div class="form-row">
+            <label for="userName">닉네임</label>
+            <input type="text" id="userName" name="userName" placeholder="닉네임을 입력해주세요." th:value="${userName}" required>
+            <div class="error-message" id="userNameError"></div>
+        </div>
+        <button type="button" onclick="profileChange()">변경사항 적용</button>
+    </form>
 </div>
-
-<script type="text/javascript" src="/js/uploadScript.js"></script>
 </body>
 </html>

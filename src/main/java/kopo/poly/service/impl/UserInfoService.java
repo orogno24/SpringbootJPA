@@ -118,6 +118,31 @@ public class UserInfoService implements IUserInfoService {
     }
 
     @Override
+    public UserInfoDTO getUserInfo(String userId) throws Exception {
+
+        log.info(this.getClass().getName() + "getUserInfo Start!");
+
+        Optional<UserInfoEntity> rEntity = userInfoRepository.findByUserId(userId);
+
+        UserInfoDTO rDTO;
+
+        if (rEntity.isPresent()) {
+
+            UserInfoEntity pEntity = rEntity.get();
+
+            rDTO = UserInfoDTO.builder()
+                    .userId(pEntity.getUserId())
+                    .userName(pEntity.getUserName())
+                    .profilePath(pEntity.getProfilePath())
+                    .build();
+        } else rDTO = UserInfoDTO.builder().build();
+
+        log.info(this.getClass().getName() + "getUserInfo End!");
+
+        return rDTO;
+    }
+
+    @Override
     public String searchUserIdProc(UserInfoDTO pDTO) throws Exception {
         log.info(this.getClass().getName() + ".searchUserIdProc Start!");
 
@@ -331,34 +356,5 @@ public class UserInfoService implements IUserInfoService {
         log.info(this.getClass().getName() + "profilePathProc End!");
 
     }
-
-    @Override
-    public String getProfilePath(UserInfoDTO pDTO) throws Exception {
-
-        log.info(this.getClass().getName() + ".getProfilePath Start!");
-
-        String res = "";
-
-        String userId = CmmUtil.nvl(pDTO.userId());
-        String defaultImageUrl = "/assets/img/profile.png";
-
-        log.info("pDTO userId : " + userId);
-
-        Optional<UserInfoEntity> rEntity = userInfoRepository.findByUserId(userId);
-
-        log.info("rEntity : " + rEntity);
-
-        if (rEntity.isPresent()) {
-            UserInfoEntity pEntity = rEntity.get();
-            res = pEntity.getProfilePath() != null ? pEntity.getProfilePath() : defaultImageUrl;
-        } else {
-            res = defaultImageUrl;
-        }
-
-        log.info(this.getClass().getName() + ".getProfilePath End!");
-
-        return res;
-    }
-
 
 }

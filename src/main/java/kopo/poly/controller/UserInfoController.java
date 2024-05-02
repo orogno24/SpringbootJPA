@@ -233,13 +233,15 @@ public class UserInfoController {
 
         String userId = (String) session.getAttribute("SS_USER_ID");
 
-        UserInfoDTO pDTO = UserInfoDTO.builder().userId(userId).build();
+        UserInfoDTO pDTO = userInfoService.getUserInfo(userId);
 
-        String imageUrl = userInfoService.getProfilePath(pDTO);
+        String profilePath = pDTO.profilePath() != null && !pDTO.profilePath().isEmpty() ? pDTO.profilePath() : "/assets/img/profile.png";
 
-        log.info("imageUrl : " + imageUrl);
+        log.info("profilePath : " + profilePath);
+        log.info("userName : " + pDTO.userName());
 
-        model.addAttribute("profileImageUrl", imageUrl);
+        model.addAttribute("profilePath", profilePath);
+        model.addAttribute("userName", pDTO.userName());
 
         log.info(this.getClass().getName() + ".user/userProfile End!");
 

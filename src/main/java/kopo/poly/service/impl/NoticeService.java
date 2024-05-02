@@ -8,6 +8,7 @@ import kopo.poly.repository.NoticeImageRepository;
 import kopo.poly.repository.NoticeRepository;
 import kopo.poly.repository.entity.NoticeEntity;
 import kopo.poly.repository.entity.NoticeImageEntity;
+import kopo.poly.repository.entity.UserInfoEntity;
 import kopo.poly.service.INoticeService;
 import kopo.poly.util.CmmUtil;
 import kopo.poly.util.DateUtil;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -218,7 +220,7 @@ public class NoticeService implements INoticeService {
                 new TypeReference<List<NoticeImageDTO>>() {
                 });
 
-        log.info(this.getClass().getName() + ".updateNoticeImages Start!");
+        log.info(this.getClass().getName() + ".updateNoticeImages End!");
 
         return nList;
     }
@@ -231,5 +233,36 @@ public class NoticeService implements INoticeService {
 
         // 데이터베이스에서 이미지 레코드 삭제
         noticeImageRepository.delete(imageEntity);
+    }
+
+    @Override
+    public String getImagePath(Long imageSeq) throws Exception {
+
+        log.info(this.getClass().getName() + "getImagePath Start!");
+
+        NoticeImageEntity rEntity = noticeImageRepository.findByImageSeq(imageSeq);
+
+        String imagePath = rEntity.getImagePath();
+        log.info("imagePath : " + imagePath);
+
+        log.info(this.getClass().getName() + "getImagePath End!");
+
+        return imagePath;
+    }
+
+    @Override
+    public List<NoticeImageDTO> getImagePathList(Long noticeSeq) throws Exception {
+
+        log.info(this.getClass().getName() + "getImagePathList Start!");
+
+        List<NoticeImageEntity> rList = noticeImageRepository.findByNoticeSeq(noticeSeq);
+
+        List<NoticeImageDTO> nList = new ObjectMapper().convertValue(rList,
+                new TypeReference<List<NoticeImageDTO>>() {
+                });
+
+        log.info(this.getClass().getName() + "getImagePathList End!");
+
+        return nList;
     }
 }
