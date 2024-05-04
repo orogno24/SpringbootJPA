@@ -83,6 +83,11 @@
             box-sizing: border-box;
         }
 
+        .card-text {
+            display: flex;
+            align-items: center; /* 모든 요소를 세로축 중앙으로 정렬 */
+        }
+
         .profile-image img {
             width: 100%;
             height: 100%;
@@ -102,7 +107,7 @@
     <ul class="nav" id="top-navigation">
         <li><a href="/main">메인 페이지</a></li>
         <li><a href="/event/apiSearch">문화행사 찾기</a></li>
-        <li><a href="/event/apiSearch">문화시설 찾기</a></li>
+        <li><a href="/culture/v1/cultureMap">문화시설 찾기</a></li>
         <li><a href="/notice/noticeListUsingNativeQuery">커뮤니티</a></li>
     </ul>
 </div>
@@ -118,7 +123,7 @@
     <div class="row">
         <div class="col-md-4 mb-4" th:each="dto : ${rList}">
             <div class="card h-100" th:onclick="doDetail([[${dto.noticeSeq}]])">
-                <!-- 썸네일 이미지 추가 -->
+
                 <img class="card-img-top" th:src="${dto.imagePath}" onerror="this.src='/assets/img/thumbnail.png'" alt="Card image cap" style="height: 150px; object-fit: cover;">
 
                 <div class="card-body">

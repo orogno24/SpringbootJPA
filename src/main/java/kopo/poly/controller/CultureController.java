@@ -1,8 +1,10 @@
 package kopo.poly.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import kopo.poly.controller.response.CommonResponse;
 import kopo.poly.dto.ApiDTO;
+import kopo.poly.dto.BookmarkDTO;
 import kopo.poly.dto.CultureDTO;
 import kopo.poly.service.ICultureService;
 import kopo.poly.util.CmmUtil;
@@ -11,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -88,5 +91,31 @@ public class CultureController {
         log.info(this.getClass().getName() + ".getCultureListNearby End!");
 
         return rList;
+    }
+
+    /**
+     * 문화시설 상세보기
+     */
+    @GetMapping(value = "cultureInfo")
+    public String apiInfo(HttpServletRequest request, ModelMap model, HttpSession session) throws Exception {
+
+        log.info(this.getClass().getName() + ".cultureInfo Start!");
+
+        // 고유 식별자를 받는 방식에 따라 변경 필요
+        String nSeq = CmmUtil.nvl(request.getParameter("nSeq"), "");
+        String userId = (String) session.getAttribute("SS_USER_ID");
+
+        log.info("nSeq: " + nSeq);
+        log.info("userId: " + userId);
+
+        CultureDTO rDTO = Optional.ofNullable(cultureService.getCultureInfo(nSeq))
+                .orElseGet(() -> CultureDTO.builder().build());
+
+        // 조회된 결과값 넣어주기
+        model.addAttribute("rDTO", rDTO);
+
+        log.info(this.getClass().getName() + ".cultureInfo End!");
+
+        return "culture/cultureInfo";
     }
 }

@@ -46,4 +46,18 @@ public class CultureService implements ICultureService {
 
         return rList;
     }
+
+    @Override
+    public CultureDTO getCultureInfo(String nSeq) throws Exception {
+
+        log.info(this.getClass().getName() + ".getCultureInfo Start!");
+
+        String colNm = "CULTURE";
+
+        CultureDTO pDTO = cultureMapper.getCultureInfo(colNm, nSeq);
+
+        log.info(this.getClass().getName() + ".getCultureInfo End!");
+
+        return pDTO;
+    }
 }

@@ -98,6 +98,7 @@ public class CultureMapper extends AbstractMongoDBComon implements ICultureMappe
                 .append("mainImg", "$mainImg")
                 .append("facName", "$facName")
                 .append("addr", "$addr")
+                .append("num", "$num")
                 .append("xCoord", "$xCoord")
                 .append("yCoord", "$yCoord");
 
@@ -112,6 +113,7 @@ public class CultureMapper extends AbstractMongoDBComon implements ICultureMappe
             String mainImg = CmmUtil.nvl(doc.getString("mainImg"));
             String facName = CmmUtil.nvl(doc.getString("facName"));
             String addr = CmmUtil.nvl(doc.getString("addr"));
+            Integer num = doc.getInteger("num");
             Double xCoord = doc.getDouble("xCoord");
             Double yCoord = doc.getDouble("yCoord");
 
@@ -120,6 +122,7 @@ public class CultureMapper extends AbstractMongoDBComon implements ICultureMappe
                     .mainImg(mainImg)
                     .facName(facName)
                     .addr(addr)
+                    .num(num)
                     .xCoord(xCoord)
                     .yCoord(yCoord)
                     .build();
@@ -132,5 +135,58 @@ public class CultureMapper extends AbstractMongoDBComon implements ICultureMappe
         log.info(this.getClass().getName() + "getCultureListNearby End!");
 
         return rList;
+    }
+
+    @Override
+    public CultureDTO getCultureInfo(String colNm, String nSeq) throws Exception {
+
+        log.info(this.getClass().getName() + ".getCultureInfo Start!");
+
+        MongoCollection<Document> col = mongodb.getCollection(colNm);
+
+        Document projection = new Document();
+        projection.append("mainImg", "$mainImg");
+        projection.append("facName", "$facName");
+        projection.append("addr", "$addr");
+        projection.append("closeday", "$closeday");
+        projection.append("phne", "$phne");
+        projection.append("facDesc", "$facDesc");
+        projection.append("homepage", "$homepage");
+        projection.append("xCoord", "$xCoord");
+        projection.append("yCoord", "$yCoord");
+        projection.append("_id", 0);
+
+        int nSeqInt = Integer.parseInt(nSeq);
+        Document query = new Document("num", nSeqInt);
+
+        Document doc = col.find(query).projection(projection).first();
+
+        CultureDTO rDTO = null;
+
+        String mainImg = CmmUtil.nvl(doc.getString("mainImg"));
+        String facName = CmmUtil.nvl(doc.getString("facName"));
+        String addr = CmmUtil.nvl(doc.getString("addr"));
+        String closeday = CmmUtil.nvl(doc.getString("closeday"));
+        String phne = CmmUtil.nvl(doc.getString("phne"));
+        String facDesc = CmmUtil.nvl(doc.getString("facDesc"));
+        String homepage = CmmUtil.nvl(doc.getString("homepage"));
+        Double xCoord = doc.getDouble("xCoord");
+        Double yCoord = doc.getDouble("yCoord");
+
+        rDTO = CultureDTO.builder()
+                .mainImg(mainImg)
+                .facName(facName)
+                .addr(addr)
+                .closeday(closeday)
+                .phne(phne)
+                .facDesc(facDesc)
+                .homepage(homepage)
+                .xCoord(xCoord)
+                .yCoord(yCoord)
+                .build();
+
+        log.info(this.getClass().getName() + ".getCultureInfo End!");
+
+        return rDTO;
     }
 }

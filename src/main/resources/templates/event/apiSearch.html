@@ -23,6 +23,9 @@
             // 시작일과 종료일 입력 필드에 기본값 설정
             document.getElementById('startDate').value = formattedCurrentDate;
             document.getElementById('endDate').value = formattedMonthLaterDate;
+
+            // 문화행사 리스트를 자동으로 표시
+            displayEvents();
         });
 
         function displayEvents() {
@@ -90,7 +93,7 @@
     <ul class="nav" id="top-navigation">
         <li><a href="/main">메인 페이지</a></li>
         <li><a href="/event/apiSearch">문화행사 찾기</a></li>
-        <li><a href="/event/apiSearch">문화시설 찾기</a></li>
+        <li><a href="/culture/v1/cultureMap">문화시설 찾기</a></li>
         <li><a href="/notice/noticeListUsingNativeQuery">커뮤니티</a></li>
     </ul>
 </div>

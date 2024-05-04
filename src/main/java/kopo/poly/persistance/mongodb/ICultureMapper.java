@@ -23,4 +23,12 @@ public interface ICultureMapper {
      */
     List<CultureDTO> getCultureListNearby(String colNm, CultureDTO pDTO) throws Exception;
 
+    /**
+     * 문화시설 상세정보 조회
+     *
+     * @param colNm 조회할 컬렉션 이름
+     * @return 문화시설 리스트
+     */
+    CultureDTO getCultureInfo(String colNm, String nSeq) throws Exception;
+
 }

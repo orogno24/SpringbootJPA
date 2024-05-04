@@ -8,24 +8,28 @@
     <link rel="stylesheet" href="/css/header.css"/>
     <style>
         .infowindow-content {
-            padding: 5px;
+            padding: 10px;
+            font-size: 13px;
+            color: #333;
+            background: white;
+            line-height: 1.5;
+            min-height: 80px;
+            max-height: 200px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .infowindow-content h4 {
+            margin: 5px 0;
+            color: #2b86fa;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .infowindow-content p {
+            margin: 5px 0;
             font-size: 14px;
-            line-height: 1.6;
-            font-family: Arial, sans-serif;
-        }
-
-        .infowindow-content strong {
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        .infowindow-content button {
-            display: block;
-            margin-top: 8px;
-            padding: 3px 5px;
-            background: #f5f5f5;
-            border: 1px solid #ccc;
-            cursor: pointer;
         }
 
         .container {
@@ -98,58 +102,60 @@
             gap: 32.5px;
         }
 
-        .eventItem {
+        .cultureItem {
+            cursor: pointer;
             border-radius: 6px;
             border: 2px solid #7d9fb7;
-            flex: 0 0 18%; /* 각 아이템의 성장을 막고, 축소하지 않으며, 기본 크기를 18%로 설정 */
+            flex: 0 0 18%;
             background: white;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s;
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            min-height: 320px; /* 최소 높이 설정 */
-            height: auto; /* 자동 높이 조정 */
+            min-height: 320px;
+            height: auto;
         }
 
-        .eventItem:hover {
+        .cultureItem:hover {
             transform: translateY(-10px);
         }
 
-        .eventThumbnail {
+        .cultureThumbnail {
             width: 100%;
-            height: 200px; /* 고정 높이 */
+            height: 200px;
             display: flex;
             justify-content: center;
             align-items: center;
             overflow: hidden;
         }
 
-        .eventThumbnail img {
-            width: 100%; /* div 너비에 맞춰서 가득 채움 */
-            height: 100%; /* div 높이에 맞춰서 가득 채움 */
-            object-fit: cover; /* 컨테이너 크기에 맞추어 이미지를 자르거나 조절 */
+        .cultureThumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
-        .eventInfo {
+        .cultureInfo {
             padding: 15px;
             text-align: left;
         }
 
-        .eventInfo h3 {
+        .cultureInfo h3 {
+            margin-top: 6px;
             color: #333;
             font-size: 18px;
             margin-bottom: 10px;
         }
 
-        .eventInfo p {
+        .cultureInfo p {
             color: #666;
             font-size: 14px;
             margin-bottom: 5px;
         }
 
         @media (max-width: 800px) {
-            .eventItem {
+            .cultureItem {
                 flex-basis: 46%;
             }
         }
@@ -164,7 +170,7 @@
     <ul class="nav" id="top-navigation">
         <li><a href="/main">메인 페이지</a></li>
         <li><a href="/event/apiSearch">문화행사 찾기</a></li>
-        <li><a href="/event/apiSearch">문화시설 찾기</a></li>
+        <li><a href="/culture/v1/cultureMap">문화시설 찾기</a></li>
         <li><a href="/notice/noticeListUsingNativeQuery">커뮤니티</a></li>
     </ul>
 </div>
@@ -190,7 +196,7 @@
         <input type="text" id="place" placeholder=" 장소를 입력해 주세요.">
         <button onclick="searchPlace()">검색</button>
     </div>
-    <div class="map-search-label">위치검색</div>
+    <div class="map-search-label">위치 검색</div>
     <div id="map"></div>
     <div class="container2" id="cultureData"></div>
 </div>
@@ -235,19 +241,11 @@
             return false;
         }
         setMapLevel(radius);
-        closeInfoWindows();
         removeMarkers();
 
         ps.keywordSearch(keyword, placesSearchCB, {
-            radius: radius  // kakao.maps.services.Places의 옵션으로 반경 추가
+            radius: radius
         });
-    }
-
-    function closeInfoWindows() { // 인포윈도우 닫는 함수 추가
-        for (var i = 0; i < infowindows.length; i++) {
-            infowindows[i].close();
-        }
-        infowindows = [];
     }
 
     function placesSearchCB(data, status, pagination) {
@@ -256,7 +254,7 @@
             map.setCenter(coords);
             displayMarker(coords);
             searchNearbyCultureSpaces(data[0].x, data[0].y);
-            setMapLevel(document.getElementById('radius').value); // 결과에 따라 확대 수준 재설정
+            setMapLevel(document.getElementById('radius').value);
         } else {
             alert('결과를 찾을 수 없습니다.');
         }
@@ -299,20 +297,25 @@
                 container.innerHTML = ''; // 컨테이너 초기화
 
                 // 서버로부터 받은 데이터를 사용하여 결과 표시
-                data.forEach(function (event) {
+                data.forEach(function (culture) {
                     var listItem = document.createElement('div');
-                    listItem.className = 'eventItem';
+                    listItem.className = 'cultureItem';
 
                     listItem.innerHTML =
-                        '<div class="eventThumbnail">' +
-                        '<img src="' + event.mainImg + '" alt="Event Thumbnail" onerror="this.onerror=null;this.src=\'/assets/img/thumbnail.png\';">' +
+                        '<div class="cultureThumbnail">' +
+                        '<img src="' + culture.mainImg + '" alt="Culture Thumbnail" onerror="this.onerror=null;this.src=\'/assets/img/thumbnail.png\';">' +
                         '</div>' +
-                        '<div class="eventInfo">' +
-                        '<h3>' + event.facName + '</h3>' +
-                        '<p>' + event.subjcode + '</p>' +
-                        '<p>' + event.addr + '</p>' +
+                        '<div class="cultureInfo">' +
+                        '<h3>' + culture.facName + '</h3>' +
+                        '<p>' + culture.subjcode + '</p>' +
+                        '<p>' + culture.addr + '</p>' +
                         '</div>';
                     container.appendChild(listItem);
+
+                    listItem.onclick = function () {
+                        doDetail(culture.num);
+                    };
+
                 });
 
             },
@@ -320,6 +323,10 @@
                 alert("An error occurred: " + error);
             }
         })
+    }
+
+    function doDetail(nSeq) {
+        location.href = "/culture/v1/cultureInfo?nSeq=" + nSeq;
     }
 
     function displayCultureSpaces(response) {
@@ -342,30 +349,26 @@
 
             markers.push(marker);
 
-            var infowindowContent = '<div class="infowindow-content"><strong>번호: ' + space.num + '</strong>' +
-                '이름: ' + space.facName + '<br>' +
-                '전화번호: ' + space.phne +
-                '<button onclick="closeInfoWindow(this)">닫기</button></div>';
-
+            var infowindowContent = `<div class="infowindow-content">
+            <h4>${space.facName}</h4>
+            <p>${space.subjcode}</p>
+            <p>${space.addr}</p>
+            </div>`;
             var infowindow = new kakao.maps.InfoWindow({
                 content: infowindowContent
             });
 
             infowindows.push(infowindow);
 
-            kakao.maps.event.addListener(marker, 'click', function () {
+            kakao.maps.event.addListener(marker, 'mouseover', function () {
                 infowindow.open(map, marker);
             });
+            kakao.maps.event.addListener(marker, 'mouseout', function () {
+                infowindow.close();
+            });
         });
-
     }
 
-    function closeInfoWindow(button) {
-        var infowindow = infowindows.find(infowindow => infowindow.getContent().includes(button.parentElement.innerHTML));
-        if (infowindow) {
-            infowindow.close();
-        }
-    }
 </script>
 </body>
 </html>

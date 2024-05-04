@@ -59,6 +59,7 @@ select {
 }
 
 .eventItem {
+    cursor: pointer;
     display: flex;
     align-items: center;
     padding: 10px;
@@ -94,7 +95,7 @@ select {
     left: 0; /* 좌측부터 0 */
     width: 100%; /* 전체 너비 */
     height: 100%; /* 전체 높이 */
-    background: rgba(255, 255, 255, 0.8); /* 흰색 반투명 배경 */
+    /*background: rgba(255, 255, 255, 0.8); !* 흰색 반투명 배경 *!*/
     z-index: 9999; /* 다른 요소들 위에 위치 */
     display: flex; /* Flexbox를 사용하여 중앙 정렬 */
     justify-content: center; /* 수평 중앙 정렬 */
