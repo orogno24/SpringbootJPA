@@ -31,4 +31,19 @@ public class CultureService implements ICultureService {
 
         return rList;
     }
+
+    @Override
+    public List<CultureDTO> getCultureListNearby(CultureDTO pDTO) throws Exception {
+
+        log.info(this.getClass().getName() + ".getCultureListNearby Start!");
+
+        // MongoDB에 저장된 컬렉션 이름
+        String colNm = "CULTURE";
+
+        List<CultureDTO> rList = cultureMapper.getCultureListNearby(colNm, pDTO);
+
+        log.info(this.getClass().getName() + ".getCultureListNearby End!");
+
+        return rList;
+    }
 }

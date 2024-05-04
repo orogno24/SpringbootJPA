@@ -32,7 +32,8 @@ public record CultureDTO(
         String subway,
         Double xCoord,
         Double yCoord,
-        String yellow
+        String yellow,
+        Double radius
 
 ) {
 }
