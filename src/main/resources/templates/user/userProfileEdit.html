@@ -1,11 +1,62 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <script type="text/javascript" src="/js/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript">
+        function profileChange() {
+            var fileInput = document.getElementById('profileImage');
+            var file = fileInput.files[0];
+            var userName = document.getElementById('userName').value;
+
+            if (!userName) {
+                alert('닉네임을 입력해주세요.');
+                document.getElementById('userName').focus();
+                return;
+            }
+
+            var formData = new FormData();
+            formData.append('userName', userName);
+
+            // 파일이 선택되었는지 확인
+            if (file) {
+                formData.append('file', file);
+            }
+
+            // AJAX 요청 생성
+            $.ajax({
+                url: '/profileChange',
+                type: 'POST',
+                data: formData,
+                contentType: false, // 필수: contentType을 false로 설정
+                processData: false, // 필수: processData를 false로 설정
+                success: function (response) {
+                    alert(response);
+                    location.href = "/user/userProfile";
+                    if (file) {
+                        previewProfileImage(fileInput); // 파일이 선택되었다면 미리보기 갱신
+                    }
+                },
+                error: function (xhr, status, error) {
+                    alert('프로필 등록에 실패했습니다.');
+                }
+            });
+        }
+
+        function previewProfileImage(input) {
+            var file = input.files[0];
+            if (file) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('profileImg').src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
     <link rel="stylesheet" href="/css/header.css"/>
-    <title>프로필</title>
+    <title>프로필 수정</title>
     <style>
         @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap");
 
@@ -38,6 +89,7 @@
         }
 
         .profile-card {
+            height: 353px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -48,6 +100,19 @@
             padding: 25px;
             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
             position: relative;
+        }
+
+        .change-photo, button {
+            background-color: #5da5bb;
+            padding: 10px 22px;
+            margin: 0 6px;
+            border-radius: 24px;
+            border: none;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 400;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
 
         .profile-card::before {
@@ -61,17 +126,31 @@
             background-color: #5d8198;
         }
 
+        input[type="text" i] {
+            border-style: revert;
+            padding-block: 0;
+            padding-inline: 0;
+            text-align: center;
+            color: #333333;
+        }
+
+        #userName::placeholder {
+            color: #8c8c8c;
+        }
+
         .image {
             position: relative;
             height: 150px;
             width: 150px;
             border-radius: 50%;
+            overflow: hidden;
+            display: inline-block;
             background-color: white;
             padding: 3px;
             margin-bottom: 10px;
         }
 
-        .image .profile-img {
+        .profileImg {
             height: 100%;
             width: 100%;
             object-fit: cover;
@@ -105,7 +184,7 @@
         .profile-card .buttons {
             display: flex;
             align-items: center;
-            margin-top: 25px;
+            margin-top: 20px;
         }
 
         .buttons .button {
@@ -149,39 +228,6 @@
         }
 
     </style>
-    <script th:inline="javascript">
-        /*<![CDATA[*/
-
-        // HTML 로딩이 완료되고, 실행됨
-        $(document).ready(function () {
-
-            var rawDate = /*[[${dto.regDt}]]*/ 'defaultDate';
-            console.log("rawDate : " + rawDate);
-
-            function formatDate(dateStr) {
-                var date = new Date(dateStr);
-                var year = date.getFullYear();
-                var month = ("0" + (date.getMonth() + 1)).slice(-2);
-                var day = ("0" + date.getDate()).slice(-2);
-                return year + '-' + month + '-' + day;
-            }
-
-            console.log("formatDate : " + formatDate(rawDate));
-
-            // 포매팅된 날짜를 HTML 요소에 적용
-            $('#regDate').text("가입일 : " + formatDate(rawDate));
-
-            $("#btn1").on("click", function () {
-                location.href = "/event/eventCalendarList";
-            })
-
-            $("#btn2").on("click", function () {
-                location.href = "/user/userProfileEdit";
-            })
-
-        })
-        /*]]>*/
-    </script>
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet"/>
 </head>
 <body>
@@ -196,35 +242,29 @@
         <li><a href="/notice/noticeListUsingNativeQuery">커뮤니티</a></li>
     </ul>
 </div>
-<h2 style="text-align: center; color:#333333; margin-top: 50px; margin-bottom: -38px">마이페이지</h2>
+<h2 style="text-align: center; color:#333333; margin-top: 50px; margin-bottom: -38px">프로필 수정</h2>
 <div class="center-container">
     <div class="profile-card">
         <div class="image">
-            <img th:src="${dto.profilePath}" onerror="this.src='/assets/img/profile.png'" alt="Profile picture "
-                 class="profile-img"/>
+            <img th:src="${profilePath}" onerror="this.src='/assets/img/profile.png'" alt="Profile picture "
+                 class="profileImg" id="profileImg"/>
         </div>
-        <div class="text-data">
-            <span class="name" style="font-weight: bolder" th:text="${dto.userName}"></span>
-            <span class="Job" id="regDate" style="color:#525252;"></span>
-        </div>
-        <div class="media-button"></div>
-        <div class="buttons">
-            <button class="button" id="btn1">북마크한 문화행사</button>
-            <button class="button" id="btn2">프로필 수정</button>
-        </div>
-        <div class="data">
-            <div class="data2">
-                <i class="bx bx-heart"></i>
-                <span class="number">팔로워 10</span>
+        <form id="uploadForm" enctype="multipart/form-data">
+            <div class="text-data">
+                <input type="text" style="font-weight: bolder; font-size: 22px" id="userName" name="userName" placeholder="닉네임을 입력해주세요." th:value="${userName}" required>
+                <div class="error-message" id="userNameError"></div>
+                <div style="height: 16px"></div>
             </div>
-            <div class="data2">
-                <i class="bx bx-share"></i>
-                <span class="number">팔로우 20</span>
+            <div class="media-button">
             </div>
-            <div class="data2">
-                <i class="bx bx-message-rounded"></i>
-                <span class="number">작성 게시글 30</span>
+            <div class="buttons">
+                    <label for="profileImage" class="change-photo">사진 업로드</label>
+                    <input type="file" id="profileImage" name="file" accept="image/*" required onchange="previewProfileImage(this);" style="display:none;">
+                <button type="button" onclick="profileChange()">변경사항 적용</button>
             </div>
+        </form>
+        <div style="height: 34px;">
+
         </div>
     </div>
 </div>

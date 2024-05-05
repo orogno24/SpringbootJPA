@@ -225,11 +225,29 @@ public class UserInfoController {
     }
 
     /**
-     * 유저 프로필 설정
+     * 유저 프로필
      */
     @GetMapping(value = "userProfile")
     public String userProfile(HttpSession session, ModelMap model) throws Exception {
         log.info(this.getClass().getName() + ".user/userProfile Start!");
+
+        String userId = (String) session.getAttribute("SS_USER_ID");
+
+        UserInfoDTO dto = userInfoService.getUserInfo(userId);
+
+        model.addAttribute("dto", dto);
+
+        log.info(this.getClass().getName() + ".user/userProfile End!");
+
+        return "user/userProfile";
+    }
+
+    /**
+     * 유저 프로필 설정
+     */
+    @GetMapping(value = "userProfileEdit")
+    public String userProfileEdit(HttpSession session, ModelMap model) throws Exception {
+        log.info(this.getClass().getName() + ".user/userProfileEdit Start!");
 
         String userId = (String) session.getAttribute("SS_USER_ID");
 
@@ -243,9 +261,9 @@ public class UserInfoController {
         model.addAttribute("profilePath", profilePath);
         model.addAttribute("userName", pDTO.userName());
 
-        log.info(this.getClass().getName() + ".user/userProfile End!");
+        log.info(this.getClass().getName() + ".user/userProfileEdit End!");
 
-        return "user/userProfile";
+        return "user/userProfileEdit";
     }
 
     @GetMapping(value = "searchUserId")         // 아이디 찾기

@@ -2,8 +2,10 @@ package kopo.poly.dto;
 
 import lombok.Builder;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 @Builder
+@Document
 public record CultureDTO(
 
         String id,

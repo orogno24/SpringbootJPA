@@ -2,446 +2,141 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>회원가입 화면</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>프로필 수정</title>
+    <link rel="stylesheet" href="/css/userProfileEdit.css"/>
     <link rel="icon" href="/assets/img/logo.png" type="image/x-icon">
     <link rel="shortcut icon" href="/assets/img/logo.png" type="image/x-icon">
+    <link rel="stylesheet" href="/css/header.css"/>
     <script type="text/javascript" src="/js/jquery-3.6.0.min.js"></script>
     <script type="text/javascript">
+        function profileChange() {
+            var fileInput = document.getElementById('profileImage');
+            var file = fileInput.files[0];
+            var userName = document.getElementById('userName').value;
 
-        // 아이디 중복체크여부 (중복 Y / 중복아님 : N)
-        let userIdCheck = "Y";
-
-        let emailAuthNumber = "";
-
-        // HTML로딩이 완료되고, 실행됨
-        $(document).ready(function () {
-
-            let f = document.getElementById("f"); // form 태그
-
-            // 아이디 중복체크
-            $("#btnUserId").on("click", function () { // 버튼 클릭했을때, 발생되는 이벤트 생성함(onclick 이벤트와 동일함)
-                userIdExists(f)
-            })
-
-            // 이메일 중복체크
-            $("#btnEmail").on("click", function () { // 버튼 클릭했을때, 발생되는 이벤트 생성함(onclick 이벤트와 동일함)
-                emailExists(f)
-            })
-
-        })
-
-        // 회원아이디 중복 체크
-        function userIdExists(f) {
-            if (f.userId.value === "") {
-                alert("아이디를 입력하세요.");
-                f.userId.focus();
+            if (!userName) {
+                alert('닉네임을 입력해주세요.');
+                document.getElementById('userName').focus();
                 return;
             }
-            // Ajax 호출해서 회원가입하기
+
+            var formData = new FormData();
+            formData.append('userName', userName);
+
+            // 파일이 선택되었는지 확인
+            if (file) {
+                formData.append('file', file);
+            }
+
+            // AJAX 요청 생성
             $.ajax({
-                    url: "/user/getUserIdExists",
-                    type: "post", // 전송방식은 Post
-                    dataType: "JSON", // 전송 결과는 JSON으로 받기
-                    data: $("#f").serialize(), // form 태그 내 input 등 객체를 자동으로 전송할 형태로 변경하기
-                    success: function (json) { // 호출이 성공했다면..
-                        if (json.existsYn === "Y") {
-                            alert("이미 가입된 아이디가 존재합니다.");
-                            f.userId.focus();
-                        } else { // 회원가입 실패
-                            alert("가입 가능한 아이디입니다.");
-                            userIdCheck = "N";
-                        }
+                url: '/profileChange',
+                type: 'POST',
+                data: formData,
+                contentType: false, // 필수: contentType을 false로 설정
+                processData: false, // 필수: processData를 false로 설정
+                success: function (response) {
+                    alert(response);
+                    if (file) {
+                        previewProfileImage(fileInput); // 파일이 선택되었다면 미리보기 갱신
                     }
+                },
+                error: function (xhr, status, error) {
+                    alert('프로필 등록에 실패했습니다.');
                 }
-            )
+            });
         }
 
-        // 이메일 중복 체크
-        function emailExists(f) {
-            if (f.email.value === "") {
-                alert("이메일을 입력하세요.");
-                f.email.focus();
-                return;
-            }
-
-            $.ajax({
-                    url: "/user/getEmailExists",
-                    type: "post", // 전송방식은 Post
-                    dataType: "JSON", // 전송 결과는 JSON으로 받기
-                    data: $("#f").serialize(), // form 태그 내 input 등 객체를 자동으로 전송할 형태로 변경하기
-                    success: function (json) { // 호출이 성공했다면..
-                        if (json.existsYn === "Y") {
-                            alert("이미 가입된 이메일 주소가 존재합니다.");
-                            f.email.focus();
-                        } else {
-                            alert("이메일로 인증번호가 발송되었습니다. \n받은 메일의 인증번호를 입력하기 바랍니다.");
-                            emailAuthNumber = json.authNumber;
-                        }
-                    }
+        function previewProfileImage(input) {
+            var file = input.files[0];
+            if (file) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('profileImg').src = e.target.result;
                 }
-            )
-        }
-
-        //회원가입 정보의 유효성 체크하기
-        function doSubmit(f) {
-            if (f.userId.value === "") {
-                alert("아이디를 입력하세요.");
-                f.userId.focus();
-                return;
+                reader.readAsDataURL(file);
             }
-
-            if (f.userId.value.length < 4) {
-                alert("아이디는 4자리 이상이어야 합니다.");
-                f.userId.focus();
-                return;
-            }
-
-            if (f.userId.value.length > 16) {
-                alert("아이디는 16자리 미만이어야 합니다.");
-                f.userId.focus();
-                return;
-            }
-
-            if (userIdCheck !== "N") {
-                alert("아이디 중복 체크 및 중복되지 않은 아이디로 가입 바랍니다.");
-                f.userId.focus();
-                return;
-            }
-            if (f.password.value === "") {
-                alert("비밀번호를 입력하세요.");
-                f.password.focus();
-                return;
-            }
-
-            if (f.password.value.length < 4) {
-                alert("비밀번호는 4자리 이상이어야 합니다.");
-                f.password.focus();
-                return;
-            }
-
-            if (f.password.value.length > 16) {
-                alert("비밀번호는 16자리 미만이어야 합니다.");
-                f.password.focus();
-                return;
-            }
-
-            if (f.password2.value === "") {
-                alert("비밀번호를 확인해주세요.");
-                f.password2.focus();
-                return;
-            }
-            if (f.password.value !== f.password2.value) {
-                alert("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
-                f.password.focus();
-                return;
-            }
-            if (f.email.value === "") {
-                alert("이메일을 입력하세요.");
-                f.email.focus();
-                return;
-            }
-
-            if (f.authNumber.value === "") {
-                alert("이메일 인증번호를 입력하세요.");
-                f.authNumber.focus();
-                return false;
-            }
-
-            console.log("비교1" + f.authNumber.value);
-            console.log("비교2" + emailAuthNumber);
-            if (f.authNumber.value != emailAuthNumber) {
-                alert("이메일 인증번호가 일치하지 않습니다.");
-                f.authNumber.focus();
-                return false;
-            }
-
-            if (f.userName.value === "") {
-                alert("닉네임을 입력하세요.");
-                f.userName.focus();
-                return false;
-            }
-
-            // Ajax 호출해서 회원가입하기
-            $.ajax({
-                    url: "/user/insertUserInfo",
-                    type: "post", // 전송방식은 Post
-                    dataType: "JSON", // 전송 결과는 JSON으로 받기
-                    data: $("#f").serialize(), // form 태그 내 input 등 객체를 자동으로 전송할 형태로 변경하기
-                    success: function (json) { // /user/insertUserInfo 호출이 성공했다면..
-                        if (json.result === 1) { // 회원가입 성공
-                            alert(json.msg); // 메시지 띄우기
-                            location.href = "/user/login"; // 로그인 페이지 이동
-                        } else { // 회원가입 실패
-                            alert(json.msg); // 메시지 띄우기
-                        }
-                    }
-                }
-            )
         }
     </script>
-</head>
-<style>
-    button {
-        padding: 6px 12px;
-        border: none;
-        background-color: #5c80b7;
-        color: #fff;
-        font-size: 16px;
-        cursor: pointer;
-        border-radius: 5px;
-        transition: background-color 0.3s ease;
-    }
+    <style>
 
-    button:hover {
-        background-color: #44628d; /* 새로운 배경색 */;
-    }
-
-    @font-face {
-        font-family: 'NIXGONM-Vb';
-        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/NIXGONM-Vb.woff') format('woff');
-        font-weight: normal;
-        font-style: normal;
-    }
-    *{
-        font-family: 'NIXGONM-Vb';
-    }
-
-    @import url("//fonts.googleapis.com/earlyaccess/nanumgothic.css" );
-    /* 비번 입력시 공백문자 뜨는 문제 해결 */
-    input[type=password]{
-        font-family:"Nanum Gothic", sans-serif !important;
-    }
-
-    @import url('https://rsms.me/inter/inter-ui.css');
-    ::selection {
-        background: #2D2F36;
-    }
-    ::-moz-selection {
-        background: #2D2F36;
-    }
-    body {
-        background: white;
-        margin: 0;
-        padding: 20px;
-    }
-    .page {
-        background: #d7f9ff;
-        display: flex;
-        flex-direction: column;
-        height: calc(100% - 40px);
-        position: absolute;
-        place-content: center;
-        width: calc(100% - 40px);
-    }
-    @media (max-width: 767px) {
-        .page {
-            height: 100%;
+        .form-row {
             margin-bottom: 20px;
-            padding-bottom: 20px;
         }
-    }
-    .container {
-        display: flex;
-        height: 680px;
-        margin: 0 auto;
-        width: 970px;
-    }
-    @media (max-width: 767px) {
-        .container {
-            flex-direction: column;
-            height: 630px;
-            width: 320px;
-        }
-    }
-    .left {
-        background: #c3eee6;
-        height: calc(100% - 40px);
-        top: 20px;
-        position: relative;
-        width: 70%;
-    }
-    @media (max-width: 767px) {
-        .left {
-            height: 100%;
-            left: 20px;
-            width: calc(100% - 40px);
-            max-height: 270px;
-        }
-    }
-    .login {
-        font-size: 25px;
-        color: #564F47;
-        margin: 50px 40px 40px;
-    }
-    .eula {
-        color: #656579;
-        font-size: 20px;
-        line-height: 1.5;
-        margin: 40px;
-    }
-    .right {
-        background: #7ea6e7;
-        box-shadow: 0px 0px 40px 16px rgba(159, 149, 149, 0.22);
-        color: #F1F1F2;
-        position: relative;
-        width: 70%;
 
-    }
-    @media (max-width: 767px) {
-        .right {
-            flex-shrink: 0;
-            height: 120%;
+        .form-row input[type="text"] {
+            width: 40%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .form-row input[type="file"],
+        .form-row button {
             width: 100%;
-            max-height: 600px;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
         }
-    }
-    svg {
-        position: absolute;
-        width: 320px;
-    }
-    path {
-        fill: none;
-        stroke: url(#linearGradient);;
-        stroke-width: 4;
-        stroke-dasharray: 240 1386;
-    }
-    .form {
-        margin: 40px;
-        position: absolute;
-    }
-    label {
-        color: #fff;
-        display: block;
-        font-size: 15px;
-        height: 16px;
-        margin-top: 20px;
-        margin-bottom: 5px;
-    }
-    input {
-        background: transparent;
-        border: 0;
-        color: #f2f2f2;
-        font-size: 20px;
-        height: 30px;
-        line-height: 30px;
-        outline: none !important;
-        width: 120%;
-    }
-    input::-moz-focus-inner {
-        border: 0;
-    }
 
-    hr {
-        width: 100%; /* 화면 크기에 관계없이 부모 요소의 50% 크기를 유지 */
-        margin: auto; /* 가운데 정렬 */
-        border: none;
-        height: 1px;
-        background-color: #fff; /* 선의 색상 */
-    }
+        .form-row input[type="file"] {
+            padding: 12px 10px; /* 조금 더 큰 여백 */
+        }
 
-</style>
-<script>
-    var current = null;
-    document.querySelector('#email').addEventListener('focus', function(e) {
-        if (current) current.pause();
-        current = anime({
-            targets: 'path',
-            strokeDashoffset: {
-                value: 0,
-                duration: 700,
-                easing: 'easeOutQuart'
-            },
-            strokeDasharray: {
-                value: '240 1386',
-                duration: 700,
-                easing: 'easeOutQuart'
-            }
-        });
-    });
-    document.querySelector('#password').addEventListener('focus', function(e) {
-        if (current) current.pause();
-        current = anime({
-            targets: 'path',
-            strokeDashoffset: {
-                value: -336,
-                duration: 700,
-                easing: 'easeOutQuart'
-            },
-            strokeDasharray: {
-                value: '240 1386',
-                duration: 700,
-                easing: 'easeOutQuart'
-            }
-        });
-    });
-    document.querySelector('#submit').addEventListener('focus', function(e) {
-        if (current) current.pause();
-        current = anime({
-            targets: 'path',
-            strokeDashoffset: {
-                value: -730,
-                duration: 700,
-                easing: 'easeOutQuart'
-            },
-            strokeDasharray: {
-                value: '530 1386',
-                duration: 700,
-                easing: 'easeOutQuart'
-            }
-        });
-    });
-</script>
-<body>
-<div class="page">
-    <div class="container">
-        <div class="left">
-            <div class="login">signUp</div>
-            <div class="eula"><br>
-                <img src="/assets/img/logo.png" alt="Your Image" class="square-image" style="width: 32%; height: 32%; margin-left: -6%; margin-top: -19%">
-            </div>
-        </div>
-        <div class="right">
-            <form class="register-form" action="/user/insertUserInfo" id="f">
+        .form-row button {
+            background-color: #007bff;
+            color: #fff;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
 
-                <div class="form" style="padding-top: 7%;">
+        .form-row button:hover {
+            background-color: #0056b3;
+        }
 
-                    <label for="userId" style="display: inline-block">아이디를 입력해주세요.</label>&nbsp;&nbsp;
-                    <button id="btnUserId" type="button">중복확인</button>
-                    <input type="text" name="userId" id="userId">
-                    <hr>
+        .change-photo {
+            text-align: center;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body style="background-color: #d7f9ff">
 
-                    <label for="password">비밀번호를 입력해주세요.</label>
-                    <input type="password" name="password" id="password" minlength="4"  maxlength="20" >
-                    <hr>
-
-                    <label for="password2">비밀번호를 확인해주세요.</label>
-                    <input type="password" name="password2" id="password2" minlength="4"  maxlength="20">
-                    <hr>
-
-                    <label for="email" style="display: inline-block">이메일을 입력해주세요.</label>&nbsp;&nbsp;
-                    <button id="btnEmail" type="button">인증번호</button>
-                    <input type="text" name="email" id="email">
-                    <hr>
-
-                    <label for="authNumber">인증번호를 입력해주세요.</label>
-                    <input type="text" name="authNumber" id="authNumber">
-                    <hr>
-
-                    <label for="userName">닉네임을 입력해주세요.</label>
-                    <input type="text" name="userName" id="userName">
-                    <hr>
-
-                    <button id="submit" type="button" style="margin-top: 20px; padding: 8px 14px;" onclick="doSubmit(this.form)">회원가입</button>
-
-                    <h5 style="color: #44628d">이미 계정이 있으신가요?&nbsp;<a href="/user/login"><strong>로그인하기</strong></a></h5>
-                </div>
-            </form>
-        </div>
-    </div>
+<div class="header" style="padding: 0 16px;">
+    <a href="/main" class="logo">
+        <img src="/assets/img/logo3.png" alt="Main Logo">
+    </a>
+    <ul class="nav" id="top-navigation">
+        <li><a href="/main">메인 페이지</a></li>
+        <li><a href="/event/apiSearch">문화행사 찾기</a></li>
+        <li><a href="/culture/v1/cultureMap">문화시설 찾기</a></li>
+        <li><a href="/notice/noticeListUsingNativeQuery">커뮤니티</a></li>
+    </ul>
 </div>
-
+<div class="container">
+    <h1 style="color: #333333">프로필 수정</h1>
+    <div class="profile-image">
+        <img id="profileImg" th:src="${profilePath}" onerror="this.src='/assets/img/profile.png'" alt="Profile Image"/>
+    </div>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <div class="form-row">
+            <label for="profileImage" class="change-photo">사진 올리기</label>
+            <input type="file" id="profileImage" name="file" accept="image/*" required
+                   onchange="previewProfileImage(this);">
+        </div>
+        <div class="form-row">
+            <label for="userName">닉네임</label>
+            <input type="text" id="userName" name="userName" placeholder="닉네임을 입력해주세요." th:value="${userName}" required>
+            <div class="error-message" id="userNameError"></div>
+        </div>
+        <button type="button" onclick="profileChange()">변경사항 적용</button>
+    </form>
+</div>
 </body>
 </html>

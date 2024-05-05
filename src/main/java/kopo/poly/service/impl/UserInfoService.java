@@ -134,6 +134,7 @@ public class UserInfoService implements IUserInfoService {
                     .userId(pEntity.getUserId())
                     .userName(pEntity.getUserName())
                     .profilePath(pEntity.getProfilePath())
+                    .regDt(pEntity.getRegDt())
                     .build();
         } else rDTO = UserInfoDTO.builder().build();
 
