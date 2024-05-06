@@ -57,12 +57,12 @@ public interface INoticeService {
     /**
      * 게시글 이미지 삭제
      */
-    public void deleteImageById(Long imageId) throws Exception;
+    public void deleteImageById(NoticeImageDTO pDTO) throws Exception;
 
     /**
      * 게시글 이미지 S3에서 삭제하기 위해 이미지 url를 추출
      */
-    String getImagePath(Long imageSeq) throws Exception;
+    String getImagePath(NoticeImageDTO pDTO) throws Exception;
 
     /**
      * 게시글을 삭제하면 이미지들을 S3에서 삭제하기 위해 이미지 리스트 추출

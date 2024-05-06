@@ -152,6 +152,18 @@
     <script th:inline="javascript">
         /*<![CDATA[*/
 
+        const ss_user_id = [[${session.SS_USER_ID}]];
+        const user_id = [[${dto.userId}]];
+
+        document.addEventListener('DOMContentLoaded', function() {
+
+            if (user_id === null || user_id === '' || user_id === 'null') {
+                alert("로그인 하시길 바랍니다.");
+                window.location.href = '/user/login';
+            }
+
+        });
+
         // HTML 로딩이 완료되고, 실행됨
         $(document).ready(function () {
 
@@ -171,6 +183,16 @@
             // 포매팅된 날짜를 HTML 요소에 적용
             $('#regDate').text("가입일 : " + formatDate(rawDate));
 
+            if (ss_user_id === user_id) {
+                // 조건이 충족되면 프로필 수정 버튼을 그대로 놔둠
+                $("#btn2").show();
+            } else {
+                // 조건이 충족되지 않으면 프로필 수정 버튼을 숨기고 팔로우 버튼 표시
+                $("#btn2").hide(); // 기존 프로필 수정 버튼 숨기기
+                // 팔로우 버튼 생성 및 추가
+                $('<button class="button" id="followBtn">팔로우하기</button>').appendTo('.buttons');
+            }
+
             $("#btn1").on("click", function () {
                 location.href = "/event/eventCalendarList";
             })
@@ -178,6 +200,11 @@
             $("#btn2").on("click", function () {
                 location.href = "/user/userProfileEdit";
             })
+
+            $(document).on('click', '#followBtn', function() {
+                console.log('Follow button clicked');
+                // 팔로우 로직 추가
+            });
 
         })
         /*]]>*/
@@ -196,7 +223,7 @@
         <li><a href="/notice/noticeListUsingNativeQuery">커뮤니티</a></li>
     </ul>
 </div>
-<h2 style="text-align: center; color:#333333; margin-top: 50px; margin-bottom: -38px">마이페이지</h2>
+<h2 style="text-align: center; color:#333333; margin-top: 50px; margin-bottom: -38px">유저 프로필</h2>
 <div class="center-container">
     <div class="profile-card">
         <div class="image">

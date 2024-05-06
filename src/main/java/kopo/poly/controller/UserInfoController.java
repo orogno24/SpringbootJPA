@@ -228,10 +228,10 @@ public class UserInfoController {
      * 유저 프로필
      */
     @GetMapping(value = "userProfile")
-    public String userProfile(HttpSession session, ModelMap model) throws Exception {
+    public String userProfile(HttpServletRequest request, HttpSession session, ModelMap model) throws Exception {
         log.info(this.getClass().getName() + ".user/userProfile Start!");
 
-        String userId = (String) session.getAttribute("SS_USER_ID");
+        String userId = CmmUtil.nvl(request.getParameter("nSeq"), "");
 
         UserInfoDTO dto = userInfoService.getUserInfo(userId);
 
@@ -259,7 +259,7 @@ public class UserInfoController {
         log.info("userName : " + pDTO.userName());
 
         model.addAttribute("profilePath", profilePath);
-        model.addAttribute("userName", pDTO.userName());
+        model.addAttribute("pDTO", pDTO);
 
         log.info(this.getClass().getName() + ".user/userProfileEdit End!");
 

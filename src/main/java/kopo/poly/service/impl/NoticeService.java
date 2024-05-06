@@ -6,6 +6,7 @@ import kopo.poly.dto.NoticeDTO;
 import kopo.poly.dto.NoticeImageDTO;
 import kopo.poly.repository.NoticeImageRepository;
 import kopo.poly.repository.NoticeRepository;
+import kopo.poly.repository.entity.ImageKey;
 import kopo.poly.repository.entity.NoticeEntity;
 import kopo.poly.repository.entity.NoticeImageEntity;
 import kopo.poly.repository.entity.UserInfoEntity;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -175,14 +177,22 @@ public class NoticeService implements INoticeService {
                 .map(NoticeImageEntity::getImageSeq)
                 .collect(Collectors.toSet());
 
+        Long nextImageSeq = noticeImageRepository.getNextImageSeq(noticeSeq);
+
         // 새 이미지 추가 또는 기존 이미지 업데이트
+        AtomicLong imageSeqCounter = new AtomicLong(nextImageSeq);
         List<NoticeImageEntity> imagesToSave = imageDTOs.stream()
                 .map(dto -> {
+
+                    Long newImageSeq = imageSeqCounter.getAndIncrement(); // nextImageSeq부터 시작해서 1씩 증가함
+                    log.info("newImageSeq : " + newImageSeq);
+
                     // 기존 이미지 엔티티 업데이트 또는 새 엔티티 생성
                     NoticeImageEntity imageEntity = existingImages.stream()
                             .filter(img -> img.getImageSeq() != null && img.getImageSeq().equals(dto.imageSeq()))
                             .findFirst()
                             .orElseGet(() -> NoticeImageEntity.builder()
+                                    .imageSeq(newImageSeq)
                                     .noticeSeq(noticeSeq) // 새 이미지의 경우 noticeSeq 설정
                                     .build());
 
@@ -227,22 +237,28 @@ public class NoticeService implements INoticeService {
 
     @Override
     @Transactional
-    public void deleteImageById(Long imageId) throws Exception {
-        NoticeImageEntity imageEntity = noticeImageRepository.findById(imageId)
-                .orElseThrow(() -> new Exception("Image not found with ID: " + imageId));
+    public void deleteImageById(NoticeImageDTO pDTO) throws Exception {
+
+        ImageKey imageKey = ImageKey.builder().imageSeq(pDTO.imageSeq()).noticeSeq(pDTO.noticeSeq()).build();
+
+        NoticeImageEntity imageEntity = noticeImageRepository.findById(imageKey)
+                .orElseThrow(() -> new Exception("Image not found with ID: " + imageKey));
 
         // 데이터베이스에서 이미지 레코드 삭제
         noticeImageRepository.delete(imageEntity);
     }
 
     @Override
-    public String getImagePath(Long imageSeq) throws Exception {
+    public String getImagePath(NoticeImageDTO pDTO) throws Exception {
 
         log.info(this.getClass().getName() + "getImagePath Start!");
 
-        NoticeImageEntity rEntity = noticeImageRepository.findByImageSeq(imageSeq);
+        ImageKey imageKey = ImageKey.builder().noticeSeq(pDTO.noticeSeq()).imageSeq(pDTO.imageSeq()).build();
 
-        String imagePath = rEntity.getImagePath();
+        Optional<NoticeImageEntity> rEntity = noticeImageRepository.findById(imageKey);
+
+        String imagePath = rEntity.get().getImagePath();
+
         log.info("imagePath : " + imagePath);
 
         log.info(this.getClass().getName() + "getImagePath End!");

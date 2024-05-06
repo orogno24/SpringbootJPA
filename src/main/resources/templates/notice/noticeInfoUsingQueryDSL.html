@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -29,6 +29,10 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+        }
+
+        .clickable {
+            cursor: pointer; /* 포인터 커서로 변경 */
         }
 
         h2 {
@@ -142,6 +146,17 @@
         const ss_user_id = [[${session.SS_USER_ID}]];
         const user_id = [[${rDTO.userId}]];
         const nSeq = [[${rDTO.noticeSeq}]];
+
+        function goToUserProfile() {
+            window.location.href = "/user/userProfile?nSeq=" + user_id;
+        }
+
+        function goToUserProfile2() {
+
+            var userId = document.getElementById('userId').value;
+
+            window.location.href = "/user/userProfile?nSeq=" + userId;
+        }
 
         $(document).ready(function () {
             $("#btnEdit").on("click", function () {
@@ -270,7 +285,7 @@
         <div class="card-body">
             <div class="post-container">
                 <div class="author-info">
-                    <img class="profile-image" th:src="${rDTO.profilePath}" onerror="this.src='/assets/img/profile.png'" alt="Profile Image"/>
+                    <img class="profile-image clickable" th:src="${rDTO.profilePath}" onerror="this.src='/assets/img/profile.png'" alt="Profile Image" onclick="goToUserProfile()" />
                     <div>
                         <span th:text="${rDTO.userName}" style="font-weight: bolder">작성자 이름</span>
                         <div class="date-views" style="color: #8c8c8c; font-size: 14px; margin-top: -3px">
@@ -302,10 +317,10 @@
                             <div class="d-flex justify-content-between">
                                 <div>
                                     <div class="author-info">
-                                        <img class="comment-image" th:src="${dto.profilePath}"
+                                        <img class="comment-image clickable" th:src="${dto.profilePath}"
                                              onerror="this.src='/assets/img/profile.png'"
-                                             alt="Comment Image"/>
-
+                                             alt="Comment Image" onclick="goToUserProfile2()" />
+                                        <input type="hidden" id="userId" th:value="${dto.userId}" />
                                         <div style="display: flex; flex-direction: column;">
                                             <span th:text="${dto.userName}" style="font-weight: bolder">작성자 이름</span>
                                             <div style="display: flex; align-items: center; gap: 6px; margin-top: -4px">

@@ -110,10 +110,14 @@
             return tcount;
         }
 
-        function removeImage(imageSeq) {
+        function deleteImage(imageSeq) {
+            // rDTO.noticeSeq 값 가져오기
+            const nSeq = document.getElementById("nSeq").value;
+
             $.ajax({
                 url: '/notice/deleteImage/' + imageSeq,
                 type: 'DELETE',
+                data: { nSeq: nSeq },
                 success: function (response) {
                     $('#image-container-' + imageSeq).hide();
                 },
@@ -210,7 +214,7 @@
         </div>
         <div class="card-body">
             <form name="f" id="f" enctype="multipart/form-data">
-                <input type="hidden" name="nSeq" th:value="${rDTO.noticeSeq}"/>
+                <input type="hidden" name="nSeq" id="nSeq" th:value="${rDTO.noticeSeq}" />
                 <div class="form-group">
                     <label for="title">제목</label>
                     <input type="text" name="title" id="title" class="form-control" maxlength="100"
@@ -227,7 +231,7 @@
                         <th:block th:each="image : ${iList}">
                             <div th:id="'image-container-' + ${image.imageSeq}">
                                 <img th:src="${image.imagePath}" alt="Image" style="width: 100px; height: auto;"/>
-                                <button type="button" th:onclick="'removeImage(' + ${image.imageSeq} + ');'">삭제</button>
+                                <button type="button" th:onclick="'deleteImage(' + ${image.imageSeq} + ');'">삭제</button>
                             </div>
                         </th:block>
                     </div>

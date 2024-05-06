@@ -75,26 +75,48 @@
             max-width: 400px; /* 최대 너비 설정 */
             margin-bottom: 10px;
         }
+
         .da-img img {
             border-radius: 20px; /* 이미지 테두리를 둥글게 */
         }
+
         .da-slide p {
             margin-top: 0; /* 상단 마진 제거 */
             padding-top: 15px; /* 상단 패딩 추가 */
         }
     </style>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+
+        const userId = /*[[${dto.userId}]]*/ '';
+
+        document.addEventListener('DOMContentLoaded', function() {
+
+            if (userId === null || userId === '' || userId === 'null') {
+                alert("로그인 하시길 바랍니다.");
+                window.location.href = '/user/login';
+            }
+
+        });
+
+        function goToUserProfile() {
+            window.location.href = "/user/userProfile?nSeq=" + userId;
+        }
+
+        /*]]>*/
+    </script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
 
             const today = new Date();
-            const options = { year: 'numeric', month: '2-digit', day: '2-digit', weekday: 'short' };
+            const options = {year: 'numeric', month: '2-digit', day: '2-digit', weekday: 'short'};
             const formattedDate = today.toLocaleDateString('ko-KR', options)
                 .replace(/(\d+)\.(\d+)\.(\d+)\.\s(\(\w+\))/, '$1.$2.$3$4')
                 .replace(/\s/g, '')
                 .replace(/(\d{4}\.\d{2}\.\d{2})\./, '$1');
 
             // 모든 슬라이드에 날짜 삽입
-            document.querySelectorAll('.da-slide h2').forEach(function(h2) {
+            document.querySelectorAll('.da-slide h2').forEach(function (h2) {
                 const dateH2 = document.createElement('h2');
                 dateH2.style.cssText = "font-size: 20px; color: #3b5260; position: relative; top: 150px;";
                 dateH2.textContent = formattedDate;
@@ -113,6 +135,7 @@
         });
 
     </script>
+
 </head>
 <body>
 <div class="navbar">
@@ -134,9 +157,11 @@
                     <li><a href="/culture/v1/cultureMap">문화시설 찾기</a></li>
                     <li><a href="/notice/noticeListUsingNativeQuery">커뮤니티</a></li>
                     <li class="dropdown">
-                        <a href="" class="dropdown-toggle" data-toggle="dropdown" style="background-color:#5395a9;"><span class="username-color">[[${userName}]]</span>님 어서오세요!<b class="caret"></b></a>
+                        <a href="" class="dropdown-toggle" data-toggle="dropdown"
+                           style="background-color:#5395a9;"><span class="username-color">[[${dto.userName}]]</span>님
+                            어서오세요!<b class="caret"></b></a>
                         <ul class="dropdown-menu">
-                            <li><a href="/user/userProfile">마이페이지</a></li>
+                            <li><a href="#" onclick="goToUserProfile()">마이페이지</a></li>
                             <li><a href="#" id="logoutLink">로그아웃</a></li>
                         </ul>
                     </li>
@@ -190,27 +215,27 @@
 
                     <div class="feature" id="div1" onclick="location.href='/event/apiSearch';"
                          style="position: relative; overflow: hidden; transition: transform 0.3s ease; cursor: pointer;">
-<!--                        <img class="icon" src="/assets/img/icon1.png" style="position: absolute; width: 14%" alt="">-->
+                        <!--                        <img class="icon" src="/assets/img/icon1.png" style="position: absolute; width: 14%" alt="">-->
                         <h2 style="font-size: 22px; text-align: center; padding-top: 40px;">
-                           <span style="color: #ffffff; background-color: #5d8198;">문화행사 찾기</span>
+                            <span style="color: #ffffff; background-color: #5d8198;">문화행사 찾기</span>
                         </h2>
-<!--                        <p style="text-align: center; transition: transform 0.3s ease; color: #3b5260; background-color: #b3ecec;">관심있는 문화행사의 정보를 확인할 수 있습니다.</p>-->
+                        <!--                        <p style="text-align: center; transition: transform 0.3s ease; color: #3b5260; background-color: #b3ecec;">관심있는 문화행사의 정보를 확인할 수 있습니다.</p>-->
                         <br><br>
                     </div>
                     <div class="feature" id="div2" onclick="location.href='/culture/v1/cultureMap';"
                          style="position: relative; overflow: hidden; transition: transform 0.3s ease; cursor: pointer;">
-<!--                        <img class="icon" src="/assets/img/icon2.png" style="position: absolute; width: 14%" alt="">-->
+                        <!--                        <img class="icon" src="/assets/img/icon2.png" style="position: absolute; width: 14%" alt="">-->
                         <h2 style="font-size: 22px; text-align: center; padding-top: 40px; transition: transform 0.3s ease;">
                             <span style="color: #ffffff; background-color: #5d8198;">문화시설 찾기</span>
                         </h2>
-<!--                        <p style="text-align: center; transition: transform 0.3s ease; color: #3b5260; background-color: #b3ecec;">근처의 문화시설 정보를 확인할 수 있습니다.</p>-->
+                        <!--                        <p style="text-align: center; transition: transform 0.3s ease; color: #3b5260; background-color: #b3ecec;">근처의 문화시설 정보를 확인할 수 있습니다.</p>-->
                     </div>
                     <div class="feature" id="div3" onclick="location.href='/notice/noticeListUsingNativeQuery';"
                          style="position: relative; overflow: hidden; transition: transform 0.3s ease; cursor: pointer;">
-<!--                        <img class="icon" src="/assets/img/icon3.png" style="position: absolute; width: 14%" alt="">-->
+                        <!--                        <img class="icon" src="/assets/img/icon3.png" style="position: absolute; width: 14%" alt="">-->
                         <h2 style="font-size: 22px; text-align: center; padding-top: 40px; transition: transform 0.3s ease;">
                             <span style="color: #ffffff; background-color: #5d8198;">커뮤니티</span></h2>
-<!--                        <p style="text-align: center; transition: transform 0.3s ease; color: #3b5260; background-color: #b3ecec;">내 경험을 다른 사람들과 공유할 수 있습니다.</p>-->
+                        <!--                        <p style="text-align: center; transition: transform 0.3s ease; color: #3b5260; background-color: #b3ecec;">내 경험을 다른 사람들과 공유할 수 있습니다.</p>-->
                     </div>
                 </div>
             </div>
@@ -256,15 +281,15 @@
 <script src="js/respond.min.js"></script>
 <script type="text/javascript" src="js/app.js"></script>
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("DOMContentLoaded", function () {
         const defaultA = document.querySelector('.nav-pills .filter:first-child a');
         defaultA.style.backgroundColor = '#2b2b36';
         defaultA.style.color = 'white';
 
         const links = document.querySelectorAll('.nav-pills .filter a');
-        links.forEach(function(link) {
-            link.addEventListener('click', function(event) {
-                links.forEach(function(l) {
+        links.forEach(function (link) {
+            link.addEventListener('click', function (event) {
+                links.forEach(function (l) {
                     l.style.backgroundColor = '';
                     l.style.color = '';
                 });

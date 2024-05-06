@@ -39,7 +39,7 @@ public class MainController {
 
         UserInfoDTO dto = userInfoService.getUserInfo(userId);
 
-        model.addAttribute("userName", dto.userName());
+        model.addAttribute("dto", dto);
 
         // 현재 날짜를 yyyy-MM-dd 포맷으로 가져오기
         String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));

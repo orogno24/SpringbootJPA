@@ -13,17 +13,18 @@ import org.hibernate.annotations.DynamicUpdate;
 @DynamicUpdate // 값이 NULL이 아닌것만 UPDATE함
 @Builder
 //@Cacheable
+@Data
+@IdClass(ImageKey.class)
 @Entity
 public class NoticeImageEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Autoincrement와 같음
+    @Column(name = "notice_seq")
+    private Long noticeSeq;
+
+    @Id
     @Column(name = "image_seq")
     private Long imageSeq;
-
-    @NonNull
-    @Column(name = "notice_seq", length = 500, nullable = false)
-    private Long noticeSeq;
 
     @Column(name = "image_path", nullable = false)
     private String imagePath;
