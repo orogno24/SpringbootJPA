@@ -166,11 +166,17 @@ public class NoticeJoinService implements INoticeJoinService {
         log.info(this.getClass().getName() + ".deleteComment Start!");
 
         Long commentSeq = pDTO.commentSeq();
+        Long noticeSeq = pDTO.noticeSeq();
 
         log.info("commentSeq : " + commentSeq);
 
+        CommentKey commentKey = CommentKey.builder()
+                .commentSeq(commentSeq)
+                .noticeSeq(noticeSeq)
+                .build();
+
         // 데이터 수정하기
-        commentRepository.deleteById(commentSeq);
+        commentRepository.deleteById(commentKey);
 
         log.info(this.getClass().getName() + ".deleteComment End!");
     }
@@ -182,11 +188,13 @@ public class NoticeJoinService implements INoticeJoinService {
 
         String userId = CmmUtil.nvl(pDTO.userId());
         String contents = CmmUtil.nvl(pDTO.contents());
-        String nSeq = CmmUtil.nvl(String.valueOf(pDTO.noticeSeq()));
+        Long noticeSeq = pDTO.noticeSeq();
+        Long commentSeq = commentRepository.getNextCommentSeq(noticeSeq);
 
         log.info("pDTO userId : " + userId);
         log.info("pDTO contents : " + contents);
-        log.info("pDTO nSeq : " + nSeq);
+        log.info("pDTO noticeSeq : " + noticeSeq);
+        log.info("commentSeq : " + commentSeq);
 
         // 공지사항 저장을 위해서는 PK 값은 빌더에 추가하지 않는다.
         // JPA에 자동 증가 설정을 해놨음
@@ -194,6 +202,7 @@ public class NoticeJoinService implements INoticeJoinService {
                 .userId(userId)
                 .contents(contents)
                 .noticeSeq(pDTO.noticeSeq())
+                .commentSeq(commentSeq)
                 .regDt(DateUtil.getDateTime("yyyy-MM-dd hh:mm:ss"))
                 .build();
 

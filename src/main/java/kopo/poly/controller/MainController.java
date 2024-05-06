@@ -92,6 +92,12 @@ public class MainController {
         return "/alert2";
     }
 
+    @GetMapping("/index")
+    public String index() throws Exception {
+        log.info(this.getClass().getName() + ".index 함수 실행");
+        return "index";
+    }
+
     // 로딩 페이지
     @GetMapping("/redirect")
     public String intro() throws Exception {

@@ -1,18 +1,18 @@
 package kopo.poly.repository;
 
 import kopo.poly.repository.entity.CommentEntity;
-import kopo.poly.repository.entity.NoticeEntity;
+import kopo.poly.repository.entity.CommentKey;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-
-import javax.xml.stream.events.Comment;
-import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
-public interface CommentRepository extends JpaRepository<CommentEntity, Long> {
+public interface CommentRepository extends JpaRepository<CommentEntity, CommentKey> {
 
-
+    @Transactional(readOnly = true)
+    @Query(value = "SELECT COALESCE(MAX(COMMENT_SEQ), 0)+1 FROM NOTICE_COMMENT WHERE NOTICE_SEQ = ?1",
+            nativeQuery = true)
+    Long getNextCommentSeq(Long noticeSeq);
 
 }

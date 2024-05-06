@@ -199,7 +199,8 @@
                         dataType: "JSON",
                         data: {
                             "commentSeq": commentSeq,
-                            "userId": userId
+                            "userId": userId,
+                            "nSeq" : nSeq
                         },
                         success: function (json) {
                             alert(json.msg);
@@ -234,7 +235,7 @@
             }
 
             $.ajax({
-                    url: "/notice/commentInsert",
+                    url: "/notice/insertComment",
                     type: "post",
                     dataType: "JSON",
                     data: $("#f").serialize(),

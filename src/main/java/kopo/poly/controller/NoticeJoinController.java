@@ -6,12 +6,14 @@ import kopo.poly.dto.CommentDTO;
 import kopo.poly.dto.MsgDTO;
 import kopo.poly.dto.NoticeDTO;
 import kopo.poly.dto.NoticeImageDTO;
+import kopo.poly.repository.entity.CommentKey;
 import kopo.poly.service.INoticeJoinService;
 import kopo.poly.service.INoticeService;
 import kopo.poly.util.CmmUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -118,11 +120,14 @@ public class NoticeJoinController {
 
         try {
             String commentSeq = CmmUtil.nvl(request.getParameter("commentSeq"));
+            String nSeq = CmmUtil.nvl(request.getParameter("nSeq"));
 
             log.info("commentSeq : " + commentSeq);
+            log.info("nSeq : " + nSeq);
 
             CommentDTO pDTO = CommentDTO.builder()
                     .commentSeq(Long.parseLong(commentSeq))
+                    .noticeSeq(Long.parseLong(nSeq))
                     .build();
 
             noticeJoinService.deleteComment(pDTO);
@@ -144,61 +149,44 @@ public class NoticeJoinController {
 
         return dto;
     }
-
-
     @ResponseBody
-    @PostMapping(value = "commentInsert")
-    public MsgDTO commentInsert(HttpServletRequest request, HttpSession session) {
+    @Transactional
+    @PostMapping(value = "insertComment")
+    public MsgDTO insertComment(HttpServletRequest request, HttpSession session) {
 
-        log.info(this.getClass().getName() + ".commentInsert Start!");
-
-        String msg = ""; // 메시지 내용
-
-        MsgDTO dto = null; // 결과 메시지 구조
+        log.info(this.getClass().getName() + ".insertComment Start!");
+        String msg = "";
+        MsgDTO dto = null;
 
         try {
-            // 로그인된 사용자 아이디를 가져오기
-            // 로그인을 아직 구현하지 않았기에 공지사항 리스트에서 로그인 한 것처럼 Session 값을 저장함
             String userId = CmmUtil.nvl((String) session.getAttribute("SS_USER_ID"));
             String contents = CmmUtil.nvl(request.getParameter("contents")); // 내용
             String nSeq = CmmUtil.nvl(request.getParameter("nSeq")); // 글번호
 
-            /*
-             * ####################################################################################
-             * 반드시, 값을 받았으면, 꼭 로그를 찍어서 값이 제대로 들어오는지 파악해야함 반드시 작성할 것
-             * ####################################################################################
-             */
             log.info("session user_id : " + userId);
             log.info("contents : " + contents);
             log.info("nSeq : " + nSeq);
 
-            // 데이터 저장하기 위해 DTO에 저장하기
             CommentDTO pDTO = CommentDTO.builder()
+                    .noticeSeq(Long.valueOf(nSeq))
                     .userId(userId)
                     .contents(contents)
-                    .noticeSeq(Long.parseLong(nSeq))
                     .build();
 
-            /*
-             * 게시글 등록하기위한 비즈니스 로직을 호출
-             */
             noticeJoinService.insertComment(pDTO);
 
-            // 저장이 완료되면 사용자에게 보여줄 메시지
             msg = "등록되었습니다.";
 
         } catch (Exception e) {
 
-            // 저장이 실패되면 사용자에게 보여줄 메시지
             msg = "실패하였습니다. : " + e.getMessage();
             log.info(e.toString());
             e.printStackTrace();
 
         } finally {
-            // 결과 메시지 전달하기
             dto = MsgDTO.builder().msg(msg).build();
 
-            log.info(this.getClass().getName() + ".commentInsert End!");
+            log.info(this.getClass().getName() + ".insertComment End!");
         }
 
         return dto;
