@@ -1,5 +1,7 @@
 package kopo.poly.service;
 
+import kopo.poly.dto.BookmarkDTO;
+import kopo.poly.dto.UserFollowDTO;
 import kopo.poly.dto.UserInfoDTO;
 
 public interface IUserInfoService {
@@ -48,5 +50,14 @@ public interface IUserInfoService {
 
     // 프로필 사진 등록
     void profilePathProc(UserInfoDTO pDTO) throws Exception;
+
+    // 팔로우하기
+    void addFollower(UserFollowDTO pDTO) throws Exception;
+
+    // 팔로우 취소하기
+    void removeFollower(UserFollowDTO pDTO) throws Exception;
+
+    // 팔로우 여부 조회
+    boolean getFollowInfo(UserFollowDTO pDTO) throws Exception;
 
 }

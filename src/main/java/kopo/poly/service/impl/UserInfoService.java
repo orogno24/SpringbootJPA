@@ -2,9 +2,11 @@ package kopo.poly.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kopo.poly.dto.MailDTO;
+import kopo.poly.dto.UserFollowDTO;
 import kopo.poly.dto.UserInfoDTO;
+import kopo.poly.repository.UserFollowRepository;
 import kopo.poly.repository.UserInfoRepository;
-import kopo.poly.repository.entity.UserInfoEntity;
+import kopo.poly.repository.entity.*;
 import kopo.poly.service.IMailService;
 import kopo.poly.service.IUserInfoService;
 import kopo.poly.util.CmmUtil;
@@ -24,6 +26,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class UserInfoService implements IUserInfoService {
 
     private final UserInfoRepository userInfoRepository;
+    private final UserFollowRepository userFollowRepository;
 
     private final IMailService mailService;
 
@@ -356,6 +359,60 @@ public class UserInfoService implements IUserInfoService {
 
         log.info(this.getClass().getName() + "profilePathProc End!");
 
+    }
+
+    @Override
+    public void addFollower(UserFollowDTO pDTO) throws Exception {
+
+        log.info(this.getClass().getName() + ".addFollower Start!");
+
+        UserFollowEntity pEntity = UserFollowEntity.builder()
+                .followingId(pDTO.followingId()).followerId(pDTO.followerId())
+                .regDt(DateUtil.getDateTime("yyyy-MM-dd hh:mm:ss"))
+                .build();
+
+        log.info(this.getClass().getName() + ".addFollower End!");
+
+        userFollowRepository.save(pEntity);
+
+    }
+
+    @Override
+    public void removeFollower(UserFollowDTO pDTO) throws Exception {
+
+        log.info(this.getClass().getName() + ".removeFollower Start!");
+
+        String followingId = pDTO.followingId();
+        String followerId = pDTO.followerId();
+
+        log.info("followingId : " + followingId);
+        log.info("followerId : " + followerId);
+
+        FollowKey followKey = FollowKey.builder()
+                .followingId(followingId)
+                .followerId(followerId)
+                .build();
+
+        userFollowRepository.deleteById(followKey);
+
+        log.info(this.getClass().getName() + ".removeFollower End!");
+    }
+
+    @Override
+    public boolean getFollowInfo(UserFollowDTO pDTO) throws Exception {
+
+        log.info(this.getClass().getName() + ".getFollowInfo Start!");
+
+        String followingId = CmmUtil.nvl(pDTO.followingId());
+        String followerId = CmmUtil.nvl(pDTO.followerId());
+
+        boolean isFollowing = userFollowRepository.existsByFollowerIdAndFollowingId(followerId, followingId);
+
+        log.info("isFollowing : " + isFollowing);
+
+        log.info(this.getClass().getName() + ".getFollowInfo End!");
+
+        return isFollowing;
     }
 
 }

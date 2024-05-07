@@ -310,7 +310,6 @@ public class EventController {
 
         log.info(this.getClass().getName() + ".addBookmark Start!");
 
-
         MsgDTO dto = null;
         String msg = "";
 

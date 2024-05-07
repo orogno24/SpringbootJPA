@@ -3,6 +3,7 @@ package kopo.poly.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import kopo.poly.dto.MsgDTO;
+import kopo.poly.dto.UserFollowDTO;
 import kopo.poly.dto.UserInfoDTO;
 import kopo.poly.service.IUserInfoService;
 import kopo.poly.util.CmmUtil;
@@ -231,11 +232,18 @@ public class UserInfoController {
     public String userProfile(HttpServletRequest request, HttpSession session, ModelMap model) throws Exception {
         log.info(this.getClass().getName() + ".user/userProfile Start!");
 
-        String userId = CmmUtil.nvl(request.getParameter("nSeq"), "");
+        String profileId = CmmUtil.nvl(request.getParameter("nSeq"), "");
+        String userId = (String) session.getAttribute("SS_USER_ID");
 
-        UserInfoDTO dto = userInfoService.getUserInfo(userId);
+        UserInfoDTO dto = userInfoService.getUserInfo(profileId);
+
+        UserFollowDTO pDTO = UserFollowDTO.builder().followingId(profileId).followerId(userId).build();
+
+        boolean followStatus = userInfoService.getFollowInfo(pDTO);
+        String existsYn = followStatus ? "Y" : "N";
 
         model.addAttribute("dto", dto);
+        model.addAttribute("existsYn", existsYn);
 
         log.info(this.getClass().getName() + ".user/userProfile End!");
 
@@ -264,6 +272,91 @@ public class UserInfoController {
         log.info(this.getClass().getName() + ".user/userProfileEdit End!");
 
         return "user/userProfileEdit";
+    }
+
+    /**
+     * 팔로우 추가
+     */
+    @ResponseBody
+    @PostMapping(value = "addFollow")
+    public MsgDTO addFollow(HttpServletRequest request, HttpSession session, ModelMap model) throws Exception {
+
+        log.info(this.getClass().getName() + ".user/addFollow Start!");
+
+        MsgDTO dto = null;
+        String msg = "";
+
+        try {
+
+            String followUserId = CmmUtil.nvl(request.getParameter("followUserId"));
+            String userId = (String) session.getAttribute("SS_USER_ID");
+
+            log.info("followUserId : " + followUserId);
+            log.info("userId : " + userId);
+
+            UserFollowDTO pDTO = UserFollowDTO.builder().followingId(followUserId).followerId(userId).build();
+
+            userInfoService.addFollower(pDTO);
+
+            msg = "팔로우 추가 완료!";
+
+        } catch (Exception e) {
+
+            msg = "실패하였습니다. : " + e.getMessage();
+            log.info(e.toString());
+            e.printStackTrace();
+
+        } finally {
+
+            dto = MsgDTO.builder().msg(msg).build();
+
+            log.info(this.getClass().getName() + ".user/addFollow End!");
+
+        }
+
+        return dto;
+
+    }
+
+    /**
+     * 팔로우 제거
+     */
+    @ResponseBody
+    @PostMapping(value = "removeFollow")
+    public MsgDTO removeFollow(HttpServletRequest request, HttpSession session) {
+
+        log.info(this.getClass().getName() + ".removeFollow Start!");
+
+        String msg = ""; // 메시지 내용
+        MsgDTO dto = null; // 결과 메시지 구조
+
+        try {
+            String followUserId = CmmUtil.nvl(request.getParameter("followUserId"));
+            String userId = (String) session.getAttribute("SS_USER_ID");
+
+            log.info("followUserId : " + followUserId);
+            log.info("userId : " + userId);
+
+            UserFollowDTO pDTO = UserFollowDTO.builder().followingId(followUserId).followerId(userId).build();
+
+            userInfoService.removeFollower(pDTO);
+
+            msg = "삭제되었습니다.";
+
+        } catch (Exception e) {
+            msg = "실패하였습니다. : " + e.getMessage();
+            log.info(e.toString());
+            e.printStackTrace();
+
+        } finally {
+            // 결과 메시지 전달하기
+            dto = MsgDTO.builder().msg(msg).build();
+
+            log.info(this.getClass().getName() + ".removeFollow End!");
+
+        }
+
+        return dto;
     }
 
     @GetMapping(value = "searchUserId")         // 아이디 찾기
@@ -375,7 +468,7 @@ public class UserInfoController {
     }
 
     @GetMapping(value = "changeUserName")
-    public String changeUserName() throws Exception{
+    public String changeUserName() throws Exception {
         log.info(this.getClass().getName() + ".changeUserName Start!");
 
         return "user/changeUserName";
@@ -391,11 +484,11 @@ public class UserInfoController {
         String msg = "";
 
         try {
-            String userId = (String)session.getAttribute("SS_USER_ID");
+            String userId = (String) session.getAttribute("SS_USER_ID");
             String userName = request.getParameter("userName");
             log.info("userId : " + userId);
             log.info("userName : " + userName);
-            UserInfoDTO pDTO =  UserInfoDTO.builder()
+            UserInfoDTO pDTO = UserInfoDTO.builder()
                     .userId(userId)
                     .userName(userName)
                     .build();

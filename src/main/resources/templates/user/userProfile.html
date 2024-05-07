@@ -167,6 +167,8 @@
         // HTML 로딩이 완료되고, 실행됨
         $(document).ready(function () {
 
+            updateBookmarkButton();
+
             var rawDate = /*[[${dto.regDt}]]*/ 'defaultDate';
             console.log("rawDate : " + rawDate);
 
@@ -185,28 +187,83 @@
 
             if (ss_user_id === user_id) {
                 // 조건이 충족되면 프로필 수정 버튼을 그대로 놔둠
-                $("#btn2").show();
+                $("#editBtn").show();
             } else {
                 // 조건이 충족되지 않으면 프로필 수정 버튼을 숨기고 팔로우 버튼 표시
-                $("#btn2").hide(); // 기존 프로필 수정 버튼 숨기기
-                // 팔로우 버튼 생성 및 추가
-                $('<button class="button" id="followBtn">팔로우하기</button>').appendTo('.buttons');
+                $("#editBtn").hide(); // 기존 프로필 수정 버튼 숨기기
             }
 
             $("#btn1").on("click", function () {
                 location.href = "/event/eventCalendarList";
             })
 
-            $("#btn2").on("click", function () {
+            $("#editBtn").on("click", function () {
                 location.href = "/user/userProfileEdit";
             })
 
             $(document).on('click', '#followBtn', function() {
                 console.log('Follow button clicked');
-                // 팔로우 로직 추가
+
+                $.ajax({
+                    type: "POST",
+                    url: "/user/addFollow", // 서버의 북마크 추가 엔드포인트
+                    dataType: "JSON",
+                    data: {
+                        followUserId: user_id // 현재 페이지의 문화행사 번호
+                    },
+                    success: function(json) {
+                        $("#editBtn").hide();
+                        $('#followBtn').remove();
+                        $('<button class="button" id="removeBtn">팔로우 취소</button>').appendTo('.buttons');
+                        $("#removeBtn").show();
+                        alert(json.msg);
+                    },
+                    error: function(xhr, status, error) {
+                        // 요청 처리 중 오류가 발생하면 실행
+                        alert("오류 발생: " + error);
+                    }
+                });
+            });
+
+            $(document).on('click', '#removeBtn', function() {
+                console.log('Follow button clicked');
+
+                $.ajax({
+                    type: "POST",
+                    url: "/user/removeFollow",
+                    dataType: "JSON",
+                    data: {
+                        followUserId: user_id // 현재 페이지의 문화행사 번호
+                    },
+                    success: function(json) {
+                        $("#editBtn").hide();
+                        $('<button class="button" id="followBtn">팔로우하기</button>').appendTo('.buttons');
+                        $("#removeBtn").remove();
+                        alert(json.msg);
+                    },
+                    error: function(xhr, status, error) {
+                        // 요청 처리 중 오류가 발생하면 실행
+                        alert("오류 발생: " + error);
+                    }
+                });
             });
 
         })
+
+        function updateBookmarkButton() {
+            var existsYn = /*[[${existsYn}]]*/ 'N';
+            if (existsYn === 'Y') {
+                $("#editBtn").hide();
+                $('#followBtn').remove();
+                $("#removeBtn").show();
+            } else {
+                $("#editBtn").show();
+                if (ss_user_id !== user_id) {
+                    $('<button class="button" id="followBtn">팔로우하기</button>').appendTo('.buttons');
+                }
+                $("#removeBtn").hide();
+            }
+        }
         /*]]>*/
     </script>
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet"/>
@@ -237,7 +294,8 @@
         <div class="media-button"></div>
         <div class="buttons">
             <button class="button" id="btn1">북마크한 문화행사</button>
-            <button class="button" id="btn2">프로필 수정</button>
+            <button class="button" id="editBtn">프로필 수정</button>
+            <button class="button" id="removeBtn">팔로우 취소</button>
         </div>
         <div class="data">
             <div class="data2">
