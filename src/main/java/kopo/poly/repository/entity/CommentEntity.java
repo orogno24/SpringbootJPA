@@ -14,8 +14,8 @@ import org.hibernate.annotations.DynamicUpdate;
 @Builder
 //@Cacheable
 @Data
-@IdClass(CommentKey.class)
 @Entity
+@IdClass(CommentKey.class)
 public class CommentEntity {
 
     @Id

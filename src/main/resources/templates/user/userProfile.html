@@ -164,6 +164,22 @@
 
         });
 
+        function goToUserProfile2() {
+
+            var userId = document.getElementById('userId').value;
+
+            window.location.href = "/user/followList?nSeq=" + userId;
+
+        }
+
+        function goToUserProfile3() {
+
+            var userId = document.getElementById('userId').value;
+
+            window.location.href = "/user/followingList?nSeq=" + userId;
+
+        }
+
         // HTML 로딩이 완료되고, 실행됨
         $(document).ready(function () {
 
@@ -206,43 +222,38 @@
 
                 $.ajax({
                     type: "POST",
-                    url: "/user/addFollow", // 서버의 북마크 추가 엔드포인트
+                    url: "/user/addFollow",
                     dataType: "JSON",
                     data: {
-                        followUserId: user_id // 현재 페이지의 문화행사 번호
+                        followUserId: user_id
                     },
                     success: function(json) {
                         $("#editBtn").hide();
-                        $('#followBtn').remove();
-                        $('<button class="button" id="removeBtn">팔로우 취소</button>').appendTo('.buttons');
-                        $("#removeBtn").show();
+                        $('#followBtn').replaceWith('<button class="button" id="removeBtn">팔로우 취소</button>');
                         alert(json.msg);
                     },
                     error: function(xhr, status, error) {
-                        // 요청 처리 중 오류가 발생하면 실행
                         alert("오류 발생: " + error);
                     }
                 });
             });
 
             $(document).on('click', '#removeBtn', function() {
-                console.log('Follow button clicked');
+                console.log('Unfollow button clicked');
 
                 $.ajax({
                     type: "POST",
                     url: "/user/removeFollow",
                     dataType: "JSON",
                     data: {
-                        followUserId: user_id // 현재 페이지의 문화행사 번호
+                        followUserId: user_id
                     },
                     success: function(json) {
                         $("#editBtn").hide();
-                        $('<button class="button" id="followBtn">팔로우하기</button>').appendTo('.buttons');
-                        $("#removeBtn").remove();
+                        $('#removeBtn').replaceWith('<button class="button" id="followBtn">팔로우하기</button>');
                         alert(json.msg);
                     },
                     error: function(xhr, status, error) {
-                        // 요청 처리 중 오류가 발생하면 실행
                         alert("오류 발생: " + error);
                     }
                 });
@@ -264,6 +275,7 @@
                 $("#removeBtn").hide();
             }
         }
+
         /*]]>*/
     </script>
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet"/>
@@ -288,6 +300,7 @@
                  class="profile-img"/>
         </div>
         <div class="text-data">
+            <input type="hidden" id="userId" th:value="${dto.userId}" />
             <span class="name" style="font-weight: bolder" th:text="${dto.userName}"></span>
             <span class="Job" id="regDate" style="color:#525252;"></span>
         </div>
@@ -300,11 +313,11 @@
         <div class="data">
             <div class="data2">
                 <i class="bx bx-heart"></i>
-                <span class="number">팔로워 10</span>
+                <span class="number" onclick="goToUserProfile2()">팔로워 10</span>
             </div>
             <div class="data2">
                 <i class="bx bx-share"></i>
-                <span class="number">팔로우 20</span>
+                <span class="number" onclick="goToUserProfile3()">팔로우 20</span>
             </div>
             <div class="data2">
                 <i class="bx bx-message-rounded"></i>

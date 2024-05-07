@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="/css/header.css"/>
+  <title>팔로우 목록</title>
+  <style>
+    @font-face {
+      font-family: 'NIXGONM-Vb';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/NIXGONM-Vb.woff') format('woff');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    body {
+      background-color: #d7f9ff;
+    }
+
+    * {
+      font-family: 'NIXGONM-Vb';
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    h1 {
+      color: #333;
+      text-align: center;
+    }
+    .list-container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #fff; /* 흰색 배경색 추가 */
+      border-radius: 10px; /* 테두리를 살짝 둥글게 */
+      padding: 20px; /* 내부 여백 추가 */
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* 그림자 효과 추가 */
+    }
+    .divTableRow {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid #ccc;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .divTableRow:hover {
+      background-color: #f0f0f0;
+    }
+    .profile-image {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      margin-right: 20px;
+    }
+    .divTableCell {
+      flex: 1;
+    }
+  </style>
+
+  <script>
+    function doDetail(followingId) {
+      window.location.href = "/user/userProfile?nSeq=" + followingId;
+    }
+  </script>
+</head>
+
+<body>
+<div class="header" style="padding: 0 16px;">
+  <a href="/main" class="logo">
+    <img src="/assets/img/logo3.png" alt="Main Logo">
+  </a>
+  <ul class="nav" id="top-navigation">
+    <li><a href="/main">메인 페이지</a></li>
+    <li><a href="/event/apiSearch">문화행사 찾기</a></li>
+    <li><a href="/culture/v1/cultureMap">문화시설 찾기</a></li>
+    <li><a href="/notice/noticeListUsingNativeQuery">커뮤니티</a></li>
+  </ul>
+</div>
+
+<h2 style="text-align: center; color:#333333; margin-top: 50px; margin-bottom: 30px">팔로우 목록</h2>
+
+<div class="list-container">
+  <div th:each="dto: ${rList}" class="divTableRow" th:onclick="doDetail([[${dto.followingId}]])">
+    <img th:src="${dto.profilePath}" alt="프로필 이미지" class="profile-image">
+    <div class="divTableCell" style="font-weight: bolder" th:text="${dto.userName}"></div>
+    <div class="divTableCell" style="color: #5d5d5d" th:text="|팔로우 날짜 : ${dto.regDt}|"></div>
+  </div>
+</div>
+
+</body>
+</html>

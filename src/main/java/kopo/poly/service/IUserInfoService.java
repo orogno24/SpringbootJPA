@@ -4,6 +4,8 @@ import kopo.poly.dto.BookmarkDTO;
 import kopo.poly.dto.UserFollowDTO;
 import kopo.poly.dto.UserInfoDTO;
 
+import java.util.List;
+
 public interface IUserInfoService {
 
     /**
@@ -59,5 +61,11 @@ public interface IUserInfoService {
 
     // 팔로우 여부 조회
     boolean getFollowInfo(UserFollowDTO pDTO) throws Exception;
+
+    // 팔로우 리스트 조회
+    List<UserFollowDTO> getFollowList(String userId) throws Exception;
+
+    // 팔로잉 리스트 조회
+    List<UserFollowDTO> getFollowingList(String userId) throws Exception;
 
 }

@@ -1,9 +1,9 @@
 package kopo.poly.service.impl;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kopo.poly.dto.MailDTO;
-import kopo.poly.dto.UserFollowDTO;
-import kopo.poly.dto.UserInfoDTO;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import kopo.poly.dto.*;
 import kopo.poly.repository.UserFollowRepository;
 import kopo.poly.repository.UserInfoRepository;
 import kopo.poly.repository.entity.*;
@@ -17,8 +17,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -29,6 +30,7 @@ public class UserInfoService implements IUserInfoService {
     private final UserFollowRepository userFollowRepository;
 
     private final IMailService mailService;
+    private final JPAQueryFactory queryFactory;
 
     @Override
     public UserInfoDTO getUserIdExists(UserInfoDTO pDTO) throws Exception {
@@ -367,8 +369,9 @@ public class UserInfoService implements IUserInfoService {
         log.info(this.getClass().getName() + ".addFollower Start!");
 
         UserFollowEntity pEntity = UserFollowEntity.builder()
-                .followingId(pDTO.followingId()).followerId(pDTO.followerId())
-                .regDt(DateUtil.getDateTime("yyyy-MM-dd hh:mm:ss"))
+                .followingId(pDTO.followingId())
+                .followerId(pDTO.followerId())
+                .regDt(DateUtil.getDateTime("yyyy-MM-dd hh:mm:ss").substring(0, 10))
                 .build();
 
         log.info(this.getClass().getName() + ".addFollower End!");
@@ -413,6 +416,90 @@ public class UserInfoService implements IUserInfoService {
         log.info(this.getClass().getName() + ".getFollowInfo End!");
 
         return isFollowing;
+    }
+
+    @Override
+    public List<UserFollowDTO> getFollowList(String userId) throws Exception {
+
+        log.info(this.getClass().getName() + ".getFollowList Start!");
+
+        QUserFollowEntity ufe = QUserFollowEntity.userFollowEntity;
+        QUserInfoEntity ue = QUserInfoEntity.userInfoEntity;
+
+        List<String> followingIds = userFollowRepository.findByFollowerId(userId)
+                .stream()
+                .map(UserFollowEntity::getFollowingId)
+                .collect(Collectors.toList());
+
+        log.info("followingIds : " + followingIds);
+
+        List<UserFollowEntity> rList = queryFactory
+                .selectFrom(ufe) // 조회할 Entity 및 항목 정의
+                .join(ufe.userInfoFollowing, ue) // Inner Join 적용
+                .where(ue.userId.in(followingIds)) // followingIds에 있는 userId들을 검색
+                .distinct()
+                .fetch(); // 결과를 리스트 구조로 반환하기
+
+        Set<UserFollowDTO> set  = new HashSet<>();
+        rList.forEach(e -> {
+            UserFollowDTO rDTO = UserFollowDTO.builder()
+                    .followingId(e.getFollowingId())
+                    .regDt(e.getRegDt())
+                    .userId(e.getUserInfoFollowing().getUserId())
+                    .userName(e.getUserInfoFollowing().getUserName())
+                    .profilePath(e.getUserInfoFollowing().getProfilePath())
+                    .build();
+            set.add(rDTO);
+        });
+
+        List<UserFollowDTO> nList = new ArrayList<>(set);
+
+        log.info(this.getClass().getName() + ".getFollowList End!");
+
+        return nList;
+    }
+
+    @Override
+    public List<UserFollowDTO> getFollowingList(String userId) throws Exception {
+
+        log.info(this.getClass().getName() + ".getFollowingList Start!");
+
+        QUserFollowEntity ufe = QUserFollowEntity.userFollowEntity;
+        QUserInfoEntity ue = QUserInfoEntity.userInfoEntity;
+
+        List<UserFollowEntity> pList = userFollowRepository.findByFollowingId(userId);
+
+        // pList에서 followingId만 추출하여 리스트 생성
+        List<String> followerIds = pList.stream()
+                .map(UserFollowEntity::getFollowerId)
+                .collect(Collectors.toList());
+
+        log.info("followerIds : " + followerIds);
+
+        List<UserFollowEntity> rList = queryFactory
+                .selectFrom(ufe) // 조회할 Entity 및 항목 정의
+                .join(ufe.userInfoFollower, ue) // Inner Join 적용
+                .where(ue.userId.in(followerIds)) // followingIds에 있는 userId들을 검색
+                .fetch(); // 결과를 리스트 구조로 반환하기
+
+        Set<UserFollowDTO> set  = new HashSet<>();
+        rList.forEach(e -> {
+            UserFollowDTO rDTO = UserFollowDTO.builder()
+                    .followerId(e.getFollowerId())
+                    .regDt(e.getRegDt())
+                    .userId(e.getUserInfoFollower().getUserId())
+                    .userName(e.getUserInfoFollower().getUserName())
+                    .profilePath(e.getUserInfoFollower().getProfilePath())
+                    .build();
+            set.add(rDTO);
+        });
+
+        List<UserFollowDTO> nList = new ArrayList<>(set);
+
+        log.info(this.getClass().getName() + ".getFollowingList End!");
+
+        return nList;
+
     }
 
 }

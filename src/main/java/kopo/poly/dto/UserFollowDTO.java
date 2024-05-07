@@ -8,7 +8,10 @@ import java.time.LocalDateTime;
 public record UserFollowDTO(
         String followerId,
         String followingId,
-        LocalDateTime regDt
+        String regDt,
+        String userId,
+        String userName,
+        String profilePath
 
 ) {
 

@@ -2,9 +2,8 @@ package kopo.poly.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import kopo.poly.dto.MsgDTO;
-import kopo.poly.dto.UserFollowDTO;
-import kopo.poly.dto.UserInfoDTO;
+import jakarta.transaction.Transactional;
+import kopo.poly.dto.*;
 import kopo.poly.service.IUserInfoService;
 import kopo.poly.util.CmmUtil;
 import kopo.poly.util.EncryptUtil;
@@ -17,8 +16,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequestMapping(value = "/user")
@@ -556,4 +558,49 @@ public class UserInfoController {
 
         return dto;
     }
+
+    @Transactional
+    @GetMapping(value = "followList")
+    public String followList(HttpServletRequest request, ModelMap model)
+            throws Exception {
+
+        log.info(this.getClass().getName() + ".followList Start!");
+
+        String userId = CmmUtil.nvl(request.getParameter("nSeq"), "");
+        log.info("userId : " + userId);
+
+        List<UserFollowDTO> rList = Optional.ofNullable(userInfoService.getFollowList(userId))
+                .orElseGet(ArrayList::new);
+
+        log.info("rList : " + rList);
+
+        model.addAttribute("rList", rList);
+
+        log.info(this.getClass().getName() + ".followList End!");
+
+        return "user/followList";
+    }
+
+    @Transactional
+    @GetMapping(value = "followingList")
+    public String followingList(HttpServletRequest request, ModelMap model)
+            throws Exception {
+
+        log.info(this.getClass().getName() + ".followingList Start!");
+
+        String userId = CmmUtil.nvl(request.getParameter("nSeq"), "");
+        log.info("userId : " + userId);
+
+        List<UserFollowDTO> rList = Optional.ofNullable(userInfoService.getFollowingList(userId))
+                .orElseGet(ArrayList::new);
+
+        log.info("rList : " + rList);
+
+        model.addAttribute("rList", rList);
+
+        log.info(this.getClass().getName() + ".followingList End!");
+
+        return "user/followingList";
+    }
+
 }

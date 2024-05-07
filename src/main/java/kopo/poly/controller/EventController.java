@@ -392,6 +392,4 @@ public class EventController {
 
         return dto;
     }
-
-
 }

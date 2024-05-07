@@ -14,7 +14,7 @@ import java.io.Serializable;
 @DynamicInsert // 값이 NULL이 아닌것만 INSERT함
 @DynamicUpdate // 값이 NULL이 아닌것만 UPDATE함
 @Builder
-@Cacheable
+//@Cacheable
 @Entity
 @Data
 @IdClass(FollowKey.class)
@@ -28,8 +28,17 @@ public class UserFollowEntity implements Serializable {
     @Column(name = "following_id")
     private String followingId;
 
-    @Column(name = "reg_dt", nullable = false)
+    @Column(name = "reg_dt")
     private String regDt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "following_id", insertable = false, updatable = false)
+    private UserInfoEntity userInfoFollowing;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "follower_id", insertable = false, updatable = false)
+    private UserInfoEntity userInfoFollower;
+
 
 
 }
