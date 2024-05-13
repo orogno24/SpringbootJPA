@@ -11,10 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -230,20 +227,24 @@ public class UserInfoController {
     /**
      * 유저 프로필
      */
-    @GetMapping(value = "userProfile")
-    public String userProfile(HttpServletRequest request, HttpSession session, ModelMap model) throws Exception {
+    @GetMapping(value = "userProfile/{profileId}")  // URL 경로 변경
+    public String userProfile(@PathVariable("profileId") String profileId, HttpSession session, ModelMap model) throws Exception {
         log.info(this.getClass().getName() + ".user/userProfile Start!");
 
-        String profileId = CmmUtil.nvl(request.getParameter("nSeq"), "");
+        // 세션에서 로그인한 사용자의 ID를 가져옵니다.
         String userId = (String) session.getAttribute("SS_USER_ID");
 
+        // URL에서 받은 profileId를 사용하여 사용자 정보를 가져옵니다.
         UserInfoDTO dto = userInfoService.getUserInfo(profileId);
 
+        // 팔로우 상태를 확인하기 위한 DTO 생성
         UserFollowDTO pDTO = UserFollowDTO.builder().followingId(profileId).followerId(userId).build();
 
+        // 팔로우 상태 확인
         boolean followStatus = userInfoService.getFollowInfo(pDTO);
         String existsYn = followStatus ? "Y" : "N";
 
+        // 모델에 사용자 정보와 팔로우 상태를 추가
         model.addAttribute("dto", dto);
         model.addAttribute("existsYn", existsYn);
 
@@ -251,6 +252,7 @@ public class UserInfoController {
 
         return "user/userProfile";
     }
+
 
     /**
      * 유저 프로필 설정
@@ -560,16 +562,13 @@ public class UserInfoController {
     }
 
     @Transactional
-    @GetMapping(value = "followList")
-    public String followList(HttpServletRequest request, ModelMap model)
+    @GetMapping(value = "followList/{profileId}")
+    public String followList(@PathVariable("profileId") String profileId, ModelMap model)
             throws Exception {
 
         log.info(this.getClass().getName() + ".followList Start!");
 
-        String userId = CmmUtil.nvl(request.getParameter("nSeq"), "");
-        log.info("userId : " + userId);
-
-        List<UserFollowDTO> rList = Optional.ofNullable(userInfoService.getFollowList(userId))
+        List<UserFollowDTO> rList = Optional.ofNullable(userInfoService.getFollowList(profileId))
                 .orElseGet(ArrayList::new);
 
         log.info("rList : " + rList);
@@ -582,16 +581,13 @@ public class UserInfoController {
     }
 
     @Transactional
-    @GetMapping(value = "followingList")
-    public String followingList(HttpServletRequest request, ModelMap model)
+    @GetMapping(value = "followingList/{profileId}")
+    public String followingList(@PathVariable("profileId") String profileId, ModelMap model)
             throws Exception {
 
         log.info(this.getClass().getName() + ".followingList Start!");
 
-        String userId = CmmUtil.nvl(request.getParameter("nSeq"), "");
-        log.info("userId : " + userId);
-
-        List<UserFollowDTO> rList = Optional.ofNullable(userInfoService.getFollowingList(userId))
+        List<UserFollowDTO> rList = Optional.ofNullable(userInfoService.getFollowingList(profileId))
                 .orElseGet(ArrayList::new);
 
         log.info("rList : " + rList);

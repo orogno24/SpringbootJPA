@@ -148,14 +148,14 @@
         const nSeq = [[${rDTO.noticeSeq}]];
 
         function goToUserProfile() {
-            window.location.href = "/user/userProfile?nSeq=" + user_id;
+            window.location.href = "/user/userProfile/" + user_id;
         }
 
         function goToUserProfile2() {
 
             var userId = document.getElementById('userId').value;
 
-            window.location.href = "/user/userProfile?nSeq=" + userId;
+            window.location.href = "/user/userProfile/" + userId;
 
         }
 

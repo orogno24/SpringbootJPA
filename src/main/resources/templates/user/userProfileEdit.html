@@ -4,6 +4,8 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <script type="text/javascript" src="/js/jquery-3.6.0.min.js"></script>
+    <link rel="icon" href="/assets/img/logo.png" type="image/x-icon">
+    <link rel="shortcut icon" href="/assets/img/logo.png" type="image/x-icon">
     <script th:inline="javascript">
         /*<![CDATA[*/
 
@@ -37,7 +39,7 @@
                 processData: false, // 필수: processData를 false로 설정
                 success: function (response) {
                     alert(response);
-                    location.href = "/user/userProfile?nSeq=" + user_id;
+                    location.href = "/user/userProfile/" + user_id;
                     if (file) {
                         previewProfileImage(fileInput); // 파일이 선택되었다면 미리보기 갱신
                     }

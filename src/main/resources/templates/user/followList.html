@@ -4,6 +4,8 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <link rel="stylesheet" href="/css/header.css"/>
+  <link rel="icon" href="/assets/img/logo.png" type="image/x-icon">
+  <link rel="shortcut icon" href="/assets/img/logo.png" type="image/x-icon">
   <title>팔로우 목록</title>
   <style>
     @font-face {
@@ -60,7 +62,7 @@
 
   <script>
     function doDetail(followingId) {
-      window.location.href = "/user/userProfile?nSeq=" + followingId;
+      window.location.href = "/user/userProfile/" + followingId;
     }
   </script>
 </head>
