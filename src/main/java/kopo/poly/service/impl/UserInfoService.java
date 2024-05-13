@@ -2,6 +2,8 @@ package kopo.poly.service.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import kopo.poly.dto.*;
 import kopo.poly.repository.UserFollowRepository;
@@ -433,12 +435,19 @@ public class UserInfoService implements IUserInfoService {
 
         log.info("followingIds : " + followingIds);
 
-        List<UserFollowEntity> rList = queryFactory
-                .selectFrom(ufe) // 조회할 Entity 및 항목 정의
-                .join(ufe.userInfoFollowing, ue) // Inner Join 적용
-                .where(ue.userId.in(followingIds)) // followingIds에 있는 userId들을 검색
-                .distinct()
-                .fetch(); // 결과를 리스트 구조로 반환하기
+        JPAQuery<UserFollowEntity> query = queryFactory
+                .selectFrom(ufe)
+                .join(ufe.userInfoFollowing, ue)
+                .where(ue.userId.in(followingIds))
+                .groupBy(ue.userId)
+                .having(ufe.regDt.eq(
+                        JPAExpressions
+                                .select(ufe.regDt.max())
+                                .from(ufe)
+                                .where(ufe.userInfoFollowing.userId.eq(ue.userId))
+                ));
+
+        List<UserFollowEntity> rList = query.fetch();
 
         Set<UserFollowDTO> set  = new HashSet<>();
         rList.forEach(e -> {
@@ -451,6 +460,7 @@ public class UserInfoService implements IUserInfoService {
                     .build();
             set.add(rDTO);
         });
+
 
         List<UserFollowDTO> nList = new ArrayList<>(set);
 
@@ -467,20 +477,28 @@ public class UserInfoService implements IUserInfoService {
         QUserFollowEntity ufe = QUserFollowEntity.userFollowEntity;
         QUserInfoEntity ue = QUserInfoEntity.userInfoEntity;
 
-        List<UserFollowEntity> pList = userFollowRepository.findByFollowingId(userId);
-
-        // pList에서 followingId만 추출하여 리스트 생성
-        List<String> followerIds = pList.stream()
+        List<String> followerIds = userFollowRepository.findByFollowingId(userId)
+                .stream()
                 .map(UserFollowEntity::getFollowerId)
                 .collect(Collectors.toList());
 
         log.info("followerIds : " + followerIds);
 
-        List<UserFollowEntity> rList = queryFactory
-                .selectFrom(ufe) // 조회할 Entity 및 항목 정의
-                .join(ufe.userInfoFollower, ue) // Inner Join 적용
-                .where(ue.userId.in(followerIds)) // followingIds에 있는 userId들을 검색
-                .fetch(); // 결과를 리스트 구조로 반환하기
+        JPAQuery<UserFollowEntity> query = queryFactory
+                .selectFrom(ufe)
+                .join(ufe.userInfoFollower, ue)
+                .where(ue.userId.in(followerIds))
+                .groupBy(ue.userId)
+                .having(ufe.regDt.eq(
+                        JPAExpressions
+                                .select(ufe.regDt.max())
+                                .from(ufe)
+                                .where(ufe.userInfoFollower.userId.eq(ue.userId))
+                ));
+
+        List<UserFollowEntity> rList = query.fetch();
+
+        log.info("rList : " + rList);
 
         Set<UserFollowDTO> set  = new HashSet<>();
         rList.forEach(e -> {
@@ -495,6 +513,8 @@ public class UserInfoService implements IUserInfoService {
         });
 
         List<UserFollowDTO> nList = new ArrayList<>(set);
+
+        log.info("nList : " + nList);
 
         log.info(this.getClass().getName() + ".getFollowingList End!");
 
