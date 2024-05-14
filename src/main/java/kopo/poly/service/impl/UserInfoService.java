@@ -425,8 +425,8 @@ public class UserInfoService implements IUserInfoService {
 
         log.info(this.getClass().getName() + ".getFollowList Start!");
 
-        QUserFollowEntity ufe = QUserFollowEntity.userFollowEntity;
-        QUserInfoEntity ue = QUserInfoEntity.userInfoEntity;
+        // 현재 사용자가 팔로우하는 사용자 ID 리스트를 가져옵니다.
+        List<UserFollowEntity> userFollows = userFollowRepository.findByFollowerId(userId);
 
         List<String> followingIds = userFollowRepository.findByFollowerId(userId)
                 .stream()
@@ -435,34 +435,19 @@ public class UserInfoService implements IUserInfoService {
 
         log.info("followingIds : " + followingIds);
 
-        JPAQuery<UserFollowEntity> query = queryFactory
-                .selectFrom(ufe)
-                .join(ufe.userInfoFollowing, ue)
-                .where(ue.userId.in(followingIds))
-                .groupBy(ue.userId)
-                .having(ufe.regDt.eq(
-                        JPAExpressions
-                                .select(ufe.regDt.max())
-                                .from(ufe)
-                                .where(ufe.userInfoFollowing.userId.eq(ue.userId))
-                ));
-
-        List<UserFollowEntity> rList = query.fetch();
-
-        Set<UserFollowDTO> set  = new HashSet<>();
-        rList.forEach(e -> {
-            UserFollowDTO rDTO = UserFollowDTO.builder()
-                    .followingId(e.getFollowingId())
-                    .regDt(e.getRegDt())
-                    .userId(e.getUserInfoFollowing().getUserId())
-                    .userName(e.getUserInfoFollowing().getUserName())
-                    .profilePath(e.getUserInfoFollowing().getProfilePath())
-                    .build();
-            set.add(rDTO);
-        });
-
-
-        List<UserFollowDTO> nList = new ArrayList<>(set);
+        List<UserFollowDTO> nList = userFollows.stream()
+                .filter(e -> followingIds.contains(e.getFollowingId())) // 팔로잉 목록에 포함된 ID만 필터링
+                .map(e -> {
+                    UserFollowDTO rDTO = UserFollowDTO.builder()
+                            .followingId(e.getFollowingId())
+                            .regDt(e.getRegDt())
+                            .userId(e.getUserInfoFollowing().getUserId())
+                            .userName(e.getUserInfoFollowing().getUserName())
+                            .profilePath(e.getUserInfoFollowing().getProfilePath())
+                            .build();
+                    return rDTO;
+                }).distinct() // 중복 제거
+                .collect(Collectors.toList());
 
         log.info(this.getClass().getName() + ".getFollowList End!");
 
@@ -474,47 +459,20 @@ public class UserInfoService implements IUserInfoService {
 
         log.info(this.getClass().getName() + ".getFollowingList Start!");
 
-        QUserFollowEntity ufe = QUserFollowEntity.userFollowEntity;
-        QUserInfoEntity ue = QUserInfoEntity.userInfoEntity;
+        // 현재 사용자가 팔로워인 모든 사용자의 팔로우 엔티티를 가져옵니다.
+        List<UserFollowEntity> userFollows = userFollowRepository.findByFollowingId(userId);
 
-        List<String> followerIds = userFollowRepository.findByFollowingId(userId)
-                .stream()
-                .map(UserFollowEntity::getFollowerId)
+        // 스트림을 사용하여 팔로워 정보를 UserFollowDTO로 변환합니다.
+        List<UserFollowDTO> nList = userFollows.stream()
+                .map(e -> UserFollowDTO.builder()
+                        .followerId(e.getFollowerId())
+                        .regDt(e.getRegDt())
+                        .userId(e.getUserInfoFollower().getUserId())
+                        .userName(e.getUserInfoFollower().getUserName())
+                        .profilePath(e.getUserInfoFollower().getProfilePath())
+                        .build())
+                .distinct() // 중복 제거
                 .collect(Collectors.toList());
-
-        log.info("followerIds : " + followerIds);
-
-        JPAQuery<UserFollowEntity> query = queryFactory
-                .selectFrom(ufe)
-                .join(ufe.userInfoFollower, ue)
-                .where(ue.userId.in(followerIds))
-                .groupBy(ue.userId)
-                .having(ufe.regDt.eq(
-                        JPAExpressions
-                                .select(ufe.regDt.max())
-                                .from(ufe)
-                                .where(ufe.userInfoFollower.userId.eq(ue.userId))
-                ));
-
-        List<UserFollowEntity> rList = query.fetch();
-
-        log.info("rList : " + rList);
-
-        Set<UserFollowDTO> set  = new HashSet<>();
-        rList.forEach(e -> {
-            UserFollowDTO rDTO = UserFollowDTO.builder()
-                    .followerId(e.getFollowerId())
-                    .regDt(e.getRegDt())
-                    .userId(e.getUserInfoFollower().getUserId())
-                    .userName(e.getUserInfoFollower().getUserName())
-                    .profilePath(e.getUserInfoFollower().getProfilePath())
-                    .build();
-            set.add(rDTO);
-        });
-
-        List<UserFollowDTO> nList = new ArrayList<>(set);
-
-        log.info("nList : " + nList);
 
         log.info(this.getClass().getName() + ".getFollowingList End!");
 
