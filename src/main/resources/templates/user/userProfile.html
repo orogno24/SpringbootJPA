@@ -315,15 +315,15 @@
         <div class="data">
             <div class="data2">
                 <i class="bx bx-heart"></i>
-                <span class="number" onclick="goToUserProfile2()">팔로워 10</span>
+                <span class="number" onclick="goToUserProfile2()" th:text="|팔로워 ${countByFollowerId}|"></span>
             </div>
             <div class="data2">
                 <i class="bx bx-share"></i>
-                <span class="number" onclick="goToUserProfile3()">팔로우 20</span>
+                <span class="number" onclick="goToUserProfile3()" th:text="|팔로잉 ${countByFollowingId}|"></span>
             </div>
             <div class="data2">
                 <i class="bx bx-message-rounded"></i>
-                <span class="number">작성 게시글 30</span>
+                <span class="number" th:text="|작성 게시글 ${countByUserId}|"></span>
             </div>
         </div>
     </div>

@@ -69,4 +69,7 @@ public interface INoticeService {
      */
     List<NoticeImageDTO> getImagePathList(Long noticeSeq) throws Exception;
 
+    // 특정 userId 기준 게시글 개수 조회
+    long countByUserId(String userId) throws Exception;
+
 }

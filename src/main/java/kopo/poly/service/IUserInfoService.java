@@ -62,6 +62,12 @@ public interface IUserInfoService {
     // 팔로우 여부 조회
     boolean getFollowInfo(UserFollowDTO pDTO) throws Exception;
 
+    //팔로워 수 조회
+    long countByFollowerId(String followerId) throws Exception;
+
+    //팔로잉 수 조회
+    long countByFollowingId(String followingId) throws Exception;
+
     // 팔로우 리스트 조회
     List<UserFollowDTO> getFollowList(String userId) throws Exception;
 

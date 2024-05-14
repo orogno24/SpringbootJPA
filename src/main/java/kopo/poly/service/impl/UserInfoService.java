@@ -421,6 +421,18 @@ public class UserInfoService implements IUserInfoService {
     }
 
     @Override
+    public long countByFollowerId(String followerId) throws Exception {
+
+        return userFollowRepository.countByFollowerId(followerId);
+    }
+
+    @Override
+    public long countByFollowingId(String followingId) throws Exception {
+
+        return userFollowRepository.countByFollowingId(followingId);
+    }
+
+    @Override
     public List<UserFollowDTO> getFollowList(String userId) throws Exception {
 
         log.info(this.getClass().getName() + ".getFollowList Start!");

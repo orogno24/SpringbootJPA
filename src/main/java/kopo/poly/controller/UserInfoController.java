@@ -4,6 +4,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import kopo.poly.dto.*;
+import kopo.poly.service.INoticeJoinService;
+import kopo.poly.service.INoticeService;
 import kopo.poly.service.IUserInfoService;
 import kopo.poly.util.CmmUtil;
 import kopo.poly.util.EncryptUtil;
@@ -27,6 +29,7 @@ public class UserInfoController {
 
     // @RequiredArgsConstructor 를 통해 메모리에 올라간 서비스 객체를 Controller에서 사용할 수 있게 주입함
     private final IUserInfoService userInfoService;
+    private final INoticeService noticeService;
 
     /**
      * 회원가입 화면으로 이동
@@ -227,26 +230,37 @@ public class UserInfoController {
     /**
      * 유저 프로필
      */
-    @GetMapping(value = "userProfile/{profileId}")  // URL 경로 변경
-    public String userProfile(@PathVariable("profileId") String profileId, HttpSession session, ModelMap model) throws Exception {
+    @GetMapping(value = "userProfile/{userId}")  // URL 경로 변경
+    public String userProfile(@PathVariable("userId") String userId, HttpSession session, ModelMap model) throws Exception {
         log.info(this.getClass().getName() + ".user/userProfile Start!");
 
         // 세션에서 로그인한 사용자의 ID를 가져옵니다.
-        String userId = (String) session.getAttribute("SS_USER_ID");
+        String ssUserId = (String) session.getAttribute("SS_USER_ID");
 
-        // URL에서 받은 profileId를 사용하여 사용자 정보를 가져옵니다.
-        UserInfoDTO dto = userInfoService.getUserInfo(profileId);
+        // URL에서 받은 userId를 사용하여 사용자 정보를 가져옵니다.
+        UserInfoDTO dto = userInfoService.getUserInfo(userId);
 
         // 팔로우 상태를 확인하기 위한 DTO 생성
-        UserFollowDTO pDTO = UserFollowDTO.builder().followingId(profileId).followerId(userId).build();
+        UserFollowDTO pDTO = UserFollowDTO.builder().followingId(userId).followerId(ssUserId).build();
+
+        long countByFollowerId = userInfoService.countByFollowerId(userId);
+        long countByFollowingId = userInfoService.countByFollowingId(userId);
+        long countByUserId = noticeService.countByUserId(userId);
 
         // 팔로우 상태 확인
         boolean followStatus = userInfoService.getFollowInfo(pDTO);
         String existsYn = followStatus ? "Y" : "N";
 
+        log.info("countByFollowerId : " + countByFollowerId);
+        log.info("countByFollowingId : " + countByFollowingId);
+        log.info("countByUserId : " + countByUserId);
+
         // 모델에 사용자 정보와 팔로우 상태를 추가
         model.addAttribute("dto", dto);
         model.addAttribute("existsYn", existsYn);
+        model.addAttribute("countByFollowerId", countByFollowerId);
+        model.addAttribute("countByFollowingId", countByFollowingId);
+        model.addAttribute("countByUserId", countByUserId);
 
         log.info(this.getClass().getName() + ".user/userProfile End!");
 
@@ -562,13 +576,13 @@ public class UserInfoController {
     }
 
     @Transactional
-    @GetMapping(value = "followList/{profileId}")
-    public String followList(@PathVariable("profileId") String profileId, ModelMap model)
+    @GetMapping(value = "followList/{userId}")
+    public String followList(@PathVariable("userId") String userId, ModelMap model)
             throws Exception {
 
         log.info(this.getClass().getName() + ".followList Start!");
 
-        List<UserFollowDTO> rList = Optional.ofNullable(userInfoService.getFollowList(profileId))
+        List<UserFollowDTO> rList = Optional.ofNullable(userInfoService.getFollowList(userId))
                 .orElseGet(ArrayList::new);
 
         log.info("rList : " + rList);
@@ -581,13 +595,13 @@ public class UserInfoController {
     }
 
     @Transactional
-    @GetMapping(value = "followingList/{profileId}")
-    public String followingList(@PathVariable("profileId") String profileId, ModelMap model)
+    @GetMapping(value = "followingList/{userId}")
+    public String followingList(@PathVariable("userId") String userId, ModelMap model)
             throws Exception {
 
         log.info(this.getClass().getName() + ".followingList Start!");
 
-        List<UserFollowDTO> rList = Optional.ofNullable(userInfoService.getFollowingList(profileId))
+        List<UserFollowDTO> rList = Optional.ofNullable(userInfoService.getFollowingList(userId))
                 .orElseGet(ArrayList::new);
 
         log.info("rList : " + rList);

@@ -281,4 +281,9 @@ public class NoticeService implements INoticeService {
 
         return nList;
     }
+
+    @Override
+    public long countByUserId(String userId) throws Exception {
+        return noticeRepository.countByUserId(userId);
+    }
 }
