@@ -16,7 +16,6 @@ import java.io.Serializable;
 @Builder
 //@Cacheable
 @Entity
-@Data
 @IdClass(FollowKey.class)
 public class UserFollowEntity implements Serializable {
 

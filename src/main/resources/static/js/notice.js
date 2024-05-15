@@ -10,6 +10,12 @@ $(document).ready(function () {
     $("#btnWrite").on("click", function () {
         location.href = "/notice/noticeReg";
     })
+    $("#btnFollow").on("click", function () {
+        location.href = "/notice/noticeFollowList";
+    })
+    $("#btnNotice").on("click", function () {
+        location.href = "/notice/noticeListUsingNativeQuery";
+    })
 });
 
 // 이전 페이지로 이동

@@ -74,4 +74,7 @@ public interface IUserInfoService {
     // 팔로잉 리스트 조회
     List<UserFollowDTO> getFollowingList(String userId) throws Exception;
 
+    // 팔로우 리스트 조회
+    List<String> noticeFollowList(String userId) throws Exception;
+
 }

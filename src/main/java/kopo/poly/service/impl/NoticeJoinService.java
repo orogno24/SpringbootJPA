@@ -1,9 +1,11 @@
 package kopo.poly.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.transaction.Transactional;
+import kopo.poly.dto.BookmarkDTO;
 import kopo.poly.dto.CommentDTO;
 import kopo.poly.dto.NoticeDTO;
 import kopo.poly.repository.CommentRepository;
@@ -82,6 +84,24 @@ public class NoticeJoinService implements INoticeJoinService {
                 });
 
         log.info(this.getClass().getName() + ".getNoticeListUsingNativeQuery End!");
+
+        return nList;
+    }
+
+    @Override
+    public List<NoticeDTO> getFollowNoticeList(List<String> followUserIdList) {
+
+        log.info(this.getClass().getName() + ".getFollowNoticeList Start!");
+
+        List<NoticeSQLEntity> rList = noticeSQLRepository.getNoticeListByFollowedUsers(followUserIdList);
+
+        log.info("rList : " + rList);
+
+        List<NoticeDTO> nList = new ObjectMapper().convertValue(rList,
+                new TypeReference<List<NoticeDTO>>() {
+                });
+
+        log.info(this.getClass().getName() + ".getFollowNoticeList End!");
 
         return nList;
     }

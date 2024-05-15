@@ -1,5 +1,7 @@
 package kopo.poly.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import kopo.poly.dto.BookmarkDTO;
 import kopo.poly.dto.CommentDTO;
 import kopo.poly.dto.NoticeDTO;
 
@@ -16,6 +18,11 @@ public interface INoticeJoinService {
      * NativeQuery 사용하여 전체 게시글 가져오기
      */
     List<NoticeDTO> getNoticeListUsingNativeQuery();
+
+    /**
+     * 팔로우한 사용자의 게시글만 가져오기
+     */
+    List<NoticeDTO> getFollowNoticeList(List<String> followUserIdList);
 
     /**
      * NativeQuery 사용하여 내 게시글만 가져오기

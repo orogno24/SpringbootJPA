@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 /*
@@ -69,6 +70,28 @@ public class NoticeJoinController {
         log.info(this.getClass().getName() + ".noticeListUsingNativeQuery End!");
 
         return "notice/noticeListUsingNativeQuery";
+    }
+
+    @GetMapping("/noticeFollowList")
+    public String noticeFollowList(HttpSession session, ModelMap model) throws Exception {
+
+        log.info(this.getClass().getName() + ".noticeFollowList Start!");
+
+        String userId = CmmUtil.nvl((String) session.getAttribute("SS_USER_ID"));
+
+        List<String> followUserIdList = Optional.ofNullable(userInfoService.noticeFollowList(userId))
+                .orElseGet(ArrayList::new);
+
+        log.info("followUserIdList : " + followUserIdList);
+
+        List<NoticeDTO> rList = Optional.ofNullable(noticeJoinService.getFollowNoticeList(followUserIdList))
+                .orElseGet(ArrayList::new);
+
+        model.addAttribute("rList", rList);
+
+        log.info(this.getClass().getName() + ".noticeFollowList End!");
+
+        return "notice/noticeFollowList";
     }
 
     @GetMapping(value = "userNoticeList/{userId}")

@@ -492,4 +492,23 @@ public class UserInfoService implements IUserInfoService {
 
     }
 
+    @Override
+    public List<String> noticeFollowList(String userId) throws Exception {
+
+        log.info(this.getClass().getName() + ".noticeFollowList Start!");
+
+        // 현재 사용자가 팔로우하는 사용자 ID 리스트를 가져옵니다.
+        List<UserFollowEntity> userFollows = userFollowRepository.findByFollowerId(userId);
+
+        log.info("userFollows : " + userFollows);
+
+        List<String> followingList = userFollows.stream() // 북마크 데이터에서 eventSeq들만 추출하는 과정
+                .map(UserFollowEntity::getFollowingId)
+                .collect(Collectors.toList());
+
+        log.info(this.getClass().getName() + ".noticeFollowList End!");
+
+        return followingList;
+    }
+
 }
