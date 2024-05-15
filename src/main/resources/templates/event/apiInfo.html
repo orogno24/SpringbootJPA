@@ -40,7 +40,11 @@
             });
 
             $("#btnBookmark").on("click", function () {
-                location.href = "/event/eventCalendarList";
+
+                var userId = document.getElementById('userId').value;
+
+                location.href = "/event/eventCalendarList/" + userId;
+
             });
 
             updateBookmarkButton();
@@ -172,6 +176,8 @@
                 <strong>프로그램 소개:</strong> <span th:text="${rDTO.program}"></span>
             </div>
         </div>
+
+        <input type="hidden" id="userId" th:value="${userId}" />
 
         <div class="info-item">
             <a href="#" th:href="${rDTO.orgLink}" target="_blank">홈페이지 바로가기</a>

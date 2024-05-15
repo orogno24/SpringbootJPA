@@ -182,6 +182,14 @@
 
         }
 
+        function goToUserNoticeList() {
+
+            var userId = document.getElementById('userId').value;
+
+            window.location.href = "/notice/userNoticeList/" + userId;
+
+        }
+
         // HTML 로딩이 완료되고, 실행됨
         $(document).ready(function () {
 
@@ -212,7 +220,11 @@
             }
 
             $("#btn1").on("click", function () {
-                location.href = "/event/eventCalendarList";
+
+                var userId = document.getElementById('userId').value;
+
+                location.href = "/event/eventCalendarList/" + userId;
+
             })
 
             $("#editBtn").on("click", function () {
@@ -294,7 +306,7 @@
         <li><a href="/notice/noticeListUsingNativeQuery">커뮤니티</a></li>
     </ul>
 </div>
-<h2 style="text-align: center; color:#333333; margin-top: 50px; margin-bottom: -38px">유저 프로필</h2>
+<h2 style="text-align: center; color:#333333; margin-top: 50px; margin-bottom: -38px" th:text="${dto.userName} + '님의 유저 프로필'"></h2>
 <div class="center-container">
     <div class="profile-card">
         <div class="image">
@@ -323,7 +335,7 @@
             </div>
             <div class="data2">
                 <i class="bx bx-message-rounded"></i>
-                <span class="number" th:text="|작성 게시글 ${countByUserId}|"></span>
+                <span class="number" onclick="goToUserNoticeList()" th:text="|작성 게시글 ${countByUserId}|"></span>
             </div>
         </div>
     </div>

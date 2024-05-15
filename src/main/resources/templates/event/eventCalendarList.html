@@ -94,14 +94,19 @@
     </ul>
 </div>
 
-<h2>북마크한 문화행사</h2>
+<h2 th:text="${dto.userName} + '님의 북마크 목록'"></h2>
+<input type="hidden" id="userId" th:value="${dto.userId}" />
 <div id='calendar'></div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         var calendarEl = document.getElementById('calendar');
+        var userId = document.getElementById('userId').value;
 
-        fetch('/event/getCalendarDateList')
+        // URL 인코딩을 적용
+        var encodedUserId = encodeURIComponent(userId);
+
+        fetch(`/event/getCalendarDateList?userId=${encodedUserId}`)
             .then(response => response.json())
             .then(data => {
                 var events = data.map(event => ({

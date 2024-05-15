@@ -13,9 +13,14 @@ public interface INoticeJoinService {
     List<NoticeDTO> getNoticeListForQueryDSL();
 
     /**
-     * NativeQuery 사용하여 공지사항 전체 가져오기
+     * NativeQuery 사용하여 전체 게시글 가져오기
      */
     List<NoticeDTO> getNoticeListUsingNativeQuery();
+
+    /**
+     * NativeQuery 사용하여 내 게시글만 가져오기
+     */
+    List<NoticeDTO> getUserNoticeListUsingNativeQuery(String userId);
 
     /**
      * QueryDSL 활용한 공지사항 싱세 정보가져오기

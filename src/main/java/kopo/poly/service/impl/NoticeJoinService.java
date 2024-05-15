@@ -86,6 +86,24 @@ public class NoticeJoinService implements INoticeJoinService {
         return nList;
     }
 
+    @Override
+    public List<NoticeDTO> getUserNoticeListUsingNativeQuery(String userId) {
+
+        log.info(this.getClass().getName() + ".getUserNoticeListUsingNativeQuery Start!");
+
+        List<NoticeSQLEntity> rList = noticeSQLRepository.getUserNoticeListUsingSQL(userId);
+
+        log.info("rList : " + rList);
+
+        List<NoticeDTO> nList = new ObjectMapper().convertValue(rList,
+                new TypeReference<List<NoticeDTO>>() {
+                });
+
+        log.info(this.getClass().getName() + ".getUserNoticeListUsingNativeQuery End!");
+
+        return nList;
+    }
+
     @Transactional
     @Override
     public NoticeDTO getNoticeInfoForQueryDSL(NoticeDTO pDTO, boolean type) throws Exception {

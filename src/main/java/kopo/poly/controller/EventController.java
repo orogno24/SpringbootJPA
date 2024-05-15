@@ -5,15 +5,13 @@ import jakarta.servlet.http.HttpSession;
 import kopo.poly.dto.*;
 import kopo.poly.dto.EventDTO;
 import kopo.poly.service.IEventService;
+import kopo.poly.service.IUserInfoService;
 import kopo.poly.util.CmmUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +35,7 @@ public class EventController {
 
     // @RequiredArgsConstructor 를 통해 메모리에 올라간 서비스 객체를 Controller에서 사용할 수 있게 주입함
     private final IEventService eventService;
+    private final IUserInfoService userInfoService;
 
     /**
      * 문화행사 리스트 보여주기
@@ -208,6 +207,7 @@ public class EventController {
         // 조회된 결과값 넣어주기
         model.addAttribute("rDTO", rDTO);
         model.addAttribute("hDTO", hDTO);
+        model.addAttribute("userId", userId);
 
         log.info(this.getClass().getName() + ".apiInfo End!");
 
@@ -245,10 +245,14 @@ public class EventController {
         return "event/eventCalendar";
     }
 
-    @GetMapping("/eventCalendarList")
-    public String eventCalendarList() throws Exception {
+    @GetMapping("/eventCalendarList/{userId}")
+    public String eventCalendarList(@PathVariable("userId") String userId, ModelMap model) throws Exception {
 
         log.info(this.getClass().getName() + ".eventCalendarList Start!");
+
+        UserInfoDTO dto = userInfoService.getUserInfo(userId);
+
+        model.addAttribute("dto", dto);
 
         log.info(this.getClass().getName() + ".eventCalendarList End!");
 
@@ -277,11 +281,12 @@ public class EventController {
 
     @ResponseBody
     @GetMapping("/getCalendarDateList")
-    public List<BookmarkDTO> getCalendarDateList(HttpSession session) throws Exception {
+    public List<BookmarkDTO> getCalendarDateList(@RequestParam("userId") String userId, HttpSession session) throws Exception {
 
         log.info(this.getClass().getName() + ".getCalendarDateList Start!");
 
-        String userId = CmmUtil.nvl((String) session.getAttribute("SS_USER_ID"));
+        log.info("userId : " + userId);
+
         BookmarkDTO pDTO = BookmarkDTO.builder().userId(userId).build();
 
         List<BookmarkDTO> rList = Optional.ofNullable(eventService.getBookmarkSeq(pDTO)) // 해당 유저아이디의 전체 북마크 데이터 불러옴

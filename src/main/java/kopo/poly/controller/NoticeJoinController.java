@@ -2,23 +2,18 @@ package kopo.poly.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import kopo.poly.dto.CommentDTO;
-import kopo.poly.dto.MsgDTO;
-import kopo.poly.dto.NoticeDTO;
-import kopo.poly.dto.NoticeImageDTO;
+import kopo.poly.dto.*;
 import kopo.poly.repository.entity.CommentKey;
 import kopo.poly.service.INoticeJoinService;
 import kopo.poly.service.INoticeService;
+import kopo.poly.service.IUserInfoService;
 import kopo.poly.util.CmmUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +35,7 @@ import java.util.Optional;
 public class NoticeJoinController {
 
     // @RequiredArgsConstructor 를 통해 메모리에 올라간 서비스 객체를 Controller에서 사용할 수 있게 주입함
+    private final IUserInfoService userInfoService;
     private final INoticeService noticeService;
     private final INoticeJoinService noticeJoinService;
 
@@ -73,6 +69,25 @@ public class NoticeJoinController {
         log.info(this.getClass().getName() + ".noticeListUsingNativeQuery End!");
 
         return "notice/noticeListUsingNativeQuery";
+    }
+
+    @GetMapping(value = "userNoticeList/{userId}")
+    public String userNoticeList(@PathVariable("userId") String userId, HttpSession session, ModelMap model)
+            throws Exception {
+
+        log.info(this.getClass().getName() + ".userNoticeList Start!");
+
+        UserInfoDTO rDTO = userInfoService.getUserInfo(userId);
+
+        List<NoticeDTO> rList = Optional.ofNullable(noticeJoinService.getUserNoticeListUsingNativeQuery(userId))
+                .orElseGet(ArrayList::new);
+
+        model.addAttribute("userNoticeName", rDTO.userName());
+        model.addAttribute("rList", rList);
+
+        log.info(this.getClass().getName() + ".userNoticeList End!");
+
+        return "notice/userNoticeList";
     }
 
     @GetMapping(value = "noticeInfoUsingQueryDSL")

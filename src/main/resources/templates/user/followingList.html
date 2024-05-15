@@ -6,7 +6,7 @@
   <link rel="stylesheet" href="/css/header.css"/>
   <link rel="icon" href="/assets/img/logo.png" type="image/x-icon">
   <link rel="shortcut icon" href="/assets/img/logo.png" type="image/x-icon">
-  <title>팔로우 목록</title>
+  <title>팔로잉 목록</title>
   <style>
     @font-face {
       font-family: 'NIXGONM-Vb';
@@ -80,13 +80,13 @@
   </ul>
 </div>
 
-<h2 style="text-align: center; color:#333333; margin-top: 50px; margin-bottom: 30px">팔로우 목록</h2>
+<h2 style="text-align: center; color:#333333; margin-top: 50px; margin-bottom: 30px" th:text="${profileUserName} + '님의 팔로잉 목록'"></h2>
 
 <div class="list-container">
   <div th:each="dto: ${rList}" class="divTableRow" th:onclick="doDetail([[${dto.followerId}]])">
     <img th:src="${dto.profilePath}" alt="프로필 이미지" class="profile-image">
     <div class="divTableCell" style="font-weight: bolder" th:text="${dto.userName}"></div>
-    <div class="divTableCell" style="color: #5d5d5d" th:text="|팔로우 날짜 : ${dto.regDt}|"></div>
+    <div class="divTableCell" style="color: #5d5d5d" th:text="|팔로잉 날짜 : ${dto.regDt}|"></div>
   </div>
 </div>
 

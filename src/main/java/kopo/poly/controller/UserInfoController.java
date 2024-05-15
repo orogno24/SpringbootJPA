@@ -582,11 +582,14 @@ public class UserInfoController {
 
         log.info(this.getClass().getName() + ".followList Start!");
 
+        UserInfoDTO rDTO = userInfoService.getUserInfo(userId);
+
         List<UserFollowDTO> rList = Optional.ofNullable(userInfoService.getFollowList(userId))
                 .orElseGet(ArrayList::new);
 
         log.info("rList : " + rList);
 
+        model.addAttribute("profileUserName", rDTO.userName());
         model.addAttribute("rList", rList);
 
         log.info(this.getClass().getName() + ".followList End!");
@@ -601,11 +604,14 @@ public class UserInfoController {
 
         log.info(this.getClass().getName() + ".followingList Start!");
 
+        UserInfoDTO rDTO = userInfoService.getUserInfo(userId);
+
         List<UserFollowDTO> rList = Optional.ofNullable(userInfoService.getFollowingList(userId))
                 .orElseGet(ArrayList::new);
 
         log.info("rList : " + rList);
 
+        model.addAttribute("profileUserName", rDTO.userName());
         model.addAttribute("rList", rList);
 
         log.info(this.getClass().getName() + ".followingList End!");
