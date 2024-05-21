@@ -17,6 +17,8 @@ public interface IEventService {
      */
     List<EventDTO> getEventList();
 
+
+
     /**
      * 문화행사 상세 정보가져오기
      *

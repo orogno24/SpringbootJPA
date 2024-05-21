@@ -142,6 +142,9 @@ public class EventController {
         return rList;
     }
 
+    /**
+     * 문화행사 리스트 + 그래프를 위한 구별 문화행사 타입 개수 조회
+     */
     @ResponseBody
     @GetMapping(value = "getList")
     public List<ApiDTO> getList(HttpServletRequest request)

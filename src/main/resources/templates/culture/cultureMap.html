@@ -172,7 +172,7 @@
     <ul class="nav" id="top-navigation">
         <li><a href="/main">메인 페이지</a></li>
         <li><a href="/event/apiSearch">문화행사 찾기</a></li>
-        <li><a href="/culture/v1/cultureMap">문화시설 찾기</a></li>
+        <li><a href="/culture/cultureMap">문화시설 찾기</a></li>
         <li><a href="/notice/noticeListUsingNativeQuery">커뮤니티</a></li>
     </ul>
 </div>
@@ -284,7 +284,7 @@
         var radius = document.getElementById('radius').value;
         var subjcode = document.getElementById('subjcode').value;
         $.ajax({
-            url: "/culture/v1/getCultureListNearby",
+            url: "/culture/getCultureListNearby",
             type: 'GET',
             data: {
                 longitude: longitude,
@@ -328,7 +328,7 @@
     }
 
     function doDetail(nSeq) {
-        location.href = "/culture/v1/cultureInfo?nSeq=" + nSeq;
+        location.href = "/culture/cultureInfo?nSeq=" + nSeq;
     }
 
     function displayCultureSpaces(response) {

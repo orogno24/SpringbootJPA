@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Slf4j
-@RequestMapping(value = "/culture/v1")
+@RequestMapping(value = "/culture")
 @RequiredArgsConstructor
 @Controller
 public class CultureController {
