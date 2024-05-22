@@ -7,6 +7,7 @@ import kopo.poly.dto.EventDTO;
 import kopo.poly.dto.NoticeDTO;
 
 import java.util.List;
+import java.util.Map;
 
 public interface IEventService {
 
@@ -39,6 +40,11 @@ public interface IEventService {
      * 오늘의 문화행사 검색
      */
     List<ApiDTO> getTodayEventList(ApiDTO pDTO) throws JsonProcessingException;
+
+    /**
+     * 행사가 가장 많이 열리는 지역구 5개 추출(그래프 용도)
+     */
+    Map<String, Long> getEventCountList(ApiDTO pDTO) throws JsonProcessingException;
 
     /**
      * 유저가 북마크한 데이터중에서 BookmarkSeq만 추출 후 List에 담기

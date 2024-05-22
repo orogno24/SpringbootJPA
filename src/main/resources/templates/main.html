@@ -14,6 +14,7 @@
     <link rel="stylesheet" type="text/css" href="css/animate.css"/>
     <link rel="icon" href="/assets/img/logo.png" type="image/x-icon">
     <link rel="shortcut icon" href="/assets/img/logo.png" type="image/x-icon">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
 
         /* 기본 이미지 스타일 */
@@ -87,6 +88,40 @@
     </style>
     <script th:inline="javascript">
         /*<![CDATA[*/
+        document.addEventListener("DOMContentLoaded", function () {
+            // 임의의 데이터 사용
+            const topDistricts = /*[[${topDistricts}]]*/ {};
+            const parsedTopDistricts = JSON.parse(topDistricts);
+
+            const labels = Object.keys(parsedTopDistricts);
+            const data = Object.values(parsedTopDistricts);
+
+            const ctx = document.getElementById('eventChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Number of Events',
+                        data: data,
+                        backgroundColor: 'rgba(75,192,192,0.44)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        });
+        /*]]>*/
+    </script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
 
         const userId = /*[[${dto.userId}]]*/ '';
 
@@ -133,9 +168,7 @@
                 }
             });
         });
-
     </script>
-
 </head>
 <body>
 <div class="navbar">
@@ -175,7 +208,6 @@
     <div id="da-slider" class="da-slider">
         <div class="triangle"></div>
         <div class="mask"></div>
-
         <div class="container">
 
             <div th:each="item : ${rList}" class="da-slide">
@@ -222,7 +254,7 @@
                         <!--                        <p style="text-align: center; transition: transform 0.3s ease; color: #3b5260; background-color: #b3ecec;">관심있는 문화행사의 정보를 확인할 수 있습니다.</p>-->
                         <br><br>
                     </div>
-                    <div class="feature" id="div2" onclick="location.href='/culture/v1/cultureMap';"
+                    <div class="feature" id="div2" onclick="location.href='/culture/cultureMap';"
                          style="position: relative; overflow: hidden; transition: transform 0.3s ease; cursor: pointer;">
                         <!--                        <img class="icon" src="/assets/img/icon2.png" style="position: absolute; width: 14%" alt="">-->
                         <h2 style="font-size: 22px; text-align: center; padding-top: 40px; transition: transform 0.3s ease;">
@@ -242,11 +274,10 @@
         </div>
     </div>
 </div>
-
 <div class="section secondary-section " id="portfolio">
     <div class="triangle2"></div>
     <div class="container" style="margin-top: -20px">
-
+        <canvas id="eventChart" width="300" height="140"></canvas>
         <div class="title">
             <h3>추천 영상</h3>
         </div>
@@ -257,7 +288,6 @@
         </div>
     </div>
 </div>
-
 <script>
     document.getElementById('logoutLink').addEventListener('click', function (event) {
         event.preventDefault();

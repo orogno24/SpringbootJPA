@@ -1,7 +1,9 @@
 package kopo.poly.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import kopo.poly.dto.ApiDTO;
-import kopo.poly.dto.EventDTO;
 import kopo.poly.dto.UserInfoDTO;
 import kopo.poly.service.IEventService;
 import kopo.poly.service.IUserInfoService;
@@ -13,13 +15,12 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
-
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -46,22 +47,76 @@ public class MainController {
         log.info("startDate : " + currentDate);
         log.info("endDate : " + currentDate);
 
+        YearMonth currentYearMonth = YearMonth.now();
+        String startDate = currentYearMonth.atDay(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        String endDate = currentYearMonth.atEndOfMonth().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        log.info("startDate : " + startDate);
+        log.info("endDate : " + endDate);
+
         ApiDTO pDTO = ApiDTO.builder().
-                startDate(currentDate).
-                endDate(currentDate)
+                startDate(startDate).
+                endDate(endDate)
                 .build();
 
         List<ApiDTO> rList = Optional.ofNullable(eventService.getTodayEventList(pDTO))
                 .orElseGet(ArrayList::new);
 
+        Map<String, Long> topDistricts = eventService.getEventCountList(pDTO);
+
         log.info("rList : " + rList);
+        log.info("topDistricts : " + new ObjectMapper().writeValueAsString(topDistricts));
 
         // 조회된 리스트 결과값 넣어주기
         model.addAttribute("rList", rList);
+        model.addAttribute("topDistricts", new ObjectMapper().writeValueAsString(topDistricts));
 
         log.info(this.getClass().getName() + ".main End!");
 
         return "main";
+    }
+
+    @GetMapping("/main2")
+    public String main2(HttpSession session, ModelMap model) throws Exception {
+
+        log.info(this.getClass().getName() + ".main Start!");
+
+        String userId = (String) session.getAttribute("SS_USER_ID");
+
+        UserInfoDTO dto = userInfoService.getUserInfo(userId);
+
+        model.addAttribute("dto", dto);
+
+        // 현재 날짜를 yyyy-MM-dd 포맷으로 가져오기
+        String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        log.info("startDate : " + currentDate);
+        log.info("endDate : " + currentDate);
+
+        YearMonth currentYearMonth = YearMonth.now();
+        String startDate = currentYearMonth.atDay(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        String endDate = currentYearMonth.atEndOfMonth().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        log.info("startDate : " + startDate);
+        log.info("endDate : " + endDate);
+
+        ApiDTO pDTO = ApiDTO.builder().
+                startDate(startDate).
+                endDate(endDate)
+                .build();
+
+        List<ApiDTO> rList = Optional.ofNullable(eventService.getTodayEventList(pDTO))
+                .orElseGet(ArrayList::new);
+
+        Map<String, Long> topDistricts = eventService.getEventCountList(pDTO);
+
+        log.info("rList : " + rList);
+        log.info("topDistricts : " + topDistricts);
+
+        // 조회된 리스트 결과값 넣어주기
+        model.addAttribute("rList", rList);
+        model.addAttribute("topDistricts", topDistricts);
+
+        log.info(this.getClass().getName() + ".main End!");
+
+        return "main2";
     }
 
     @GetMapping("/awsUpload")
