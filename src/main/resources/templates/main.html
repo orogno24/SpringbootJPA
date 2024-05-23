@@ -52,6 +52,25 @@
             display: block;
         }
 
+        .chart-container {
+            width: 45%; /* 각 차트의 너비를 45%로 설정 */
+            height: 300px; /* 높이 설정 */
+            margin: auto; /* 가운데 정렬 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .chart-wrapper {
+            display: flex; /* Flexbox 사용 */
+            justify-content: space-around; /* 공간을 균등하게 분배 */
+        }
+
+        .chart-description {
+            text-align: center;
+            margin-top: 10px; /* 그래프와 설명 사이의 간격 조정 */
+        }
+
         #div1 {
             background-image: url("/assets/img/1.jpg");
             background-size: cover; /* 배경 이미지를 화면 전체에 맞춥니다. */
@@ -91,8 +110,9 @@
         document.addEventListener("DOMContentLoaded", function () {
             // 임의의 데이터 사용
             const topDistricts = /*[[${topDistricts}]]*/ {};
-            const parsedTopDistricts = JSON.parse(topDistricts);
+            const eventTypeCount = /*[[${eventTypeCount}]]*/ {};
 
+            const parsedTopDistricts = JSON.parse(topDistricts);
             const labels = Object.keys(parsedTopDistricts);
             const data = Object.values(parsedTopDistricts);
 
@@ -102,7 +122,7 @@
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: 'Number of Events',
+                        label: '문화행사 수',
                         data: data,
                         backgroundColor: 'rgba(75,192,192,0.44)',
                         borderColor: 'rgba(75, 192, 192, 1)',
@@ -112,20 +132,82 @@
                 options: {
                     scales: {
                         y: {
-                            beginAtZero: true
+                            ticks: {
+                                color: '#3b5260'  // y축 텍스트 색상
+                            },
+                            title: {
+                                display: true,
+                                color: '#3b5260'  // y축 제목 색상
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#3b5260'  // x축 텍스트 색상
+                            },
+                            title: {
+                                display: true,
+                                color: '#3b5260'  // x축 제목 색상
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#3b5260'  // 범례 텍스트 색상
+                            }
+                        }
+                    }
+                }
+            });
+
+            const parsedEventTypeCount = JSON.parse(eventTypeCount);
+            const eventTypeLabels = Object.keys(parsedEventTypeCount);
+            const eventTypeData = Object.values(parsedEventTypeCount);
+
+            const ctx2 = document.getElementById('eventTypeChart').getContext('2d');
+            new Chart(ctx2, {
+                type: 'pie',
+                data: {
+                    labels: eventTypeLabels,
+                    datasets: [{
+                        label: '문화행사 유형',
+                        data: eventTypeData,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#3b5260'  // 범례 텍스트 색상
+                            }
                         }
                     }
                 }
             });
         });
-        /*]]>*/
-    </script>
-    <script th:inline="javascript">
-        /*<![CDATA[*/
 
         const userId = /*[[${dto.userId}]]*/ '';
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
 
             if (userId === null || userId === '' || userId === 'null') {
                 alert("로그인 하시길 바랍니다.");
@@ -244,7 +326,6 @@
         <div class="row-fluid">
             <div class="container" style="margin-top: -40px">
                 <div class="feature-grid">
-
                     <div class="feature" id="div1" onclick="location.href='/event/apiSearch';"
                          style="position: relative; overflow: hidden; transition: transform 0.3s ease; cursor: pointer;">
                         <!--                        <img class="icon" src="/assets/img/icon1.png" style="position: absolute; width: 14%" alt="">-->
@@ -274,14 +355,32 @@
         </div>
     </div>
 </div>
+
 <div class="section secondary-section " id="portfolio">
     <div class="triangle2"></div>
+    <div class="container">
+        <div class="title" style="margin-top: -40px">
+            <h3>이달의 문화행사 정보</h3>
+        </div>
+        <div class="chart-wrapper" style="margin-bottom: 40px">
+            <div class="chart-container">
+                <p class="chart-description" th:text="${currentMonth} + '월의 문화행사 개최 수'"></p>
+                <canvas id="eventChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <p class="chart-description" th:text="${currentMonth} + '월의 문화행사 유형'"></p>
+                <canvas id="eventTypeChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="section secondary-section " id="about" style="background-color: #5d8198">
+    <div class="triangle"></div>
     <div class="container" style="margin-top: -20px">
-        <canvas id="eventChart" width="300" height="140"></canvas>
         <div class="title">
             <h3>추천 영상</h3>
         </div>
-
         <div id="single-project">
             <ul id="portfolio-grid" class="thumbnails row">
             </ul>

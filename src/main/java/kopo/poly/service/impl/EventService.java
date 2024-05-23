@@ -212,6 +212,9 @@ public class EventService implements IEventService  {
         // 조건에 맞는 데이터만 필터링
         Stream<ApiDTO> stream = rContent.stream().map(content -> objectMapper.convertValue(content, ApiDTO.class));
 
+        log.info("pDTO.startDate : " + pDTO.startDate());
+        log.info("pDTO.endDate : " + pDTO.endDate());
+
         // startDate가 설정되어 있다면, 해당 날짜 이전의 이벤트는 제외
         if (pDTO.startDate() != null && !pDTO.startDate().isEmpty()) {
             LocalDate startDate = LocalDate.parse(pDTO.startDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -270,18 +273,15 @@ public class EventService implements IEventService  {
         // 각 구별로 행사 개수 세기
         Map<String, Long> districtEventCount = rContent.stream()
                 .filter(content -> {
-                    // null 체크 추가
                     String startDateStr = (String) content.get("STRTDATE");
                     String endDateStr = (String) content.get("END_DATE");
-                    String guName = (String) content.get("GUNAME");
-                    log.info("startDateStr : " + startDateStr);
-                    log.info("endDateStr : " + endDateStr);
-                    log.info("guName : " + guName);
                     LocalDateTime eventStartDate = LocalDateTime.parse(startDateStr, formatter);
                     LocalDateTime eventEndDate = LocalDateTime.parse(endDateStr, formatter);
                     return !eventStartDate.toLocalDate().isBefore(startDate) && !eventEndDate.toLocalDate().isAfter(endDate);
                 })
                 .collect(Collectors.groupingBy(content -> content.get("GUNAME").toString(), Collectors.counting()));
+
+        log.info("districtEventCount : " + districtEventCount);
 
         // 상위 5개 구 추출
         Map<String, Long> top5Districts = districtEventCount.entrySet().stream()
@@ -296,6 +296,51 @@ public class EventService implements IEventService  {
         return top5Districts;
     }
 
+    public Map<String, Long> getEventTypeCountList(ApiDTO pDTO) throws JsonProcessingException {
+        log.info(this.getClass().getName() + ".getEventTypeCountList Start!");
+
+        String apiParam = apiKey + "/" + "json" + "/" + "culturalEventInfo" + "/" + "1" + "/" + "500" + "/";
+        String json = NetworkUtil.get(IEventService.apiURL + apiParam);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Object> rMap = objectMapper.readValue(json, LinkedHashMap.class);
+
+        Map<String, Object> culturalEventInfo = (Map<String, Object>) rMap.get("culturalEventInfo");
+        List<Map<String, Object>> rContent = (List<Map<String, Object>>) culturalEventInfo.get("row");
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
+
+        LocalDate startDate = LocalDate.parse(pDTO.startDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        LocalDate endDate = LocalDate.parse(pDTO.endDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+        log.info("startDate : " + startDate);
+        log.info("endDate : " + endDate);
+
+        // 각 행사 유형별로 행사 개수 세기
+        Map<String, Long> eventTypeCount = rContent.stream()
+                .filter(content -> {
+                    String startDateStr = (String) content.get("STRTDATE");
+                    String endDateStr = (String) content.get("END_DATE");
+                    LocalDateTime eventStartDate = LocalDateTime.parse(startDateStr, formatter);
+                    LocalDateTime eventEndDate = LocalDateTime.parse(endDateStr, formatter);
+                    return !eventStartDate.toLocalDate().isBefore(startDate) && !eventEndDate.toLocalDate().isAfter(endDate);
+                })
+                .collect(Collectors.groupingBy(content -> content.get("CODENAME").toString(), Collectors.counting()));
+
+        log.info("eventTypeCount : " + eventTypeCount);
+
+        // 상위 6개 행사 유형 추출
+        Map<String, Long> top6EventTypes = eventTypeCount.entrySet().stream()
+                .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
+                .limit(6)
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+
+        log.info("top6EventTypes : " + top6EventTypes);
+
+        log.info(this.getClass().getName() + ".getEventTypeCountList End!");
+
+        return top6EventTypes;
+    }
 
     @Override
     public List<BookmarkDTO> getBookmarkSeq(BookmarkDTO pDTO) throws Exception {

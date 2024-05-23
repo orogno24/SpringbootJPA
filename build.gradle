@@ -2,13 +2,10 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.2.4'
     id 'io.spring.dependency-management' version '1.1.4'
-    id 'war'
-    id 'application'
 }
 
 group = 'kopo'
 version = '0.0.1-SNAPSHOT'
-description = 'SpringbootJPA'
 
 java {
     sourceCompatibility = '17'
@@ -26,7 +23,6 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-    providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
     implementation 'org.apache.tomcat.embed:tomcat-embed-jasper'
     implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
@@ -49,25 +45,6 @@ dependencies {
     runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-}
-
-// War 플러그인 구성
-war {
-    enabled = true
-    // 필요한 경우 추가 WAR 설정을 여기에 기입하세요.
-}
-
-application {
-    mainClass = 'kopo.poly.SpringbootJpaApplication'
-}
-
-bootWar {
-    archiveFileName = 'JPA-0.0.1.war'
-    launchScript()  // 스크립트를 추가하여 실행 가능한 WAR 파일을 생성
-}
-
-jar {
-    enabled = false
 }
 
 tasks.named('test') {

@@ -47,6 +47,11 @@ public interface IEventService {
     Map<String, Long> getEventCountList(ApiDTO pDTO) throws JsonProcessingException;
 
     /**
+     * 이벤트 유형 개수 추출
+     */
+    Map<String, Long> getEventTypeCountList(ApiDTO pDTO) throws JsonProcessingException;
+
+    /**
      * 유저가 북마크한 데이터중에서 BookmarkSeq만 추출 후 List에 담기
      * @param pDTO 유저아이디
      */

@@ -54,6 +54,11 @@ public class MainController {
         log.info("endDate : " + endDate);
 
         ApiDTO pDTO = ApiDTO.builder().
+                startDate(currentDate).
+                endDate(currentDate)
+                .build();
+
+        ApiDTO pDTO2 = ApiDTO.builder().
                 startDate(startDate).
                 endDate(endDate)
                 .build();
@@ -61,62 +66,23 @@ public class MainController {
         List<ApiDTO> rList = Optional.ofNullable(eventService.getTodayEventList(pDTO))
                 .orElseGet(ArrayList::new);
 
-        Map<String, Long> topDistricts = eventService.getEventCountList(pDTO);
+        Map<String, Long> topDistricts = eventService.getEventCountList(pDTO2);
+        Map<String, Long> eventTypeCount = eventService.getEventTypeCountList(pDTO2);
+        String currentMonth = String.valueOf(currentYearMonth.getMonthValue());
 
         log.info("rList : " + rList);
         log.info("topDistricts : " + new ObjectMapper().writeValueAsString(topDistricts));
+        log.info("eventTypeCount : " + new ObjectMapper().writeValueAsString(eventTypeCount));
+        log.info("currentMonth : " + currentMonth);
 
-        // 조회된 리스트 결과값 넣어주기
         model.addAttribute("rList", rList);
         model.addAttribute("topDistricts", new ObjectMapper().writeValueAsString(topDistricts));
+        model.addAttribute("eventTypeCount", new ObjectMapper().writeValueAsString(eventTypeCount));
+        model.addAttribute("currentMonth", currentMonth);
 
         log.info(this.getClass().getName() + ".main End!");
 
         return "main";
-    }
-
-    @GetMapping("/main2")
-    public String main2(HttpSession session, ModelMap model) throws Exception {
-
-        log.info(this.getClass().getName() + ".main Start!");
-
-        String userId = (String) session.getAttribute("SS_USER_ID");
-
-        UserInfoDTO dto = userInfoService.getUserInfo(userId);
-
-        model.addAttribute("dto", dto);
-
-        // 현재 날짜를 yyyy-MM-dd 포맷으로 가져오기
-        String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        log.info("startDate : " + currentDate);
-        log.info("endDate : " + currentDate);
-
-        YearMonth currentYearMonth = YearMonth.now();
-        String startDate = currentYearMonth.atDay(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        String endDate = currentYearMonth.atEndOfMonth().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        log.info("startDate : " + startDate);
-        log.info("endDate : " + endDate);
-
-        ApiDTO pDTO = ApiDTO.builder().
-                startDate(startDate).
-                endDate(endDate)
-                .build();
-
-        List<ApiDTO> rList = Optional.ofNullable(eventService.getTodayEventList(pDTO))
-                .orElseGet(ArrayList::new);
-
-        Map<String, Long> topDistricts = eventService.getEventCountList(pDTO);
-
-        log.info("rList : " + rList);
-        log.info("topDistricts : " + topDistricts);
-
-        // 조회된 리스트 결과값 넣어주기
-        model.addAttribute("rList", rList);
-        model.addAttribute("topDistricts", topDistricts);
-
-        log.info(this.getClass().getName() + ".main End!");
-
-        return "main2";
     }
 
     @GetMapping("/awsUpload")
