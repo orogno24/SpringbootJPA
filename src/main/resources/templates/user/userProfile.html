@@ -156,6 +156,7 @@
 
         const ss_user_id = [[${session.SS_USER_ID}]];
         const user_id = [[${dto.userId}]];
+        const provider = [[${dto.provider}]];
 
         document.addEventListener('DOMContentLoaded', function() {
 
@@ -196,6 +197,7 @@
             updateBookmarkButton();
 
             var rawDate = /*[[${dto.regDt}]]*/ 'defaultDate';
+
             console.log("rawDate : " + rawDate);
 
             function formatDate(dateStr) {
@@ -211,12 +213,17 @@
             // 포매팅된 날짜를 HTML 요소에 적용
             $('#regDate').text("가입일 : " + formatDate(rawDate));
 
-            if (ss_user_id === user_id) {
-                // 조건이 충족되면 프로필 수정 버튼을 그대로 놔둠
-                $("#editBtn").show();
+
+            console.log("provider : " + provider);
+
+            if (provider === "google") {
+                $("#editBtn").hide();
             } else {
-                // 조건이 충족되지 않으면 프로필 수정 버튼을 숨기고 팔로우 버튼 표시
-                $("#editBtn").hide(); // 기존 프로필 수정 버튼 숨기기
+                $("#editBtn").show();
+            }
+
+            if (ss_user_id !== user_id) {
+                $("#editBtn").hide();
             }
 
             $("#btn1").on("click", function () {
@@ -245,6 +252,7 @@
                         $("#editBtn").hide();
                         $('#followBtn').replaceWith('<button class="button" id="removeBtn">팔로우 취소</button>');
                         alert(json.msg);
+                        location.reload();
                     },
                     error: function(xhr, status, error) {
                         alert("오류 발생: " + error);
@@ -266,6 +274,7 @@
                         $("#editBtn").hide();
                         $('#removeBtn').replaceWith('<button class="button" id="followBtn">팔로우하기</button>');
                         alert(json.msg);
+                        location.reload();
                     },
                     error: function(xhr, status, error) {
                         alert("오류 발생: " + error);
@@ -282,7 +291,9 @@
                 $('#followBtn').remove();
                 $("#removeBtn").show();
             } else {
-                $("#editBtn").show();
+                if (provider !== "google") {
+                    $("#editBtn").show();
+                }
                 if (ss_user_id !== user_id) {
                     $('<button class="button" id="followBtn">팔로우하기</button>').appendTo('.buttons');
                 }

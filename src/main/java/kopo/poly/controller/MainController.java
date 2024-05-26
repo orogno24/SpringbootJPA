@@ -132,11 +132,5 @@ public class MainController {
         log.info(this.getClass().getName() + ".redirect2 함수 실행");
         return "redirect2";
     }
-    
-    @PostMapping("/logout")
-    public String handleLogout(HttpSession session) {
-        session.invalidate(); // 세션 정보를 모두 삭제
-        return "user/login"; // 로그인 페이지 또는 홈페이지로 리다이렉트
-    }
 
 }

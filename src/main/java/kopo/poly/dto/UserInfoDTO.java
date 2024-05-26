@@ -20,7 +20,11 @@ public record UserInfoDTO(
 
         // 이메일 중복체크를 위한 인증번호
         int authNumber,
-        int mailNumber
+        int mailNumber,
+
+        // OAuth2 추가 필드
+        String provider // 로그인 제공자
+//        String providerId // 제공자 고유 ID
 
 ) {
 

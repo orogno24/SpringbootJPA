@@ -142,6 +142,7 @@ public class UserInfoService implements IUserInfoService {
                     .userName(pEntity.getUserName())
                     .profilePath(pEntity.getProfilePath())
                     .regDt(pEntity.getRegDt())
+                    .provider(pEntity.getProvider())
                     .build();
         } else rDTO = UserInfoDTO.builder().build();
 
@@ -284,6 +285,7 @@ public class UserInfoService implements IUserInfoService {
                     .email(rEntity.getEmail())
                     .regId(rEntity.getUserId()).regDt(rEntity.getRegDt())
                     .chgId(rEntity.getUserId()).chgDt(DateUtil.getDateTime("yyyy-MM-dd hh:mm:ss"))
+                    .provider(rEntity.getProvider())
                     .profilePath(rEntity.getProfilePath())
                     .build();
 
@@ -351,6 +353,7 @@ public class UserInfoService implements IUserInfoService {
                     .email(rEntity.getEmail())
                     .regId(rEntity.getUserId()).regDt(rEntity.getRegDt())
                     .chgId(rEntity.getUserId()).chgDt(DateUtil.getDateTime("yyyy-MM-dd hh:mm:ss"))
+                    .provider(rEntity.getProvider())
                     .profilePath(pDTO.profilePath())
                     .build();
 

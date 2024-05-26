@@ -253,7 +253,7 @@ public class EventService implements IEventService  {
     public Map<String, Long> getEventCountList(ApiDTO pDTO) throws JsonProcessingException {
         log.info(this.getClass().getName() + ".getEventCountList Start!");
 
-        String apiParam = apiKey + "/" + "json" + "/" + "culturalEventInfo" + "/" + "1" + "/" + "500" + "/";
+        String apiParam = apiKey + "/" + "json" + "/" + "culturalEventInfo" + "/" + "1" + "/" + "700" + "/";
         String json = NetworkUtil.get(IEventService.apiURL + apiParam);
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -277,7 +277,13 @@ public class EventService implements IEventService  {
                     String endDateStr = (String) content.get("END_DATE");
                     LocalDateTime eventStartDate = LocalDateTime.parse(startDateStr, formatter);
                     LocalDateTime eventEndDate = LocalDateTime.parse(endDateStr, formatter);
-                    return !eventStartDate.toLocalDate().isBefore(startDate) && !eventEndDate.toLocalDate().isAfter(endDate);
+                    boolean isInDateRange = !eventStartDate.toLocalDate().isBefore(startDate) && !eventEndDate.toLocalDate().isAfter(endDate);
+
+                    if (isInDateRange) {
+                        log.info("Event " + content.get("EVENTID") + ": Start Date = " + eventStartDate + ", End Date = " + eventEndDate + ", In Date Range: " + isInDateRange);
+                    }
+
+                    return isInDateRange;
                 })
                 .collect(Collectors.groupingBy(content -> content.get("GUNAME").toString(), Collectors.counting()));
 
@@ -299,7 +305,7 @@ public class EventService implements IEventService  {
     public Map<String, Long> getEventTypeCountList(ApiDTO pDTO) throws JsonProcessingException {
         log.info(this.getClass().getName() + ".getEventTypeCountList Start!");
 
-        String apiParam = apiKey + "/" + "json" + "/" + "culturalEventInfo" + "/" + "1" + "/" + "500" + "/";
+        String apiParam = apiKey + "/" + "json" + "/" + "culturalEventInfo" + "/" + "1" + "/" + "700" + "/";
         String json = NetworkUtil.get(IEventService.apiURL + apiParam);
 
         ObjectMapper objectMapper = new ObjectMapper();

@@ -23,11 +23,10 @@ public class UserInfoEntity implements Serializable {
     private String userId;
 
     @NonNull
-    @Column(name = "user_name", length = 500, nullable = false)
+    @Column(name = "user_name", nullable = false)
     private String userName;
 
-    @NonNull
-    @Column(name = "password", length = 1, nullable = false)
+    @Column(name = "password")
     private String password;
 
     @NonNull
@@ -48,4 +47,11 @@ public class UserInfoEntity implements Serializable {
 
     @Column(name = "profile_path")
     private String profilePath;
+
+    // OAuth2 로그인 지원을 위한 필드 추가
+    @Column(name = "provider")
+    private String provider;
+
+//    @Column(name = "provider_id")
+//    private String providerId;
 }

@@ -124,8 +124,8 @@
                     datasets: [{
                         label: '문화행사 수',
                         data: data,
-                        backgroundColor: 'rgba(75,192,192,0.44)',
-                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'rgba(0, 255, 255, 0.6)', // 시안색 네온
+                        borderColor: 'rgba(0, 255, 255, 1)', // 시안색 네온
                         borderWidth: 1
                     }]
                 },
@@ -173,20 +173,20 @@
                         label: '문화행사 유형',
                         data: eventTypeData,
                         backgroundColor: [
-                            'rgba(255, 99, 132, 0.2)',
-                            'rgba(54, 162, 235, 0.2)',
-                            'rgba(255, 206, 86, 0.2)',
-                            'rgba(75, 192, 192, 0.2)',
-                            'rgba(153, 102, 255, 0.2)',
-                            'rgba(255, 159, 64, 0.2)'
+                            'rgba(255, 0, 255, 0.4)', // 핑크 네온
+                            'rgba(0, 255, 0, 0.4)',   // 녹색 네온
+                            'rgba(0, 255, 255, 0.4)', // 시안 네온
+                            'rgba(255, 165, 0, 0.4)', // 주황 네온
+                            'rgba(255, 0, 0, 0.4)',   // 레드 네온
+                            'rgba(0, 0, 255, 0.4)'    // 블루 네온
                         ],
                         borderColor: [
-                            'rgba(255, 99, 132, 1)',
-                            'rgba(54, 162, 235, 1)',
-                            'rgba(255, 206, 86, 1)',
-                            'rgba(75, 192, 192, 1)',
-                            'rgba(153, 102, 255, 1)',
-                            'rgba(255, 159, 64, 1)'
+                            'rgba(255, 0, 255, 1)',
+                            'rgba(0, 255, 0, 1)',
+                            'rgba(0, 255, 255, 1)',
+                            'rgba(255, 165, 0, 1)',
+                            'rgba(255, 0, 0, 1)',
+                            'rgba(0, 0, 255, 1)'
                         ],
                         borderWidth: 1
                     }]
@@ -277,7 +277,7 @@
                             어서오세요!<b class="caret"></b></a>
                         <ul class="dropdown-menu">
                             <li><a href="#" onclick="goToUserProfile()">마이페이지</a></li>
-                            <li><a href="#" id="logoutLink">로그아웃</a></li>
+                            <li><a href="/logout" id="logoutLink">로그아웃</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -387,18 +387,6 @@
         </div>
     </div>
 </div>
-<script>
-    document.getElementById('logoutLink').addEventListener('click', function (event) {
-        event.preventDefault();
-        fetch('/logout', {method: 'POST'})
-            .then(response => {
-                window.location.href = '/user/login';
-            })
-            .catch(error => {
-                console.error('Logout failed:', error);
-            });
-    });
-</script>
 <script src="js/jquery.js"></script>
 <script type="text/javascript" src="js/jquery.mixitup.js"></script>
 <script type="text/javascript" src="js/bootstrap.js"></script>

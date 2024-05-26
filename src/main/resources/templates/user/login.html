@@ -36,6 +36,31 @@
             padding: 20px;
         }
 
+        /* 구글 로그인 버튼 스타일 */
+        .google-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            color: #395072;
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .google-btn img {
+            background-color: white;
+            margin-right: 10px;
+            width: 26px;
+            height: 26px;
+            border-radius: 4px;
+        }
+
+        .google-btn:hover {
+            color: #2b3c56;
+        }
+
+
         .page {
             background: #d7f9ff;
             display: flex;
@@ -382,6 +407,10 @@
                         <br><br>
                         <button id="btnSearchUserId" type="button">아이디 찾기</button>
                         <button id="btnSearchPassword" type="button">비밀번호 찾기</button>
+                        <br><br>
+                        <a href="/oauth2/authorization/google" class="google-btn">
+                            <img src="/assets/img/google.png" alt="Google Logo">구글 계정으로 로그인
+                        </a>
                     </div>
                 </div>
 
@@ -389,6 +418,5 @@
         </div>
     </div>
 </div>
-
 </body>
 </html>
