@@ -37,68 +37,6 @@ public class EventController {
     private final IEventService eventService;
     private final IUserInfoService userInfoService;
 
-    /**
-     * 문화행사 리스트 보여주기
-     * <p>
-     * GetMapping(value = "event/eventList") =>  GET방식을 통해 접속되는 URL이 event/eventList 경우 아래 함수를 실행함
-     */
-    @GetMapping(value = "eventList")
-    public String eventList(ModelMap model)
-            throws Exception {
-
-        // 로그 찍기(추후 찍은 로그를 통해 이 함수에 접근했는지 파악하기 용이하다.)
-        log.info(this.getClass().getName() + ".eventList Start!");
-
-        List<EventDTO> rList = Optional.ofNullable(eventService.getEventList())
-                .orElseGet(ArrayList::new);
-
-        // 조회된 리스트 결과값 넣어주기
-        model.addAttribute("rList", rList);
-
-        // 로그 찍기(추후 찍은 로그를 통해 이 함수 호출이 끝났는지 파악하기 용이하다.)
-        log.info(this.getClass().getName() + ".eventList End!");
-
-        // 함수 처리가 끝나고 보여줄 HTML (Thymeleaf) 파일명
-        // templates/event/eventList.html
-        return "event/eventList";
-    }
-
-    /**
-     * 문화행사 상세보기
-     */
-    @GetMapping(value = "eventInfo")
-    public String eventInfo(HttpServletRequest request, ModelMap model) throws Exception {
-
-        log.info(this.getClass().getName() + ".eventInfo Start!");
-
-        String nSeq = CmmUtil.nvl(request.getParameter("nSeq"), "0");
-
-        log.info("nSeq : " + nSeq);
-
-        EventDTO pDTO = EventDTO.builder().eventSeq(Long.parseLong(nSeq)).build();
-
-        EventDTO rDTO = Optional.ofNullable(eventService.getEventInfo(pDTO, true))
-                .orElseGet(() -> EventDTO.builder().build());
-
-        // 조회된 리스트 결과값 넣어주기
-        model.addAttribute("rDTO", rDTO);
-
-        log.info(this.getClass().getName() + ".eventInfo End!");
-
-        return "event/eventInfo";
-    }
-
-    @GetMapping(value = "eventSearch")
-    public String eventSearch()
-            throws Exception {
-
-        log.info(this.getClass().getName() + ".eventSearch Start!");
-
-        log.info(this.getClass().getName() + ".eventSearch End!");
-
-        return "event/eventSearch";
-    }
-
     @GetMapping(value = "apiSearch")
     public String apiSearch()
             throws Exception {
@@ -108,38 +46,6 @@ public class EventController {
         log.info(this.getClass().getName() + ".apiSearch End!");
 
         return "event/apiSearch";
-    }
-
-    @ResponseBody
-    @GetMapping(value = "filteredList")
-    public List<EventDTO> filteredList(HttpServletRequest request)
-            throws Exception {
-
-        // 로그 찍기(추후 찍은 로그를 통해 이 함수에 접근했는지 파악하기 용이하다.)
-        log.info(this.getClass().getName() + ".filteredList Start!");
-
-        String eventPlace = CmmUtil.nvl(request.getParameter("region"));
-        String eventSort = CmmUtil.nvl(request.getParameter("tourType"));
-        String eventDate = CmmUtil.nvl(request.getParameter("tourDate"));
-
-        log.info("eventPlace : " + eventPlace);
-        log.info("eventSort : " + eventSort);
-        log.info("eventDate : " + eventDate);
-
-        EventDTO pDTO = EventDTO.builder().
-                eventPlace(eventPlace).
-                eventSort(eventSort).
-                eventDate(eventDate)
-                .build();
-
-        List<EventDTO> rList = Optional.ofNullable(eventService.getEventListSearch(pDTO))
-                .orElseGet(ArrayList::new);
-
-        log.info("rList : " + rList);
-
-        log.info(this.getClass().getName() + ".filteredList End!");
-
-        return rList;
     }
 
     /**
@@ -215,27 +121,6 @@ public class EventController {
         log.info(this.getClass().getName() + ".apiInfo End!");
 
         return "event/apiInfo";
-    }
-
-    @GetMapping(value = "eventBookmarkList")
-    public String eventBookmarkList(ModelMap model)
-            throws Exception {
-
-        // 로그 찍기(추후 찍은 로그를 통해 이 함수에 접근했는지 파악하기 용이하다.)
-        log.info(this.getClass().getName() + ".eventBookmarkList Start!");
-
-        List<EventDTO> rList = Optional.ofNullable(eventService.getEventList())
-                .orElseGet(ArrayList::new);
-
-        // 조회된 리스트 결과값 넣어주기
-        model.addAttribute("rList", rList);
-
-        // 로그 찍기(추후 찍은 로그를 통해 이 함수 호출이 끝났는지 파악하기 용이하다.)
-        log.info(this.getClass().getName() + ".eventBookmarkList End!");
-
-        // 함수 처리가 끝나고 보여줄 HTML (Thymeleaf) 파일명
-        // templates/event/eventList.html
-        return "event/eventList";
     }
 
     @GetMapping("/eventCalendar")

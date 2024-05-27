@@ -8,8 +8,10 @@ import kopo.poly.dto.UserInfoDTO;
 import kopo.poly.service.IEventService;
 import kopo.poly.service.IUserInfoService;
 import kopo.poly.util.CmmUtil;
+import kopo.poly.util.NetworkUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,10 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Controller
@@ -30,6 +29,9 @@ public class MainController {
 
     private final IEventService eventService;
     private final IUserInfoService userInfoService;
+
+    @Value("${data.api.key}")
+    private String apiKey;
 
     @GetMapping("/main")
     public String main(HttpSession session, ModelMap model) throws Exception {
@@ -42,38 +44,23 @@ public class MainController {
 
         model.addAttribute("dto", dto);
 
-        // 현재 날짜를 yyyy-MM-dd 포맷으로 가져오기
-        String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        log.info("startDate : " + currentDate);
-        log.info("endDate : " + currentDate);
+        String colNm = "EVENT_" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        List<Map<String, Object>> rContent = eventService.getCulturalEvents(colNm);
 
+        String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         YearMonth currentYearMonth = YearMonth.now();
         String startDate = currentYearMonth.atDay(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         String endDate = currentYearMonth.atEndOfMonth().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        log.info("startDate : " + startDate);
-        log.info("endDate : " + endDate);
 
-        ApiDTO pDTO = ApiDTO.builder().
-                startDate(currentDate).
-                endDate(currentDate)
-                .build();
+        ApiDTO pDTO = ApiDTO.builder().startDate(currentDate).endDate(currentDate).build();
+        ApiDTO pDTO2 = ApiDTO.builder().startDate(startDate).endDate(endDate).build();
 
-        ApiDTO pDTO2 = ApiDTO.builder().
-                startDate(startDate).
-                endDate(endDate)
-                .build();
-
-        List<ApiDTO> rList = Optional.ofNullable(eventService.getTodayEventList(pDTO))
+        List<ApiDTO> rList = Optional.ofNullable(eventService.getTodayEventList(rContent, pDTO))
                 .orElseGet(ArrayList::new);
+        Map<String, Long> topDistricts = eventService.getEventCountList(rContent, pDTO2);
+        Map<String, Long> eventTypeCount = eventService.getEventTypeCountList(rContent, pDTO2);
 
-        Map<String, Long> topDistricts = eventService.getEventCountList(pDTO2);
-        Map<String, Long> eventTypeCount = eventService.getEventTypeCountList(pDTO2);
         String currentMonth = String.valueOf(currentYearMonth.getMonthValue());
-
-        log.info("rList : " + rList);
-        log.info("topDistricts : " + new ObjectMapper().writeValueAsString(topDistricts));
-        log.info("eventTypeCount : " + new ObjectMapper().writeValueAsString(eventTypeCount));
-        log.info("currentMonth : " + currentMonth);
 
         model.addAttribute("rList", rList);
         model.addAttribute("topDistricts", new ObjectMapper().writeValueAsString(topDistricts));

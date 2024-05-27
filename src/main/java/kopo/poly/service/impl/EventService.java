@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import kopo.poly.dto.ApiDTO;
 import kopo.poly.dto.BookmarkDTO;
 import kopo.poly.dto.EventDTO;
+import kopo.poly.redis.IRedisMapper;
 import kopo.poly.repository.BookmarkRepository;
 import kopo.poly.repository.EventRespository;
 import kopo.poly.repository.entity.BookmarkEntity;
@@ -18,9 +19,11 @@ import kopo.poly.util.ExtractImageUtil;
 import kopo.poly.util.NetworkUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +31,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -38,44 +42,13 @@ public class EventService implements IEventService  {
 
     private final EventRespository eventRepository;
     private final BookmarkRepository bookmarkRepository;
+    private final IRedisMapper redisMapper;
+
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
 
     @Value("${data.api.key}")
     private String apiKey;
-
-    @Override
-    public List<EventDTO> getEventList() {
-
-        log.info(this.getClass().getName() + ".getEventList Start!");
-
-        // 공지사항 전체 리스트 조회하기
-        List<EventEntity> rList = eventRepository.findAllByOrderByEventSeqDesc();
-
-        // 엔티티의 값들을 DTO에 맞게 넣어주기
-        List<EventDTO> nList = new ObjectMapper().convertValue(rList,
-                new TypeReference<List<EventDTO>>() {
-                });
-
-        log.info(this.getClass().getName() + ".getEventList End!");
-
-        return nList;
-    }
-
-    @Transactional
-    @Override
-    public EventDTO getEventInfo(EventDTO pDTO, boolean type) throws Exception {
-
-        log.info(this.getClass().getName() + ".getEventInfo Start!");
-
-        // 공지사항 상세내역 가져오기
-        EventEntity rEntity = eventRepository.findByEventSeq(pDTO.eventSeq());
-
-        // 엔티티의 값들을 DTO에 맞게 넣어주기
-        EventDTO rDTO = new ObjectMapper().convertValue(rEntity, EventDTO.class);
-
-        log.info(this.getClass().getName() + ".getEventInfo End!");
-
-        return rDTO;
-    }
 
     @Override
     public ApiDTO getApiInfo(String uniqueIdentifier) throws Exception {
@@ -103,27 +76,6 @@ public class EventService implements IEventService  {
 
         log.info("No matching event found.");
         return ApiDTO.builder().build();
-    }
-
-    @Override
-    public List<EventDTO> getEventListSearch(EventDTO pDTO) {
-        log.info(this.getClass().getName() + ".getEventListSearch Start!");
-
-        Specification<EventEntity> spec = Specification.where(EventSpecification.eventPlace(pDTO.eventPlace()))
-                .and(EventSpecification.eventSort(pDTO.eventSort()))
-                .and(EventSpecification.eventDate(pDTO.eventDate()));
-
-        Sort sort = Sort.by(Sort.Direction.ASC, "eventSeq");
-        List<EventEntity> rList = eventRepository.findAll(spec, sort);
-
-        // 엔티티의 값들을 DTO에 맞게 넣어주기
-        List<EventDTO> nList = new ObjectMapper().convertValue(rList,
-                new TypeReference<List<EventDTO>>() {
-                });
-
-        log.info(this.getClass().getName() + ".getEventListSearch End!");
-
-        return nList;
     }
 
     @Override
@@ -193,18 +145,47 @@ public class EventService implements IEventService  {
     }
 
     @Override
-    public List<ApiDTO> getTodayEventList(ApiDTO pDTO) throws JsonProcessingException {
+    public List<Map<String, Object>> getCulturalEvents(String colNm) throws Exception {
+
+        List<Map<String, Object>> rContent;
+
+        if (!redisMapper.getExistKey(colNm)) {
+
+            final int MAX_ITEMS_PER_REQUEST = 1000;
+            int page = 1;
+            boolean hasMoreData = true;
+            rContent = new ArrayList<>();
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            while (hasMoreData) {
+                String apiParam = apiKey + "/json/culturalEventInfo/" + page + "/" + MAX_ITEMS_PER_REQUEST + "/";
+                String json = NetworkUtil.get(apiURL + apiParam);
+                Map<String, Object> rMap = objectMapper.readValue(json, LinkedHashMap.class);
+                Map<String, Object> culturalEventInfo = (Map<String, Object>) rMap.get("culturalEventInfo");
+                List<Map<String, Object>> rows = (List<Map<String, Object>>) culturalEventInfo.get("row");
+                rContent.addAll(rows);
+                page++;
+                // 데이터가 요청한 만큼 반환되지 않았다면, 더 이상 데이터가 없다고 가정
+                hasMoreData = (rows.size() == MAX_ITEMS_PER_REQUEST);
+            }
+
+            redisMapper.insertEventList(rContent, colNm);
+
+        } else {
+
+            rContent = redisMapper.getEventList(colNm);
+
+        }
+
+        return rContent;
+    }
+
+    @Override
+    public List<ApiDTO> getTodayEventList(List<Map<String, Object>> rContent, ApiDTO pDTO) throws JsonProcessingException {
 
         log.info(this.getClass().getName() + ".getTodayEventList Start!");
 
-        String apiParam = apiKey + "/" + "json" + "/" + "culturalEventInfo" + "/" + "1" + "/" + "500" + "/";
-        String json = NetworkUtil.get(IEventService.apiURL + apiParam);
-
         ObjectMapper objectMapper = new ObjectMapper();
-        Map<String, Object> rMap = objectMapper.readValue(json, LinkedHashMap.class);
-
-        Map<String, Object> culturalEventInfo = (Map<String, Object>) rMap.get("culturalEventInfo");
-        List<Map<String, Object>> rContent = (List<Map<String, Object>>) culturalEventInfo.get("row");
 
         // 날짜 및 시간을 처리할 수 있는 Formatter 정의
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
@@ -250,17 +231,8 @@ public class EventService implements IEventService  {
 
     }
 
-    public Map<String, Long> getEventCountList(ApiDTO pDTO) throws JsonProcessingException {
+    public Map<String, Long> getEventCountList(List<Map<String, Object>> rContent, ApiDTO pDTO) throws JsonProcessingException {
         log.info(this.getClass().getName() + ".getEventCountList Start!");
-
-        String apiParam = apiKey + "/" + "json" + "/" + "culturalEventInfo" + "/" + "1" + "/" + "700" + "/";
-        String json = NetworkUtil.get(IEventService.apiURL + apiParam);
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        Map<String, Object> rMap = objectMapper.readValue(json, LinkedHashMap.class);
-
-        Map<String, Object> culturalEventInfo = (Map<String, Object>) rMap.get("culturalEventInfo");
-        List<Map<String, Object>> rContent = (List<Map<String, Object>>) culturalEventInfo.get("row");
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
 
@@ -279,9 +251,9 @@ public class EventService implements IEventService  {
                     LocalDateTime eventEndDate = LocalDateTime.parse(endDateStr, formatter);
                     boolean isInDateRange = !eventStartDate.toLocalDate().isBefore(startDate) && !eventEndDate.toLocalDate().isAfter(endDate);
 
-                    if (isInDateRange) {
-                        log.info("Event " + content.get("EVENTID") + ": Start Date = " + eventStartDate + ", End Date = " + eventEndDate + ", In Date Range: " + isInDateRange);
-                    }
+//                    if (isInDateRange) {
+//                        log.info("Event " + content.get("EVENTID") + ": Start Date = " + eventStartDate + ", End Date = " + eventEndDate + ", In Date Range: " + isInDateRange);
+//                    }
 
                     return isInDateRange;
                 })
@@ -302,17 +274,8 @@ public class EventService implements IEventService  {
         return top5Districts;
     }
 
-    public Map<String, Long> getEventTypeCountList(ApiDTO pDTO) throws JsonProcessingException {
+    public Map<String, Long> getEventTypeCountList(List<Map<String, Object>> rContent, ApiDTO pDTO) throws JsonProcessingException {
         log.info(this.getClass().getName() + ".getEventTypeCountList Start!");
-
-        String apiParam = apiKey + "/" + "json" + "/" + "culturalEventInfo" + "/" + "1" + "/" + "700" + "/";
-        String json = NetworkUtil.get(IEventService.apiURL + apiParam);
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        Map<String, Object> rMap = objectMapper.readValue(json, LinkedHashMap.class);
-
-        Map<String, Object> culturalEventInfo = (Map<String, Object>) rMap.get("culturalEventInfo");
-        List<Map<String, Object>> rContent = (List<Map<String, Object>>) culturalEventInfo.get("row");
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
 
