@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <title>문화시설 상세보기</title>
     <link rel="stylesheet" href="/css/apiInfo.css"/>
-    <script type="text/javascript" src="/js/apiInfo.js"></script>
     <script type="text/javascript" src="/js/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="/css/header.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -23,9 +22,74 @@
         });
         /*]]>*/
     </script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const facName = [[${rDTO.facName}]];
+
+        function loadBlogResults() {
+            $.ajax({
+                url: '/culture/facilities/' + facName,
+                type: 'GET',
+                success: function(data) {
+                    $('#blogResults').html(data);
+                },
+                error: function(error) {
+                    $('#blogResults').html('<p>검색 결과를 불러오는 데 실패했습니다.</p>');
+                }
+            });
+        }
+        /*]]>*/
+    </script>
+    <style>
+        .blog-item {
+            border: 2px solid #e8e8e8;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            padding: 10px;
+            margin-bottom: 20px;
+            transition: transform 0.3s;
+        }
+
+        .blog-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .blog-title {
+            margin-top: 8px;
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .blog-metadata {
+            color: #888;
+            font-size: 14px;
+            margin-bottom: -4px;
+        }
+
+        .blog-description {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .blog-link {
+            text-decoration: none;
+            color: #333;
+            transition: color 0.3s ease;
+        }
+
+        .naver-icon {
+            display: inline-block;
+            vertical-align: middle;
+            width: 20px;
+            height: 20px;
+            margin-bottom: 3px;
+            margin-right: 4px;
+        }
+
+    </style>
 
 </head>
-<body onload="initMap()" style="background-color: #d7f9ff">
+<body onload="loadBlogResults()" style="background-color: #d7f9ff">
 <div class="header" style="padding: 0 16px;">
     <a href="/main" class="logo">
         <img src="/assets/img/logo3.png" alt="Main Logo">
@@ -64,19 +128,13 @@
     <div th:if="${!#strings.isEmpty(rDTO.facDesc)}">
        <span th:utext="${rDTO.facDesc}"></span>
     </div>
+    <br>
     <hr class="custom-hr">
     <br>
-    <h2 style="margin-top: 4px; text-align: center">위치안내</h2>
-    <div id="map"></div>
-    <div class="tab-container">
-        <div class="tab" onclick="searchPlacesByCategory('FD6', event)">근처 음식점 안내</div>
-        <div class="tab" onclick="searchPlacesByCategory('AT4', event)">근처 관광명소 안내</div>
-        <div class="tab" onclick="searchPlacesByCategory('MT1', event)">근처 시장 안내</div>
-    </div>
-    <ul id="placesList"></ul>
-
+    <h2 style="margin-top: 4px; text-align: center">블로그 리뷰</h2>
+    <div id="blogResults" style=" margin-top: -12px; padding: 12px;"></div>
     <div class="button-container">
-        <button id="btnList" type="button" style="font-family: 'NIXGONM-Vb';">문화시설 목록으로 이동</button>
+        <button id="btnList" type="button" style="font-family: 'NIXGONM-Vb'; margin-top: -12px">문화시설 목록으로 이동</button>
     </div>
 
 </div>

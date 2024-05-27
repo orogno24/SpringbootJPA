@@ -151,23 +151,17 @@ public class EventService implements IEventService  {
 
         if (!redisMapper.getExistKey(colNm)) {
 
-            final int MAX_ITEMS_PER_REQUEST = 1000;
-            int page = 1;
-            boolean hasMoreData = true;
-            rContent = new ArrayList<>();
-            ObjectMapper objectMapper = new ObjectMapper();
+            // API 호출을 위한 파라미터 설정
+            String apiParam = apiKey + "/" + "json" + "/" + "culturalEventInfo" + "/" + "1" + "/" + "900" + "/";
+            String json = NetworkUtil.get(IEventService.apiURL + apiParam);
 
-            while (hasMoreData) {
-                String apiParam = apiKey + "/json/culturalEventInfo/" + page + "/" + MAX_ITEMS_PER_REQUEST + "/";
-                String json = NetworkUtil.get(apiURL + apiParam);
-                Map<String, Object> rMap = objectMapper.readValue(json, LinkedHashMap.class);
-                Map<String, Object> culturalEventInfo = (Map<String, Object>) rMap.get("culturalEventInfo");
-                List<Map<String, Object>> rows = (List<Map<String, Object>>) culturalEventInfo.get("row");
-                rContent.addAll(rows);
-                page++;
-                // 데이터가 요청한 만큼 반환되지 않았다면, 더 이상 데이터가 없다고 가정
-                hasMoreData = (rows.size() == MAX_ITEMS_PER_REQUEST);
-            }
+            // JSON 응답을 객체로 변환
+            ObjectMapper objectMapper = new ObjectMapper();
+            Map<String, Object> rMap = objectMapper.readValue(json, LinkedHashMap.class);
+
+            // "culturalEventInfo" 객체 내 "row" 배열 추출
+            Map<String, Object> culturalEventInfo = (Map<String, Object>) rMap.get("culturalEventInfo");
+            rContent = (List<Map<String, Object>>) culturalEventInfo.get("row");
 
             redisMapper.insertEventList(rContent, colNm);
 

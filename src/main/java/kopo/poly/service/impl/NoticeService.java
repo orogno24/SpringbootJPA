@@ -9,7 +9,6 @@ import kopo.poly.repository.NoticeRepository;
 import kopo.poly.repository.entity.ImageKey;
 import kopo.poly.repository.entity.NoticeEntity;
 import kopo.poly.repository.entity.NoticeImageEntity;
-import kopo.poly.repository.entity.UserInfoEntity;
 import kopo.poly.service.INoticeService;
 import kopo.poly.util.CmmUtil;
 import kopo.poly.util.DateUtil;
@@ -19,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
