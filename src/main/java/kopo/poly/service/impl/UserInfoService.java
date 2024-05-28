@@ -1,14 +1,14 @@
 package kopo.poly.service.impl;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.querydsl.jpa.JPAExpressions;
-import com.querydsl.jpa.impl.JPAQuery;
-import com.querydsl.jpa.impl.JPAQueryFactory;
-import kopo.poly.dto.*;
+import kopo.poly.dto.MailDTO;
+import kopo.poly.dto.UserFollowDTO;
+import kopo.poly.dto.UserInfoDTO;
 import kopo.poly.repository.UserFollowRepository;
 import kopo.poly.repository.UserInfoRepository;
-import kopo.poly.repository.entity.*;
+import kopo.poly.repository.entity.FollowKey;
+import kopo.poly.repository.entity.UserFollowEntity;
+import kopo.poly.repository.entity.UserInfoEntity;
 import kopo.poly.service.IMailService;
 import kopo.poly.service.IUserInfoService;
 import kopo.poly.util.CmmUtil;
@@ -19,7 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
@@ -30,10 +31,14 @@ public class UserInfoService implements IUserInfoService {
 
     private final UserInfoRepository userInfoRepository;
     private final UserFollowRepository userFollowRepository;
-
     private final IMailService mailService;
-    private final JPAQueryFactory queryFactory;
 
+    /**
+     * 아이디 중복 체크
+     *
+     * @param pDTO 회원 가입을 위한 아이디
+     * @return 아이디 중복 여부 결과
+     */
     @Override
     public UserInfoDTO getUserIdExists(UserInfoDTO pDTO) throws Exception {
 
@@ -58,6 +63,12 @@ public class UserInfoService implements IUserInfoService {
         return rDTO;
     }
 
+    /**
+     * 회원 가입하기(회원정보 등록하기)
+     *
+     * @param pDTO 회원 가입을 위한 회원정보
+     * @return 회원가입 결과
+     */
     @Override
     public int insertUserInfo(UserInfoDTO pDTO) throws Exception {
 
@@ -100,6 +111,28 @@ public class UserInfoService implements IUserInfoService {
         return res;
     }
 
+    /**
+     * 회원탈퇴
+     *
+     * @param pDTO 회원정보
+     */
+    @Override
+    public void deleteUserProc(UserInfoDTO pDTO) throws Exception {
+
+        log.info(this.getClass().getName() + ".deleteUserProc Start!");
+
+        userInfoRepository.deleteById(pDTO.userId());
+
+        log.info(this.getClass().getName() + ".deleteUserProc End!");
+
+    }
+
+    /**
+     *  로그인을 위해 아이디와 비밀번호가 일치하는지 확인하기
+     *
+     * @param pDTO 로그인을 위한 회원정보
+     * @return 회원가입 결과
+     */
     @Override
     public int getUserLogin(UserInfoDTO pDTO) throws Exception {
 
@@ -124,6 +157,12 @@ public class UserInfoService implements IUserInfoService {
         return res;
     }
 
+    /**
+     * 특정 유저 전체 정보 조회
+     *
+     * @param userId 유저 아이디
+     * @return 정보 조회 결과
+     */
     @Override
     public UserInfoDTO getUserInfo(String userId) throws Exception {
 
@@ -151,6 +190,12 @@ public class UserInfoService implements IUserInfoService {
         return rDTO;
     }
 
+    /**
+     * 아이디 찾기
+     *
+     * @param pDTO 회원정보
+     * @return 아이디 찾기 결과
+     */
     @Override
     public String searchUserIdProc(UserInfoDTO pDTO) throws Exception {
         log.info(this.getClass().getName() + ".searchUserIdProc Start!");
@@ -167,12 +212,6 @@ public class UserInfoService implements IUserInfoService {
 
         log.info("rEntity : " + rEntity);
 
-//        if (rEntity.isPresent()) {
-//            rDTO = new ObjectMapper().convertValue(rEntity.get(), UserInfoDTO.class);
-//        } else {
-//            rDTO = UserInfoDTO.builder().build();
-//        }
-
         if (rEntity.isPresent()) {
             res = rEntity.get().getUserId();
         }
@@ -182,6 +221,12 @@ public class UserInfoService implements IUserInfoService {
         return res;
     }
 
+    /**
+     * 이메일 중복체크
+     *
+     * @param pDTO 회원정보
+     * @return 중복체크 결과
+     */
     @Override
     public UserInfoDTO getEmailExists(UserInfoDTO pDTO) throws Exception {
 
@@ -231,6 +276,12 @@ public class UserInfoService implements IUserInfoService {
         return rDTO;
     }
 
+    /**
+     * 비밀번호 찾기
+     *
+     * @param pDTO 회원정보
+     * @return 비밀번호 찾기 결과
+     */
     @Override
     public UserInfoDTO searchPasswordProc(UserInfoDTO pDTO) throws Exception {
 
@@ -263,6 +314,11 @@ public class UserInfoService implements IUserInfoService {
 
     }
 
+    /**
+     * 닉네임 변경
+     *
+     * @param pDTO 회원정보
+     */
     @Transactional
     @Override   // 닉네임 변경 함수
     public void newUserNameProc(UserInfoDTO pDTO) throws Exception {
@@ -297,6 +353,11 @@ public class UserInfoService implements IUserInfoService {
 
     }
 
+    /**
+     * 비밀번호 변경
+     *
+     * @param pDTO 회원정보
+     */
     @Transactional
     @Override
     public void newPasswordProc(UserInfoDTO pDTO) throws Exception {
@@ -332,6 +393,11 @@ public class UserInfoService implements IUserInfoService {
         log.info(this.getClass().getName() + "newPasswordProc End!");
     }
 
+    /**
+     * 프로필 사진 등록
+     *
+     * @param pDTO 회원정보
+     */
     @Transactional
     @Override
     public void profilePathProc(UserInfoDTO pDTO) throws Exception {
@@ -368,6 +434,11 @@ public class UserInfoService implements IUserInfoService {
 
     }
 
+    /**
+     * 팔로우하기
+     *
+     * @param pDTO 회원정보
+     */
     @Override
     public void addFollower(UserFollowDTO pDTO) throws Exception {
 
@@ -385,6 +456,11 @@ public class UserInfoService implements IUserInfoService {
 
     }
 
+    /**
+     * 팔로우 취소하기
+     *
+     * @param pDTO 회원정보
+     */
     @Override
     public void removeFollower(UserFollowDTO pDTO) throws Exception {
 
@@ -406,6 +482,12 @@ public class UserInfoService implements IUserInfoService {
         log.info(this.getClass().getName() + ".removeFollower End!");
     }
 
+    /**
+     * 팔로우 여부 조회
+     *
+     * @param pDTO 회원정보
+     * @return 팔로우 여부 조회 결과
+     */
     @Override
     public boolean getFollowInfo(UserFollowDTO pDTO) throws Exception {
 
@@ -423,18 +505,36 @@ public class UserInfoService implements IUserInfoService {
         return isFollowing;
     }
 
+    /**
+     * 팔로워 수 조회
+     *
+     * @param followerId 회원 아이디
+     * @return 팔로워 수 조회 결과
+     */
     @Override
     public long countByFollowerId(String followerId) throws Exception {
 
         return userFollowRepository.countByFollowerId(followerId);
     }
 
+    /**
+     * 팔로잉 수 조회
+     *
+     * @param followingId 회원 아이디
+     * @return 팔로잉 수 조회 결과
+     */
     @Override
     public long countByFollowingId(String followingId) throws Exception {
 
         return userFollowRepository.countByFollowingId(followingId);
     }
 
+    /**
+     * 팔로우 리스트 조회
+     *
+     * @param userId 회원 아이디
+     * @return 팔로우 리스트 조회 결과
+     */
     @Override
     public List<UserFollowDTO> getFollowList(String userId) throws Exception {
 
@@ -469,6 +569,12 @@ public class UserInfoService implements IUserInfoService {
         return nList;
     }
 
+    /**
+     * 팔로잉 리스트 조회
+     *
+     * @param userId 회원 아이디
+     * @return 팔로잉 리스트 조회 결과
+     */
     @Override
     public List<UserFollowDTO> getFollowingList(String userId) throws Exception {
 
@@ -495,6 +601,12 @@ public class UserInfoService implements IUserInfoService {
 
     }
 
+    /**
+     * 팔로우 유저들 게시글 조회
+     *
+     * @param userId 회원 아이디
+     * @return 팔로우 유저들 게시글 조회 결과
+     */
     @Override
     public List<String> noticeFollowList(String userId) throws Exception {
 

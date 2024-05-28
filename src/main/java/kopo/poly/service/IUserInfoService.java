@@ -25,6 +25,13 @@ public interface IUserInfoService {
     int insertUserInfo(UserInfoDTO pDTO) throws Exception;
 
     /**
+     * 회원탈퇴
+     *
+     * @param pDTO 회원정보
+     */
+    void deleteUserProc(UserInfoDTO pDTO) throws Exception;
+
+    /**
      *  로그인을 위해 아이디와 비밀번호가 일치하는지 확인하기
      *
      * @param pDTO 로그인을 위한 회원정보
@@ -32,49 +39,119 @@ public interface IUserInfoService {
      */
     int getUserLogin(UserInfoDTO pDTO) throws Exception;
 
-    // 특정 유저 전체 정보 조회 코드
+    /**
+     * 특정 유저 전체 정보 조회
+     *
+     * @param userId 유저 아이디
+     * @return 정보 조회 결과
+     */
     UserInfoDTO getUserInfo(String userId) throws Exception;
 
-    // 아이디찾기
+    /**
+     * 아이디 찾기
+     *
+     * @param pDTO 회원정보
+     * @return 아이디 찾기 결과
+     */
     String searchUserIdProc(UserInfoDTO pDTO) throws Exception;
 
-    // 이메일 중복체크
+    /**
+     * 이메일 중복체크
+     *
+     * @param pDTO 회원정보
+     * @return 중복체크 결과
+     */
     UserInfoDTO getEmailExists(UserInfoDTO pDTO) throws Exception;
 
-    // 비밀번호찾기
+    /**
+     * 비밀번호 찾기
+     *
+     * @param pDTO 회원정보
+     * @return 비밀번호 찾기 결과
+     */
     UserInfoDTO searchPasswordProc(UserInfoDTO pDTO) throws Exception;
 
-    // 닉네임변경
+    /**
+     * 닉네임 변경
+     *
+     * @param pDTO 회원정보
+     */
     void newUserNameProc(UserInfoDTO pDTO) throws Exception;
 
-    // 비밀번호변경
+    /**
+     * 비밀번호 변경
+     *
+     * @param pDTO 회원정보
+     */
     void newPasswordProc(UserInfoDTO pDTO) throws Exception;
 
-    // 프로필 사진 등록
+    /**
+     * 프로필 사진 등록
+     *
+     * @param pDTO 회원정보
+     */
     void profilePathProc(UserInfoDTO pDTO) throws Exception;
 
-    // 팔로우하기
+    /**
+     * 팔로우하기
+     *
+     * @param pDTO 회원정보
+     */
     void addFollower(UserFollowDTO pDTO) throws Exception;
 
-    // 팔로우 취소하기
+    /**
+     * 팔로우 취소하기
+     *
+     * @param pDTO 회원정보
+     */
     void removeFollower(UserFollowDTO pDTO) throws Exception;
 
-    // 팔로우 여부 조회
+    /**
+     * 팔로우 여부 조회
+     *
+     * @param pDTO 회원정보
+     * @return 팔로우 여부 조회 결과
+     */
     boolean getFollowInfo(UserFollowDTO pDTO) throws Exception;
 
-    //팔로워 수 조회
+    /**
+     * 팔로워 수 조회
+     *
+     * @param followerId 회원 아이디
+     * @return 팔로워 수 조회 결과
+     */
     long countByFollowerId(String followerId) throws Exception;
 
-    //팔로잉 수 조회
+    /**
+     * 팔로잉 수 조회
+     *
+     * @param followingId 회원 아이디
+     * @return 팔로잉 수 조회 결과
+     */
     long countByFollowingId(String followingId) throws Exception;
 
-    // 팔로우 리스트 조회
+    /**
+     * 팔로우 리스트 조회
+     *
+     * @param userId 회원 아이디
+     * @return 팔로우 리스트 조회 결과
+     */
     List<UserFollowDTO> getFollowList(String userId) throws Exception;
 
-    // 팔로잉 리스트 조회
+    /**
+     * 팔로잉 리스트 조회
+     *
+     * @param userId 회원 아이디
+     * @return 팔로잉 리스트 조회 결과
+     */
     List<UserFollowDTO> getFollowingList(String userId) throws Exception;
 
-    // 팔로우 리스트 조회
+    /**
+     * 팔로우 유저들 게시글 조회
+     *
+     * @param userId 회원 아이디
+     * @return 팔로우 유저들 게시글 조회 결과
+     */
     List<String> noticeFollowList(String userId) throws Exception;
 
 }

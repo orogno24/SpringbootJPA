@@ -15,9 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -144,6 +142,37 @@ public class NoticeJoinController {
         log.info(this.getClass().getName() + ".NoticeInfoUsingQueryDSL End!");
 
         return "notice/noticeInfoUsingQueryDSL";
+    }
+    @ResponseBody
+    @PostMapping("updateComment")
+    public Map<String, String> updateComment(@RequestParam("commentSeq") int commentSeq, @RequestParam("contents") String contents, @RequestParam("noticeSeq") int noticeSeq) {
+
+        log.info(this.getClass().getName() + ".updateComment Start!");
+
+        Map<String, String> response = new HashMap<>();
+
+        try {
+
+            log.info("commentSeq : " + commentSeq);
+            log.info("contents : " + contents);
+            log.info("noticeSeq : " + noticeSeq);
+
+            CommentDTO pDTO = CommentDTO.builder()
+                    .commentSeq((long) commentSeq)
+                    .contents(contents)
+                    .noticeSeq((long) noticeSeq)
+                    .build();
+
+            noticeJoinService.updateComment(pDTO);
+            response.put("msg", "댓글이 수정되었습니다.");
+
+        } catch (Exception e) {
+            response.put("msg", "댓글 수정에 실패하였습니다.");
+        }
+
+        log.info(this.getClass().getName() + ".updateComment End!");
+
+        return response;
     }
 
     @ResponseBody

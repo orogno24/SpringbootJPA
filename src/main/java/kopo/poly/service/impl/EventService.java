@@ -50,6 +50,12 @@ public class EventService implements IEventService  {
     @Value("${data.api.key}")
     private String apiKey;
 
+    /**
+     * 조건에 맞는 문화행사정보 필터링
+     *
+     * @param uniqueIdentifier 필터링 기준 키
+     * @return 필터링된 문화행사
+     */
     @Override
     public ApiDTO getApiInfo(String uniqueIdentifier) throws Exception {
 
@@ -78,6 +84,12 @@ public class EventService implements IEventService  {
         return ApiDTO.builder().build();
     }
 
+    /**
+     * 조건에 맞는 문화행사정보 리스트 필터링
+     *
+     * @param pDTO 필터링 조건
+     * @return 필터링된 문화행사 리스트
+     */
     @Override
     public List<ApiDTO> getList(ApiDTO pDTO) throws JsonProcessingException {
 
@@ -144,6 +156,12 @@ public class EventService implements IEventService  {
         return pList;
     }
 
+    /**
+     * RedisDB를 활용한 문화행사 리스트 조회
+     *
+     *  @param colNm 테이블 이름
+     *  @return 문화행사 리스트
+     */
     @Override
     public List<Map<String, Object>> getCulturalEvents(String colNm) throws Exception {
 
@@ -174,6 +192,13 @@ public class EventService implements IEventService  {
         return rContent;
     }
 
+    /**
+     * 오늘의 문화행사 리스트 검색
+     *
+     *  @param rContent 문화행사 리스트
+     *  @param pDTO 필터링 조건
+     *  @return 오늘의 문화행사 리스트
+     */
     @Override
     public List<ApiDTO> getTodayEventList(List<Map<String, Object>> rContent, ApiDTO pDTO) throws JsonProcessingException {
 
@@ -225,6 +250,13 @@ public class EventService implements IEventService  {
 
     }
 
+    /**
+     * 행사가 가장 많이 열리는 지역구 5개 추출 (그래프 용도)
+     *
+     *  @param rContent 문화행사 리스트
+     *  @param pDTO 필터링 조건
+     *  @return 행사가 가장 많이 열리는 지역구 리스트
+     */
     public Map<String, Long> getEventCountList(List<Map<String, Object>> rContent, ApiDTO pDTO) throws JsonProcessingException {
         log.info(this.getClass().getName() + ".getEventCountList Start!");
 
@@ -268,6 +300,13 @@ public class EventService implements IEventService  {
         return top5Districts;
     }
 
+    /**
+     * 이벤트 유형 개수 추출 (그래프 용도)
+     *
+     *  @param rContent 문화행사 리스트
+     *  @param pDTO 필터링 조건
+     *  @return 이벤트 유형 리스트
+     */
     public Map<String, Long> getEventTypeCountList(List<Map<String, Object>> rContent, ApiDTO pDTO) throws JsonProcessingException {
         log.info(this.getClass().getName() + ".getEventTypeCountList Start!");
 
@@ -305,6 +344,11 @@ public class EventService implements IEventService  {
         return top6EventTypes;
     }
 
+    /**
+     * 유저 북마크에서 BookmarkSeq만 추출 후 List에 담기
+     * @param pDTO 유저아이디
+     * @return  북마크의 BookmarkSeq 리스트
+     */
     @Override
     public List<BookmarkDTO> getBookmarkSeq(BookmarkDTO pDTO) throws Exception {
 
@@ -323,6 +367,11 @@ public class EventService implements IEventService  {
         return nList;
     }
 
+    /**
+     * BookmarkSeq List를 기준으로 전체 데이터 필터링
+     * @param BookMarkSeqList BookmarkSeq 목록
+     * @return BookmarkSeq 기준 문화행사 리스트
+     */
     @Override
     public List<BookmarkDTO> getBookmarkDateList(List<String> BookMarkSeqList) throws JsonProcessingException {
         // API 호출을 위한 파라미터 설정
@@ -370,6 +419,10 @@ public class EventService implements IEventService  {
         return filteredEvents;
     }
 
+    /**
+     * 북마크 추가하기
+     * @param pDTO 북마크 정보
+     */
     @Override
     public void insertBookmark(BookmarkDTO pDTO) throws Exception {
 
@@ -406,6 +459,10 @@ public class EventService implements IEventService  {
 
     }
 
+    /**
+     * 북마크 해제하기
+     * @param pDTO 북마크 정보
+     */
     @Override
     public void removeBookmark(BookmarkDTO pDTO) throws Exception {
 
@@ -429,6 +486,10 @@ public class EventService implements IEventService  {
 
     }
 
+    /**
+     * 북마크가 존재하는지 조회
+     * @param pDTO 북마크 정보
+     */
     @Override
     public BookmarkDTO getBookmarkExists(BookmarkDTO pDTO) throws Exception {
 

@@ -11,7 +11,6 @@
     <link rel="stylesheet" href="/css/header.css"/>
     <link rel="icon" href="/assets/img/logo.png" type="image/x-icon">
     <link rel="shortcut icon" href="/assets/img/logo.png" type="image/x-icon">
-
     <style>
         @font-face {
             font-family: 'NIXGONM-Vb';
@@ -216,7 +215,7 @@
                         data: {
                             "commentSeq": commentSeq,
                             "userId": userId,
-                            "nSeq" : nSeq
+                            "nSeq": nSeq
                         },
                         success: function (json) {
                             alert(json.msg);
@@ -286,7 +285,8 @@
         <div class="card-body">
             <div class="post-container">
                 <div class="author-info">
-                    <img class="profile-image clickable" th:src="${rDTO.profilePath}" onerror="this.src='/assets/img/profile.png'" alt="Profile Image" onclick="goToUserProfile()" />
+                    <img class="profile-image clickable" th:src="${rDTO.profilePath}"
+                         onerror="this.src='/assets/img/profile.png'" alt="Profile Image" onclick="goToUserProfile()"/>
                     <div>
                         <span th:text="${rDTO.userName}" style="font-weight: bolder">작성자 이름</span>
                         <div class="date-views" style="color: #8c8c8c; font-size: 14px; margin-top: -3px">
@@ -297,7 +297,8 @@
                 </div>
                 <div class="image-gallery" style="margin-top: 10px">
                     <th:block th:each="iList : ${iList}">
-                        <img th:src="${iList.imagePath}" class="post-image" style="max-width: 100%; margin-top: 10px;" alt="Post Image"/>
+                        <img th:src="${iList.imagePath}" class="post-image" style="max-width: 100%; margin-top: 10px;"
+                             alt="Post Image"/>
                     </th:block>
                 </div>
                 <div class="content"
@@ -320,17 +321,24 @@
                                     <div class="author-info">
                                         <img class="comment-image clickable" th:src="${dto.profilePath}"
                                              onerror="this.src='/assets/img/profile.png'"
-                                             alt="Comment Image" onclick="goToUserProfile2()" />
-                                        <input type="hidden" id="userId" th:value="${dto.userId}" />
+                                             alt="Comment Image" onclick="goToUserProfile2()"/>
+                                        <input type="hidden" id="userId" th:value="${dto.userId}"/>
                                         <div style="display: flex; flex-direction: column;">
                                             <span th:text="${dto.userName}" style="font-weight: bolder">작성자 이름</span>
                                             <div style="display: flex; align-items: center; gap: 6px; margin-top: -4px">
-                                            <span th:text="|작성일: ${dto.regDt}|" style="color: #8c8c8c; font-size: 14px;">작성일</span>
-                                            <i class="fa-solid fa-square-xmark"
-                                               style="color: #6c6c6c; cursor: pointer; margin-bottom: 1px;"
-                                               th:data-comment-seq="${dto.commentSeq}"
-                                               th:data-user-id="${dto.userId}"
-                                               onclick="sendCommentSeq(this)"></i>
+                                                <span th:text="|작성일: ${dto.regDt}|"
+                                                      style="color: #8c8c8c; font-size: 14px;">작성일</span>
+                                                <i class="fa-solid fa-square-xmark"
+                                                   style="color: #6c6c6c; cursor: pointer; margin-bottom: 1px;"
+                                                   th:data-comment-seq="${dto.commentSeq}"
+                                                   th:data-user-id="${dto.userId}"
+                                                   onclick="sendCommentSeq(this)"></i>
+                                                <i class="fa-solid fa-edit"
+                                                   style="color: #6c6c6c; cursor: pointer; margin-bottom: 1px;"
+                                                   th:data-comment-seq="${dto.commentSeq}"
+                                                   th:data-user-id="${dto.userId}"
+                                                   th:data-comment-contents="${dto.contents}"
+                                                   onclick="editComment(this)"></i>
                                             </div>
                                         </div>
                                     </div>
@@ -362,7 +370,79 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="editCommentModal" tabindex="-1" role="dialog" aria-labelledby="editCommentModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editCommentModalLabel">Edit Comment</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="editCommentForm">
+                        <div class="form-group">
+                            <label for="editCommentContent">Comment</label>
+                            <textarea class="form-control" id="editCommentContent" rows="3"></textarea>
+                        </div>
+                        <input type="hidden" id="editCommentSeq" name="commentSeq">
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="submitEditComment()">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 <br>
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        // Edit comment function
+        function editComment(element) {
+            var commentSeq = element.getAttribute('data-comment-seq');
+            var commentContents = element.getAttribute('data-comment-contents');
+
+            document.getElementById('editCommentSeq').value = commentSeq;
+            document.getElementById('editCommentContent').value = commentContents;
+
+            $('#editCommentModal').modal('show');
+        }
+
+        function submitEditComment() {
+            var commentSeq = document.getElementById('editCommentSeq').value;
+            var contents = document.getElementById('editCommentContent').value;
+
+            if (contents === "") {
+                alert("내용을 입력하시기 바랍니다.");
+                return;
+            }
+
+            $.ajax({
+                url: "/notice/updateComment",
+                type: "post",
+                dataType: "JSON",
+                data: {
+                    commentSeq: commentSeq,
+                    contents: contents,
+                    noticeSeq: nSeq
+                },
+                success: function (json) {
+                    alert(json.msg);
+                    $('#editCommentModal').modal('hide');
+                    location.href = "/notice/noticeInfoUsingQueryDSL?nSeq=" + nSeq;
+                }
+            });
+        }
+
+        // Ensure the editComment and submitEditComment functions are accessible globally
+        window.editComment = editComment;
+        window.submitEditComment = submitEditComment;
+    });
+</script>
 </body>
 </html>

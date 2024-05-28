@@ -3,14 +3,16 @@ package kopo.poly.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
-import kopo.poly.dto.*;
-import kopo.poly.service.INoticeJoinService;
+import kopo.poly.dto.MsgDTO;
+import kopo.poly.dto.UserFollowDTO;
+import kopo.poly.dto.UserInfoDTO;
 import kopo.poly.service.INoticeService;
 import kopo.poly.service.IUserInfoService;
 import kopo.poly.util.CmmUtil;
 import kopo.poly.util.EncryptUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RequestMapping(value = "/user")
@@ -208,23 +209,39 @@ public class UserInfoController {
     }
 
     /**
-     * 로그아웃 처리하기
+     * 회원탈퇴 페이지
+     */
+    @GetMapping(value = "deleteUser")
+    public String deleteUser() {
+
+        log.info(this.getClass().getName() + ".user/deleteUser Start!");
+
+        log.info(this.getClass().getName() + ".user/deleteUser End!");
+
+        return "user/deleteUser";
+
+    }
+
+    /**
+     * 회원탈퇴 과정
      */
     @ResponseBody
-    @PostMapping(value = "logout")
-    public MsgDTO logout(HttpSession session) {
+    @DeleteMapping(value = "deleteUserProc")
+    public ResponseEntity<?> deleteUserProc(HttpSession session) throws Exception {
 
-        log.info(this.getClass().getName() + ".logout Start!");
+        log.info(this.getClass().getName() + ".user/deleteUserProc Start!");
 
-        session.setAttribute("SS_USER_ID", ""); // 세션 값 빈값으로 변경
-        session.removeAttribute("SS_USER_ID"); // 세션 값 지우기
+        String userId = (String) session.getAttribute("SS_USER_ID");
+        log.info("userId : " + userId);
 
-        // 결과 메시지 전달하기
-        MsgDTO dto = MsgDTO.builder().result(1).msg("로그아웃하였습니다.").build();
+        UserInfoDTO pDTO = UserInfoDTO.builder().userId(userId).build();
 
-        log.info(this.getClass().getName() + "logout End!");
+        // 회원가입 서비스 호출하여 결과 받기
+        userInfoService.deleteUserProc(pDTO);
 
-        return dto;
+        log.info(this.getClass().getName() + ".user/deleteUserProc End!");
+
+        return ResponseEntity.ok().body("회원탈퇴 성공!");
     }
 
     /**

@@ -40,6 +40,13 @@ public interface INoticeJoinService {
     List<CommentDTO> getCommentForQueryDSL(CommentDTO cDTO);
 
     /**
+     * 해당 댓글 수정
+     *
+     * @param pDTO 댓글 수정하기 위한 정보
+     */
+    void updateComment(CommentDTO pDTO) throws Exception;
+
+    /**
      * 해당 댓글 삭제하기
      *
      * @param pDTO 댓글 삭제하기 위한 정보

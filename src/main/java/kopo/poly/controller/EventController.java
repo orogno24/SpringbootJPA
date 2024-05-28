@@ -209,9 +209,6 @@ public class EventController {
         try {
             String userId = (String) session.getAttribute("SS_USER_ID");
             String eventSeq = CmmUtil.nvl(request.getParameter("eventSeq"));
-//            String eventTitle = CmmUtil.nvl(request.getParameter("title"));
-//            String startDate = CmmUtil.nvl(request.getParameter("startDate"));
-//            String endDate = CmmUtil.nvl(request.getParameter("endDate"));
 
             log.info("userId : " + userId);
             log.info("eventSeq : " + eventSeq);

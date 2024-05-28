@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원 탈퇴</title>
+    <link rel="stylesheet" href="/css/header.css"/>
+    <link rel="icon" href="/assets/img/logo.png" type="image/x-icon">
+    <link rel="shortcut icon" href="/assets/img/logo.png" type="image/x-icon">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap");
+
+        @font-face {
+            font-family: 'NIXGONM-Vb';
+            src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/NIXGONM-Vb.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        * {
+            font-family: 'NIXGONM-Vb';
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            align-items: center;
+            justify-content: center;
+            background-color: #d7f9ff;
+        }
+
+        #page {
+            max-width: 1100px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        #btn {
+            background-color: #5da5bb;
+            padding: 6px 22px;
+            border-radius: 24px;
+            border: none;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #btn:hover {
+            background-color: #5291a4;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <a href="/main" class="logo">
+        <img src="/assets/img/logo3.png" alt="Main Logo">
+    </a>
+    <ul class="nav" id="top-navigation">
+        <li><a href="/main">메인 페이지</a></li>
+        <li><a href="/event/apiSearch">문화행사 찾기</a></li>
+        <li><a href="/culture/cultureMap">문화시설 찾기</a></li>
+        <li><a href="/notice/noticeListUsingNativeQuery">커뮤니티</a></li>
+    </ul>
+</div>
+
+<div id="page" class="container mt-5">
+    <h2>회원 탈퇴</h2>
+    <p class="text-danger">회원 탈퇴 시 모든 정보는 삭제되고 복구가 불가능합니다. 이에 동의하시면 '탈퇴합니다'를 입력해주세요.</p>
+    <input type="text" id="confirmation" class="form-control mb-3" placeholder="'탈퇴합니다'를 입력해주세요">
+    <button id="btn">탈퇴하기</button>
+    <p id="responseMessage" class="mt-3"></p>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#btn').click(function() {
+            var confirmation = $('#confirmation').val();
+            if (confirmation === '탈퇴합니다') {
+                $.ajax({
+                    url: '/user/deleteUserProc',
+                    type: 'DELETE',
+                    success: function(response) {
+                        alert(response);
+                        window.location.href = '/user/login';
+                    },
+                    error: function() {
+                        $('#responseMessage').text('탈퇴 요청 중 오류가 발생했습니다.').addClass('text-danger');
+                    }
+                });
+            } else {
+                $('#responseMessage').text("정확히 '탈퇴합니다'를 입력해주세요.").addClass('text-danger');
+            }
+        });
+    });
+</script>
+</body>
+</html>

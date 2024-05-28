@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -197,6 +198,28 @@ public class NoticeJoinService implements INoticeJoinService {
         log.info(this.getClass().getName() + ".getCommentForQueryDSL End!");
 
         return nList;
+    }
+
+    @Override
+    public void updateComment(CommentDTO pDTO) throws Exception {
+
+        log.info(this.getClass().getName() + ".updateComment Start!");
+
+        Long commentSeq = pDTO.commentSeq();
+        String contents = pDTO.contents();
+        Long noticeSeq = pDTO.noticeSeq();
+
+        CommentKey commentKey = CommentKey.builder()
+                .commentSeq(commentSeq)
+                .noticeSeq(noticeSeq)
+                .build();
+
+        Optional<CommentEntity> rEntity = commentRepository.findById(commentKey);
+
+        log.info("rEntity : " + rEntity);
+
+        log.info(this.getClass().getName() + ".updateComment End!");
+
     }
 
     @Override

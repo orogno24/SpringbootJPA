@@ -13,49 +13,88 @@ public interface IEventService {
 
     String apiURL = "http://openapi.seoul.go.kr:8088/";
 
-
+    /**
+     * 조건에 맞는 문화행사정보 필터링
+     *
+     * @param uniqueIdentifier 필터링 기준 키
+     * @return 필터링된 문화행사
+     */
     ApiDTO getApiInfo(String uniqueIdentifier) throws Exception;
 
+    /**
+     * 조건에 맞는 문화행사정보 리스트 필터링
+     *
+     * @param pDTO 필터링 조건
+     * @return 필터링된 문화행사 리스트
+     */
     List<ApiDTO> getList(ApiDTO pDTO) throws JsonProcessingException;
 
     /**
      * RedisDB를 활용한 문화행사 리스트 조회
+     *
+     *  @param colNm 테이블 이름
+     *  @return 문화행사 리스트
      */
     List<Map<String, Object>> getCulturalEvents(String colNm) throws Exception;
 
     /**
-     * 오늘의 문화행사 검색
+     * 오늘의 문화행사 리스트 검색
+     *
+     *  @param rContent 문화행사 리스트
+     *  @param pDTO 필터링 조건
+     *  @return 오늘의 문화행사 리스트
      */
     List<ApiDTO> getTodayEventList(List<Map<String, Object>> rContent, ApiDTO pDTO) throws JsonProcessingException;
 
     /**
-     * 행사가 가장 많이 열리는 지역구 5개 추출(그래프 용도)
+     * 행사가 가장 많이 열리는 지역구 5개 추출 (그래프 용도)
+     *
+     *  @param rContent 문화행사 리스트
+     *  @param pDTO 필터링 조건
+     *  @return 행사가 가장 많이 열리는 지역구 리스트
      */
     Map<String, Long> getEventCountList(List<Map<String, Object>> rContent, ApiDTO pDTO) throws JsonProcessingException;
 
     /**
-     * 이벤트 유형 개수 추출
+     * 이벤트 유형 개수 추출 (그래프 용도)
+     *
+     *  @param rContent 문화행사 리스트
+     *  @param pDTO 필터링 조건
+     *  @return 이벤트 유형 리스트
      */
     Map<String, Long> getEventTypeCountList(List<Map<String, Object>> rContent, ApiDTO pDTO) throws JsonProcessingException;
 
     /**
-     * 유저가 북마크한 데이터중에서 BookmarkSeq만 추출 후 List에 담기
+     * 유저 북마크에서 BookmarkSeq만 추출 후 List에 담기
      * @param pDTO 유저아이디
+     * @return  북마크의 BookmarkSeq 리스트
      */
     List<BookmarkDTO> getBookmarkSeq(BookmarkDTO pDTO) throws Exception;
 
     /**
      * BookmarkSeq List를 기준으로 전체 데이터 필터링
-     * @param rList BookmarkSeq 목록
+     * @param BookMarkSeqList BookmarkSeq 목록
+     * @return BookmarkSeq 기준 문화행사 리스트
      */
-    List<BookmarkDTO> getBookmarkDateList(List<String> rList) throws JsonProcessingException;
+    List<BookmarkDTO> getBookmarkDateList(List<String> BookMarkSeqList) throws JsonProcessingException;
 
+    /**
+     * 북마크 추가하기
+     * @param pDTO 북마크 정보
+     */
     void insertBookmark(BookmarkDTO pDTO) throws Exception;
 
+    /**
+     * 북마크 해제하기
+     * @param pDTO 북마크 정보
+     */
     void removeBookmark(BookmarkDTO pDTO) throws Exception;
 
+    /**
+     * 북마크가 존재하는지 조회
+     * @param pDTO 북마크 정보
+     */
     BookmarkDTO getBookmarkExists(BookmarkDTO pDTO) throws Exception;
 
-    //    ApiDTO parseUniqueIdentifierToDTO(String uniqueIdentifier) throws Exception;
 
 }
