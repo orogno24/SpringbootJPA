@@ -32,10 +32,14 @@ public class ChatHandler extends TextWebSocketHandler {
 
         String roomName = CmmUtil.nvl((String) session.getAttributes().get("roomName"));
         String userName = CmmUtil.nvl((String) session.getAttributes().get("userName"));
+        String userId = CmmUtil.nvl((String) session.getAttributes().get("userId"));
+        String profilePath = CmmUtil.nvl((String) session.getAttributes().get("profilePath"));
         String roomNameHash = CmmUtil.nvl((String) session.getAttributes().get("roomNameHash"));
 
         log.info("roomName : " + roomName);
         log.info("userName : " + userName);
+        log.info("userId : " + userId);
+        log.info("profilePath : " + profilePath);
         log.info("roomNameHash : " + roomNameHash);
 
         // 채팅 메시지
@@ -97,6 +101,7 @@ public class ChatHandler extends TextWebSocketHandler {
                     ChatDTO cDTO = new ChatDTO();
                     cDTO.setName("관리자");
                     cDTO.setMsg(userName + "님이 " + roomName + " 채팅방에 입장하셨습니다.");
+                    cDTO.setUserId("admin");
                     cDTO.setDate(DateUtil.getDateTime("yyyy-MM-dd hh:mm:ss"));
 
                     String json = new ObjectMapper().writeValueAsString(cDTO);
@@ -151,6 +156,7 @@ public class ChatHandler extends TextWebSocketHandler {
                     ChatDTO cDTO = new ChatDTO();
                     cDTO.setName("관리자");
                     cDTO.setMsg(userName + "님이 " + roomName + " 채팅방에 퇴장하셨습니다.");
+                    cDTO.setUserId("admin");
                     cDTO.setDate(DateUtil.getDateTime("yyyy-MM-dd hh:mm:ss"));
 
                     String json = new ObjectMapper().writeValueAsString(cDTO);

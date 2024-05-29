@@ -62,6 +62,14 @@
             padding: 8px 20px;
         }
 
+        .author-tag {
+            background-color: #5c80b7;
+            color: white;
+            padding: 1px 6px;
+            border-radius: 10px;
+            font-size: 12px;
+        }
+
         .table-borderless td, .table-borderless th {
             border: none;
         }
@@ -324,7 +332,10 @@
                                              alt="Comment Image" onclick="goToUserProfile2()"/>
                                         <input type="hidden" id="userId" th:value="${dto.userId}"/>
                                         <div style="display: flex; flex-direction: column;">
-                                            <span th:text="${dto.userName}" style="font-weight: bolder">작성자 이름</span>
+                                            <div style="display: flex; align-items: center; gap: 4px;">
+                                                <span th:text="${dto.userName}" style="font-weight: bolder;"></span>
+                                                <span th:if="${dto.userId == rDTO.userId}" class="author-tag">작성자</span>
+                                            </div>
                                             <div style="display: flex; align-items: center; gap: 6px; margin-top: -4px">
                                                 <span th:text="|작성일: ${dto.regDt}|"
                                                       style="color: #8c8c8c; font-size: 14px;">작성일</span>
@@ -332,21 +343,20 @@
                                                    style="color: #6c6c6c; cursor: pointer; margin-bottom: 1px;"
                                                    th:data-comment-seq="${dto.commentSeq}"
                                                    th:data-user-id="${dto.userId}"
+                                                   th:if="${session.SS_USER_ID == dto.userId}"
                                                    onclick="sendCommentSeq(this)"></i>
                                                 <i class="fa-solid fa-edit"
                                                    style="color: #6c6c6c; cursor: pointer; margin-bottom: 1px;"
                                                    th:data-comment-seq="${dto.commentSeq}"
                                                    th:data-user-id="${dto.userId}"
+                                                   th:if="${session.SS_USER_ID == dto.userId}"
                                                    th:data-comment-contents="${dto.contents}"
                                                    onclick="editComment(this)"></i>
                                             </div>
                                         </div>
                                     </div>
-
                                     <p th:text="${dto.contents}" style="white-space: pre; margin-top: 12px">댓글 내용</p>
                                 </div>
-
-
                             </div>
                             <hr>
                         </div>
@@ -371,11 +381,12 @@
         </div>
     </div>
 
-    <div class="modal fade" id="editCommentModal" tabindex="-1" role="dialog" aria-labelledby="editCommentModalLabel" aria-hidden="true">
+    <div class="modal fade" id="editCommentModal" tabindex="-1" role="dialog" aria-labelledby="editCommentModalLabel"
+         aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="editCommentModalLabel">Edit Comment</h5>
+                    <h5 class="modal-title" id="editCommentModalLabel">댓글 수정</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -383,15 +394,15 @@
                 <div class="modal-body">
                     <form id="editCommentForm">
                         <div class="form-group">
-                            <label for="editCommentContent">Comment</label>
+                            <label for="editCommentContent">내용</label>
                             <textarea class="form-control" id="editCommentContent" rows="3"></textarea>
                         </div>
                         <input type="hidden" id="editCommentSeq" name="commentSeq">
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" onclick="submitEditComment()">Save changes</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+                    <button type="button" class="btn btn-primary" onclick="submitEditComment()">수정하기</button>
                 </div>
             </div>
         </div>
@@ -402,15 +413,14 @@
 <script type="text/javascript">
     $(document).ready(function () {
 
-        // Edit comment function
         function editComment(element) {
-            var commentSeq = element.getAttribute('data-comment-seq');
-            var commentContents = element.getAttribute('data-comment-contents');
+                var commentSeq = element.getAttribute('data-comment-seq');
+                var commentContents = element.getAttribute('data-comment-contents');
 
-            document.getElementById('editCommentSeq').value = commentSeq;
-            document.getElementById('editCommentContent').value = commentContents;
+                document.getElementById('editCommentSeq').value = commentSeq;
+                document.getElementById('editCommentContent').value = commentContents;
 
-            $('#editCommentModal').modal('show');
+                $('#editCommentModal').modal('show');
         }
 
         function submitEditComment() {
@@ -439,7 +449,6 @@
             });
         }
 
-        // Ensure the editComment and submitEditComment functions are accessible globally
         window.editComment = editComment;
         window.submitEditComment = submitEditComment;
     });

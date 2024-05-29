@@ -1,6 +1,10 @@
 package kopo.poly.controller;
 
+import jakarta.servlet.http.HttpSession;
 import kopo.poly.chat.ChatHandler;
+import kopo.poly.dto.UserInfoDTO;
+import kopo.poly.service.IUserInfoService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,8 +14,11 @@ import java.util.Set;
 
 @Slf4j
 @Controller
+@RequiredArgsConstructor
 @RequestMapping(value = "/chat")
 public class ChatController {
+
+    private final IUserInfoService userInfoService;
 
     /**
      * 채팅창 입장 전
@@ -31,15 +38,19 @@ public class ChatController {
      */
     @PostMapping(value = "chatroom")
     public String chatroom(@RequestParam("roomName") String roomName,
-                           @RequestParam("userName") String userName,
-                           Model model) {
+                           HttpSession session,
+                           Model model) throws Exception {
 
         log.info(this.getClass().getName() + ".chatroom Start!");
+
+        String userId = (String) session.getAttribute("SS_USER_ID");
+
+        UserInfoDTO dto = userInfoService.getUserInfo(userId);
+
         log.info("chatroom roomName: " + roomName);
-        log.info("chatroom userName: " + userName);
 
         model.addAttribute("roomName", roomName);
-        model.addAttribute("userName", userName);
+        model.addAttribute("dto", dto);
 
         log.info(this.getClass().getName() + ".chatroom End!");
         return "chat/chatroom";

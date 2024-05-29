@@ -205,18 +205,23 @@ public class NoticeJoinService implements INoticeJoinService {
 
         log.info(this.getClass().getName() + ".updateComment Start!");
 
-        Long commentSeq = pDTO.commentSeq();
-        String contents = pDTO.contents();
-        Long noticeSeq = pDTO.noticeSeq();
-
         CommentKey commentKey = CommentKey.builder()
-                .commentSeq(commentSeq)
-                .noticeSeq(noticeSeq)
+                .commentSeq(pDTO.commentSeq())
+                .noticeSeq(pDTO.noticeSeq())
                 .build();
 
-        Optional<CommentEntity> rEntity = commentRepository.findById(commentKey);
+        CommentEntity rEntity = commentRepository.findById(commentKey)
+                .orElseThrow(() -> new Exception("Comment not found for the provided key"));
 
-        log.info("rEntity : " + rEntity);
+        CommentEntity pEntity = CommentEntity.builder()
+                .noticeSeq(rEntity.getNoticeSeq())
+                .commentSeq(rEntity.getCommentSeq())
+                .userId(rEntity.getUserId())
+                .contents(pDTO.contents())
+                .regDt(DateUtil.getDateTime("yyyy-MM-dd hh:mm:ss"))
+                .build();
+
+        commentRepository.save(pEntity);
 
         log.info(this.getClass().getName() + ".updateComment End!");
 
@@ -257,8 +262,6 @@ public class NoticeJoinService implements INoticeJoinService {
         log.info("pDTO noticeSeq : " + noticeSeq);
         log.info("commentSeq : " + commentSeq);
 
-        // 공지사항 저장을 위해서는 PK 값은 빌더에 추가하지 않는다.
-        // JPA에 자동 증가 설정을 해놨음
         CommentEntity pEntity = CommentEntity.builder()
                 .userId(userId)
                 .contents(contents)
@@ -267,7 +270,6 @@ public class NoticeJoinService implements INoticeJoinService {
                 .regDt(DateUtil.getDateTime("yyyy-MM-dd hh:mm:ss"))
                 .build();
 
-        // 공지사항 저장하기
         commentRepository.save(pEntity);
 
         log.info(this.getClass().getName() + ".insertComment End!");

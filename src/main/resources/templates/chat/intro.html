@@ -2,13 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>비버토벌</title>
-  <link rel="stylesheet" href="/css/table.css"/>
+  <title>채팅 페이지</title>
+  <link rel="stylesheet" href="/css/header.css"/>
   <link rel="icon" href="/assets/img/logo.png" type="image/x-icon">
   <link rel="shortcut icon" href="/assets/img/logo.png" type="image/x-icon">
   <script type="text/javascript" src="/js/jquery-3.6.0.min.js"></script>
   <style>
-
     @font-face {
       font-family: 'NIXGONM-Vb';
       src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/NIXGONM-Vb.woff') format('woff');
@@ -18,140 +17,155 @@
 
     * {
       font-family: 'NIXGONM-Vb';
+      box-sizing: border-box;
     }
 
     body {
-      background-color: #f5f5f5;
+      background-color: #d7f9ff;
       margin: 0;
       padding: 0;
-    }
-    h1 {
-      text-align: center;
+      font-size: 16px;
       color: #333;
     }
-    .divTable {
-      display: table;
-      width: 80%;
-      margin: 20px auto;
-      background-color: #fff;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    .divTableHeading {
-      background-color: #5da5bb;
-      color: #fff;
-      padding: 10px;
-    }
-    .divTableRow {
-      display: table-row;
-    }
-    .divTableHead, .divTableCell {
-      display: table-cell;
-      padding: 10px;
+
+    header {
+      margin-top: 30px;
+      padding: 20px;
       text-align: center;
-    }
-    div.minimalistBlack {
-      border: none;
-    }
-    .divTableHead {
+      font-size: 24px;
       font-weight: bold;
     }
-    #room_list {
-      padding: 15px;
+
+    .intro {
+      color: #6bb8d0;
+      font-weight: normal;
+      text-align: center;
     }
-    form {
-      width: 80%;
+
+    .container {
+      width: 90%;
       margin: 20px auto;
-      background-color: #fff;
-      padding: 20px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      max-width: 600px;
     }
-    input[type="text"] {
-      width: 80%;
-      padding: 10px;
+
+    .chat-room-list {
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+      padding: 20px;
+    }
+
+    .chat-room-list h2 {
+      margin: 0;
+      margin-bottom: 10px;
+      font-size: 20px;
+      border-bottom: 2px solid #5d8198;
+      padding-bottom: 10px;
+    }
+
+    .room-item {
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 10px;
+      background-color: #f9f9f9;
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s;
+    }
+
+    .room-item:hover {
+      background-color: #e6e6e6;
+    }
+
+    .form-container {
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+    }
+
+    .form-container input[type="text"] {
+      font-size: 16px;
+      width: 100%;
+      padding: 15px;
       margin: 10px 0;
       border: 1px solid #ccc;
-      border-radius: 5px;
+      border-radius: 10px;
     }
-    button {
+
+    .form-container button {
       background-color: #5da5bb;
-      color: white;
-      padding: 15px 20px;
+      color: #fff;
+      padding: 15px;
       border: none;
-      border-radius: 5px;
+      border-radius: 10px;
       cursor: pointer;
       font-size: 16px;
-      display: block;
       width: 100%;
-      margin-top: 10px;
+      transition: background-color 0.3s;
     }
-    button:hover {
-      background-color: #4c8596;
+
+    .form-container button:hover {
+      background-color: #4e899a;
     }
   </style>
   <script type="text/javascript">
-    // HTML 로딩이 완료되고, 실행됨
     $(document).ready(function () {
-      // 화면 로딩이 완료되면 첫 번째로 실행함
-      getRoomList(); // 전체 채팅방 리스트 가져오기
+      getRoomList();
 
-      // 2번째부터 채팅방 전체리스트를 5초마다 로딩함
       setInterval(getRoomList, 5000);
     });
 
-    // 전체 채팅방 리스트 가져오기
     function getRoomList() {
-      // Ajax 호출
       $.ajax({
-        url: "/chat/roomList", // 채팅방 정보 가져올 URL
-        type: "post", // 전송방식
-        dataType: "JSON", // 전달받을 데이터 타입
+        url: "/chat/roomList",
+        type: "post",
+        dataType: "JSON",
         success: function (json) {
-          // 기존 데이터 삭제하기
           $("#room_list").empty();
           for (let i = 0; i < json.length; i++) {
-            $("#room_list").append("<div class='room-item'>" + json[i] + "</div>"); // 채팅방마다 한 줄씩 추가
+            $("#room_list").append("<div class='room-item' data-room='" + json[i] + "'>" + json[i] + "</div>");
           }
+          $('.room-item').click(function() {
+            var roomName = $(this).data('room');
+            var form = $('<form action="/chat/chatroom" method="post">' +
+                    '<input type="hidden" name="roomName" value="' + roomName + '"></form>');
+            $('body').append(form);
+            form.submit();
+          });
         }
       });
     }
   </script>
 </head>
 <body>
-<h1>채팅방 전체 리스트</h1>
-<div class="divTable minimalistBlack">
-  <div class="divTableHeading">
-    <div class="divTableRow">
-      <div class="divTableHead">대화 가능한 채팅방들</div>
-    </div>
+
+<div class="header" style="padding: 0 16px;">
+  <a href="/main" class="logo">
+    <img src="/assets/img/logo3.png" alt="Main Logo">
+  </a>
+  <ul class="nav" id="top-navigation">
+    <li><a href="/main">메인 페이지</a></li>
+    <li><a href="/event/apiSearch">문화행사 찾기</a></li>
+    <li><a href="/culture/cultureMap">문화시설 찾기</a></li>
+    <li><a href="/notice/noticeListUsingNativeQuery">커뮤니티</a></li>
+  </ul>
+</div>
+
+<header>실시간 채팅</header>
+<h3 class="intro">실시간 채팅을 통해 문화행사 및 시설에 대한 궁금한 점을 실시간으로 질문하고 답변을 받을 수 있습니다.<br>서울의 풍부한 문화생활을 최대한 활용하여 즐거운 경험을 만드세요!</h3>
+<div class="container">
+  <div class="chat-room-list">
+    <h2>대화 가능한 채팅방들</h2>
+    <div id="room_list"></div>
   </div>
-  <div class="divTableBody">
-    <div class="divTableRow">
-      <div class="divTableCell" id="room_list"></div>
-    </div>
+  <div class="form-container">
+    <form name="f" id="f" method="post" th:action="@{/chat/chatroom}">
+      <input type="text" name="roomName" placeholder="채팅방 이름" required>
+      <button type="submit">채팅방 만들기</button>
+    </form>
   </div>
 </div>
-<br/><br/>
-<h1>채팅방 입장 정보</h1>
-<hr/>
-<br/><br/>
-<form name="f" id="f" method="post" th:action="@{/chat/chatroom}">
-  <div class="divTable minimalistBlack">
-    <div class="divTableBody">
-      <div class="divTableRow">
-        <div class="divTableCell">채팅방 이름</div>
-        <div class="divTableCell">
-          <input type="text" name="roomName" required>
-        </div>
-        <div class="divTableCell">대화명(별명)</div>
-        <div class="divTableCell">
-          <input type="text" name="userName" required>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div>
-    <button type="submit">입장하기</button>
-  </div>
-</form>
 </body>
 </html>

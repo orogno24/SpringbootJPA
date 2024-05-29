@@ -12,8 +12,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @DynamicInsert // 값이 NULL이 아닌것만 INSERT함
 @DynamicUpdate // 값이 NULL이 아닌것만 UPDATE함
 @Builder
-//@Cacheable
-@Data
+@Cacheable
 @Entity
 @IdClass(CommentKey.class)
 public class CommentEntity {
@@ -34,7 +33,7 @@ public class CommentEntity {
     @Column(name = "contents", nullable = false)
     private String contents;
 
-    @Column(name = "reg_dt", updatable = false)
+    @Column(name = "reg_dt")
     private String regDt;
 
     @ManyToOne(fetch = FetchType.LAZY)

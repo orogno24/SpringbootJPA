@@ -53,7 +53,7 @@
         }
 
         .chart-container {
-            width: 45%; /* 각 차트의 너비를 45%로 설정 */
+            width: 50%; /* 각 차트의 너비를 45%로 설정 */
             height: 300px; /* 높이 설정 */
             margin: auto; /* 가운데 정렬 */
             display: flex;
@@ -62,6 +62,7 @@
         }
 
         .chart-wrapper {
+            height: 350px;
             display: flex; /* Flexbox 사용 */
             justify-content: space-around; /* 공간을 균등하게 분배 */
         }
@@ -122,9 +123,9 @@
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: '문화행사 수',
+                        label: '개최된 문화행사 수',
                         data: data,
-                        backgroundColor: 'rgba(0, 255, 255, 0.6)', // 시안색 네온
+                        backgroundColor: 'rgba(0, 255, 255, 0.4)', // 시안색 네온
                         borderColor: 'rgba(0, 255, 255, 1)', // 시안색 네온
                         borderWidth: 1
                     }]
@@ -132,8 +133,11 @@
                 options: {
                     scales: {
                         y: {
+                            grid: {
+                                display: false // y축 격자선을 숨깁니다.
+                            },
                             ticks: {
-                                color: '#3b5260'  // y축 텍스트 색상
+                                display: false  // y축 틱 레이블을 숨깁니다.
                             },
                             title: {
                                 display: true,
@@ -141,20 +145,29 @@
                             }
                         },
                         x: {
+                            grid: {
+                                display: false // x축 격자선을 숨깁니다.
+                            },
                             ticks: {
-                                color: '#3b5260'  // x축 텍스트 색상
+                                color: '#3b5260',  // x축 텍스트 색상
+                                font: {
+                                    size: 16, // 여기에 폰트 사이즈를 지정
+                                    family: 'NIXGONM-Vb',
+                                }
                             },
                             title: {
-                                display: true,
+                                display: false,
+                                font: {
+                                    size: 16, // 여기에 폰트 사이즈를 지정
+                                    family: 'NIXGONM-Vb',
+                                },
                                 color: '#3b5260'  // x축 제목 색상
                             }
                         }
                     },
                     plugins: {
                         legend: {
-                            labels: {
-                                color: '#3b5260'  // 범례 텍스트 색상
-                            }
+                            display: false
                         }
                     }
                 }
@@ -173,20 +186,20 @@
                         label: '문화행사 유형',
                         data: eventTypeData,
                         backgroundColor: [
-                            'rgba(255, 0, 255, 0.4)', // 핑크 네온
-                            'rgba(0, 255, 0, 0.4)',   // 녹색 네온
-                            'rgba(0, 255, 255, 0.4)', // 시안 네온
-                            'rgba(255, 165, 0, 0.4)', // 주황 네온
-                            'rgba(255, 0, 0, 0.4)',   // 레드 네온
-                            'rgba(0, 0, 255, 0.4)'    // 블루 네온
+                            'rgba(204, 153, 255, 0.4)', // 연보라색
+                            'rgba(153, 255, 153, 0.4)', // 연두색
+                            'rgba(153, 255, 255, 0.4)', // 연한 시안색
+                            'rgba(255, 204, 153, 0.4)', // 연한 주황색
+                            'rgba(255, 153, 153, 0.4)', // 연한 빨간색
+                            'rgba(153, 153, 255, 0.4)'  // 연한 파란색
                         ],
                         borderColor: [
-                            'rgba(255, 0, 255, 1)',
-                            'rgba(0, 255, 0, 1)',
-                            'rgba(0, 255, 255, 1)',
-                            'rgba(255, 165, 0, 1)',
-                            'rgba(255, 0, 0, 1)',
-                            'rgba(0, 0, 255, 1)'
+                            'rgba(204, 153, 255, 1)', // 연보라색
+                            'rgba(153, 255, 153, 1)', // 연두색
+                            'rgba(153, 255, 255, 1)', // 연한 시안색
+                            'rgba(255, 204, 153, 1)', // 연한 주황색
+                            'rgba(255, 153, 153, 1)', // 연한 빨간색
+                            'rgba(153, 153, 255, 1)'  // 연한 파란색
                         ],
                         borderWidth: 1
                     }]
@@ -197,6 +210,10 @@
                     plugins: {
                         legend: {
                             labels: {
+                                font: {
+                                    size: 16, // 여기에 폰트 사이즈를 지정
+                                    family: 'NIXGONM-Vb',
+                                },
                                 color: '#3b5260'  // 범례 텍스트 색상
                             }
                         }
@@ -277,6 +294,7 @@
                             어서오세요!<b class="caret"></b></a>
                         <ul class="dropdown-menu">
                             <li><a href="#" onclick="goToUserProfile()">마이페이지</a></li>
+                            <li><a href="/chat/intro">실시간 채팅</a></li>
                             <li><a href="/logout" id="logoutLink">로그아웃</a></li>
                             <li><a href="/user/deleteUser">회원탈퇴</a></li>
                         </ul>
@@ -361,15 +379,15 @@
     <div class="triangle2"></div>
     <div class="container">
         <div class="title" style="margin-top: -40px">
-            <h3>이달의 문화행사 정보</h3>
+            <h3 th:text="${currentMonth} + '월의 문화행사 정보'"></h3>
         </div>
         <div class="chart-wrapper" style="margin-bottom: 40px">
             <div class="chart-container">
-                <p class="chart-description" th:text="${currentMonth} + '월의 문화행사 개최 수'"></p>
+                <p class="chart-description" style="font-size: 20px">지역별 문화행사 개최 수</p>
                 <canvas id="eventChart"></canvas>
             </div>
             <div class="chart-container">
-                <p class="chart-description" th:text="${currentMonth} + '월의 문화행사 유형'"></p>
+                <p class="chart-description" style="font-size: 20px">이달의 문화행사 유형</p>
                 <canvas id="eventTypeChart"></canvas>
             </div>
         </div>
