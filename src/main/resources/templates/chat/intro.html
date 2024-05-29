@@ -2,9 +2,92 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>채팅방 입장 및 채팅 리스트</title>
+  <title>비버토벌</title>
   <link rel="stylesheet" href="/css/table.css"/>
+  <link rel="icon" href="/assets/img/logo.png" type="image/x-icon">
+  <link rel="shortcut icon" href="/assets/img/logo.png" type="image/x-icon">
   <script type="text/javascript" src="/js/jquery-3.6.0.min.js"></script>
+  <style>
+
+    @font-face {
+      font-family: 'NIXGONM-Vb';
+      src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/NIXGONM-Vb.woff') format('woff');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    * {
+      font-family: 'NIXGONM-Vb';
+    }
+
+    body {
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 0;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    .divTable {
+      display: table;
+      width: 80%;
+      margin: 20px auto;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .divTableHeading {
+      background-color: #5da5bb;
+      color: #fff;
+      padding: 10px;
+    }
+    .divTableRow {
+      display: table-row;
+    }
+    .divTableHead, .divTableCell {
+      display: table-cell;
+      padding: 10px;
+      text-align: center;
+    }
+    div.minimalistBlack {
+      border: none;
+    }
+    .divTableHead {
+      font-weight: bold;
+    }
+    #room_list {
+      padding: 15px;
+    }
+    form {
+      width: 80%;
+      margin: 20px auto;
+      background-color: #fff;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    input[type="text"] {
+      width: 80%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      background-color: #5da5bb;
+      color: white;
+      padding: 15px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      display: block;
+      width: 100%;
+      margin-top: 10px;
+    }
+    button:hover {
+      background-color: #4c8596;
+    }
+  </style>
   <script type="text/javascript">
     // HTML 로딩이 완료되고, 실행됨
     $(document).ready(function () {
@@ -26,7 +109,7 @@
           // 기존 데이터 삭제하기
           $("#room_list").empty();
           for (let i = 0; i < json.length; i++) {
-            $("#room_list").append(json[i] + "<br/>"); // 채팅방마다 한 줄씩 추가
+            $("#room_list").append("<div class='room-item'>" + json[i] + "</div>"); // 채팅방마다 한 줄씩 추가
           }
         }
       });
