@@ -6,7 +6,7 @@ import kopo.poly.dto.UserFollowDTO;
 import kopo.poly.dto.UserInfoDTO;
 import kopo.poly.repository.UserFollowRepository;
 import kopo.poly.repository.UserInfoRepository;
-import kopo.poly.repository.entity.FollowKey;
+import kopo.poly.repository.entity.FollowPK;
 import kopo.poly.repository.entity.UserFollowEntity;
 import kopo.poly.repository.entity.UserInfoEntity;
 import kopo.poly.service.IMailService;
@@ -472,12 +472,12 @@ public class UserInfoService implements IUserInfoService {
         log.info("followingId : " + followingId);
         log.info("followerId : " + followerId);
 
-        FollowKey followKey = FollowKey.builder()
+        FollowPK followPK = FollowPK.builder()
                 .followingId(followingId)
                 .followerId(followerId)
                 .build();
 
-        userFollowRepository.deleteById(followKey);
+        userFollowRepository.deleteById(followPK);
 
         log.info(this.getClass().getName() + ".removeFollower End!");
     }

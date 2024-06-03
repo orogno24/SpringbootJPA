@@ -1,10 +1,7 @@
 package kopo.poly.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import kopo.poly.dto.ApiDTO;
-import kopo.poly.dto.BookmarkDTO;
-import kopo.poly.dto.EventDTO;
-import kopo.poly.dto.NoticeDTO;
+import kopo.poly.dto.*;
 
 import java.util.List;
 import java.util.Map;
@@ -19,7 +16,7 @@ public interface IEventService {
      * @param uniqueIdentifier 필터링 기준 키
      * @return 필터링된 문화행사
      */
-    ApiDTO getApiInfo(String uniqueIdentifier) throws Exception;
+    ApiDTO getApiInfo(RedisDTO redisDTO, String uniqueIdentifier) throws Exception;
 
     /**
      * 조건에 맞는 문화행사정보 리스트 필터링
@@ -27,7 +24,7 @@ public interface IEventService {
      * @param pDTO 필터링 조건
      * @return 필터링된 문화행사 리스트
      */
-    List<ApiDTO> getList(ApiDTO pDTO) throws JsonProcessingException;
+    List<ApiDTO> getList(RedisDTO redisDTO, ApiDTO pDTO) throws JsonProcessingException;
 
     /**
      * RedisDB를 활용한 문화행사 리스트 조회
@@ -35,34 +32,34 @@ public interface IEventService {
      *  @param colNm 테이블 이름
      *  @return 문화행사 리스트
      */
-    List<Map<String, Object>> getCulturalEvents(String colNm) throws Exception;
+    RedisDTO getCulturalEvents(String colNm) throws Exception;
 
     /**
      * 오늘의 문화행사 리스트 검색
      *
-     *  @param rContent 문화행사 리스트
+     *  @param redisDTO 문화행사 리스트
      *  @param pDTO 필터링 조건
      *  @return 오늘의 문화행사 리스트
      */
-    List<ApiDTO> getTodayEventList(List<Map<String, Object>> rContent, ApiDTO pDTO) throws JsonProcessingException;
+    List<ApiDTO> getTodayEventList(RedisDTO redisDTO, ApiDTO pDTO) throws JsonProcessingException;
 
     /**
      * 행사가 가장 많이 열리는 지역구 5개 추출 (그래프 용도)
      *
-     *  @param rContent 문화행사 리스트
+     *  @param redisDTO 문화행사 리스트
      *  @param pDTO 필터링 조건
      *  @return 행사가 가장 많이 열리는 지역구 리스트
      */
-    Map<String, Long> getEventCountList(List<Map<String, Object>> rContent, ApiDTO pDTO) throws JsonProcessingException;
+    Map<String, Long> getEventCountList(RedisDTO redisDTO, ApiDTO pDTO) throws JsonProcessingException;
 
     /**
      * 이벤트 유형 개수 추출 (그래프 용도)
      *
-     *  @param rContent 문화행사 리스트
+     *  @param redisDTO 문화행사 리스트
      *  @param pDTO 필터링 조건
      *  @return 이벤트 유형 리스트
      */
-    Map<String, Long> getEventTypeCountList(List<Map<String, Object>> rContent, ApiDTO pDTO) throws JsonProcessingException;
+    Map<String, Long> getEventTypeCountList(RedisDTO redisDTO, ApiDTO pDTO) throws JsonProcessingException;
 
     /**
      * 유저 북마크에서 BookmarkSeq만 추출 후 List에 담기
@@ -76,7 +73,7 @@ public interface IEventService {
      * @param BookMarkSeqList BookmarkSeq 목록
      * @return BookmarkSeq 기준 문화행사 리스트
      */
-    List<BookmarkDTO> getBookmarkDateList(List<String> BookMarkSeqList) throws JsonProcessingException;
+    List<BookmarkDTO> getBookmarkDateList(RedisDTO redisDTO, List<String> BookMarkSeqList) throws JsonProcessingException;
 
     /**
      * 북마크 추가하기

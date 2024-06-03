@@ -1,6 +1,7 @@
 package kopo.poly.redis;
 
 import kopo.poly.dto.EventDTO;
+import kopo.poly.dto.RedisDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,6 @@ public interface IRedisMapper {
      * @param colNm 저장된 키 이름
      * @return 노래 리스트
      */
-    List<Map<String, Object>> getEventList(String colNm) throws Exception;
+    RedisDTO getEventList(String colNm) throws Exception;
 
 }

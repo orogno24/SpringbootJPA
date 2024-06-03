@@ -205,12 +205,12 @@ public class NoticeJoinService implements INoticeJoinService {
 
         log.info(this.getClass().getName() + ".updateComment Start!");
 
-        CommentKey commentKey = CommentKey.builder()
+        CommentPK commentPK = CommentPK.builder()
                 .commentSeq(pDTO.commentSeq())
                 .noticeSeq(pDTO.noticeSeq())
                 .build();
 
-        CommentEntity rEntity = commentRepository.findById(commentKey)
+        CommentEntity rEntity = commentRepository.findById(commentPK)
                 .orElseThrow(() -> new Exception("Comment not found for the provided key"));
 
         CommentEntity pEntity = CommentEntity.builder()
@@ -236,13 +236,13 @@ public class NoticeJoinService implements INoticeJoinService {
 
         log.info("commentSeq : " + commentSeq);
 
-        CommentKey commentKey = CommentKey.builder()
+        CommentPK commentPK = CommentPK.builder()
                 .commentSeq(commentSeq)
                 .noticeSeq(noticeSeq)
                 .build();
 
         // 데이터 수정하기
-        commentRepository.deleteById(commentKey);
+        commentRepository.deleteById(commentPK);
 
         log.info(this.getClass().getName() + ".deleteComment End!");
     }

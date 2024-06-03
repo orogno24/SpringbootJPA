@@ -14,7 +14,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @Builder
 @Cacheable
 @Entity
-@IdClass(CommentKey.class)
+@IdClass(CommentPK.class)
 public class CommentEntity {
 
     @Id
@@ -39,4 +39,8 @@ public class CommentEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
     private UserInfoEntity userInfo;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "notice_seq", insertable = false, updatable = false)
+    private NoticeEntity noticeEntity;
 }

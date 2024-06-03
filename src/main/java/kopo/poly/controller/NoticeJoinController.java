@@ -3,7 +3,6 @@ package kopo.poly.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import kopo.poly.dto.*;
-import kopo.poly.repository.entity.CommentKey;
 import kopo.poly.service.INoticeJoinService;
 import kopo.poly.service.INoticeService;
 import kopo.poly.service.IUserInfoService;
@@ -16,7 +15,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 /*

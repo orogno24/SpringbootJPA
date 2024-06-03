@@ -1,6 +1,6 @@
 package kopo.poly.repository;
 
-import kopo.poly.repository.entity.ImageKey;
+import kopo.poly.repository.entity.ImagePK;
 import kopo.poly.repository.entity.NoticeImageEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Repository
-public interface NoticeImageRepository extends JpaRepository<NoticeImageEntity, ImageKey> {
+public interface NoticeImageRepository extends JpaRepository<NoticeImageEntity, ImagePK> {
 
     /**
      * 특정 noticeSeq에 대한 모든 이미지 찾기

@@ -14,7 +14,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @Builder
 //@Cacheable
 @Data
-@IdClass(ImageKey.class)
+@IdClass(ImagePK.class)
 @Entity
 public class NoticeImageEntity {
 

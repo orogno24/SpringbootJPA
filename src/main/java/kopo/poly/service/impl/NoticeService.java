@@ -6,7 +6,7 @@ import kopo.poly.dto.NoticeDTO;
 import kopo.poly.dto.NoticeImageDTO;
 import kopo.poly.repository.NoticeImageRepository;
 import kopo.poly.repository.NoticeRepository;
-import kopo.poly.repository.entity.ImageKey;
+import kopo.poly.repository.entity.ImagePK;
 import kopo.poly.repository.entity.NoticeEntity;
 import kopo.poly.repository.entity.NoticeImageEntity;
 import kopo.poly.service.INoticeService;
@@ -237,10 +237,10 @@ public class NoticeService implements INoticeService {
     @Transactional
     public void deleteImageById(NoticeImageDTO pDTO) throws Exception {
 
-        ImageKey imageKey = ImageKey.builder().imageSeq(pDTO.imageSeq()).noticeSeq(pDTO.noticeSeq()).build();
+        ImagePK imagePK = ImagePK.builder().imageSeq(pDTO.imageSeq()).noticeSeq(pDTO.noticeSeq()).build();
 
-        NoticeImageEntity imageEntity = noticeImageRepository.findById(imageKey)
-                .orElseThrow(() -> new Exception("Image not found with ID: " + imageKey));
+        NoticeImageEntity imageEntity = noticeImageRepository.findById(imagePK)
+                .orElseThrow(() -> new Exception("Image not found with ID: " + imagePK));
 
         // 데이터베이스에서 이미지 레코드 삭제
         noticeImageRepository.delete(imageEntity);
@@ -251,9 +251,9 @@ public class NoticeService implements INoticeService {
 
         log.info(this.getClass().getName() + "getImagePath Start!");
 
-        ImageKey imageKey = ImageKey.builder().noticeSeq(pDTO.noticeSeq()).imageSeq(pDTO.imageSeq()).build();
+        ImagePK imagePK = ImagePK.builder().noticeSeq(pDTO.noticeSeq()).imageSeq(pDTO.imageSeq()).build();
 
-        Optional<NoticeImageEntity> rEntity = noticeImageRepository.findById(imageKey);
+        Optional<NoticeImageEntity> rEntity = noticeImageRepository.findById(imagePK);
 
         String imagePath = rEntity.get().getImagePath();
 

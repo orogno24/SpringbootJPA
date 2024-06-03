@@ -13,6 +13,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -58,6 +60,10 @@ public class EventController {
 
         log.info(this.getClass().getName() + ".getList start!");
 
+        RedisDTO redisDTO = null;
+        String colNm = "EVENT_" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        redisDTO = eventService.getCulturalEvents(colNm);
+
         String guName = CmmUtil.nvl(request.getParameter("guName"));
         String codename = CmmUtil.nvl(request.getParameter("codename"));
         String themeCode = CmmUtil.nvl(request.getParameter("themeCode"));
@@ -81,7 +87,7 @@ public class EventController {
                 endDate(endDate)
                 .build();
 
-        List<ApiDTO> rList = Optional.ofNullable(eventService.getList(pDTO))
+        List<ApiDTO> rList = Optional.ofNullable(eventService.getList(redisDTO, pDTO))
                 .orElseGet(ArrayList::new);
 
         log.info(this.getClass().getName() + ".getList end!");
@@ -105,7 +111,11 @@ public class EventController {
 
         uniqueIdentifier = "https://culture.seoul.go.kr/cmmn/file/getImage.do?atchFileId=" + uniqueIdentifier + "&thumb=Y";
 
-        ApiDTO rDTO = Optional.ofNullable(eventService.getApiInfo(uniqueIdentifier))
+        RedisDTO redisDTO = null;
+        String colNm = "EVENT_" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        redisDTO = eventService.getCulturalEvents(colNm);
+
+        ApiDTO rDTO = Optional.ofNullable(eventService.getApiInfo(redisDTO, uniqueIdentifier))
                 .orElseGet(() -> ApiDTO.builder().build());
 
         BookmarkDTO gDTO = BookmarkDTO.builder().userId(userId).eventSeq(eventSeq).build();
@@ -187,7 +197,11 @@ public class EventController {
         log.info("rList : " + rList);
         log.info("eventIds : " + BookMarkSeqList);
 
-        List<BookmarkDTO> eventDetails = Optional.ofNullable(eventService.getBookmarkDateList(BookMarkSeqList)) // 추출한 eventSeq 리스트를 요청인자로 해서 전체 문화행사 데이터에서 북마크된것만 필터링함
+        RedisDTO redisDTO = null;
+        String colNm = "EVENT_" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        redisDTO = eventService.getCulturalEvents(colNm);
+
+        List<BookmarkDTO> eventDetails = Optional.ofNullable(eventService.getBookmarkDateList(redisDTO, BookMarkSeqList)) // 추출한 eventSeq 리스트를 요청인자로 해서 전체 문화행사 데이터에서 북마크된것만 필터링함
                 .orElseGet(ArrayList::new);
 
         log.info("eventDetails : " + eventDetails);

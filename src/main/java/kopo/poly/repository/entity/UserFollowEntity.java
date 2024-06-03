@@ -16,7 +16,7 @@ import java.io.Serializable;
 @Builder
 //@Cacheable
 @Entity
-@IdClass(FollowKey.class)
+@IdClass(FollowPK.class)
 public class UserFollowEntity implements Serializable {
 
     @Id
@@ -37,7 +37,5 @@ public class UserFollowEntity implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "follower_id", insertable = false, updatable = false)
     private UserInfoEntity userInfoFollower;
-
-
 
 }

@@ -1,13 +1,16 @@
 package kopo.poly.redis.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import kopo.poly.dto.RedisDTO;
 import kopo.poly.redis.IRedisMapper;
 import kopo.poly.util.DateUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +26,22 @@ public class RedisMapper implements IRedisMapper {
 
     private final RedisTemplate<String, Object> redisDB;
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    /**
+     * ReidsDB 저장된 키 삭제하는 공통 함수
+     */
+    private void deleteRedisKey(String redisKey) {
+
+        if (redisDB.hasKey(redisKey)) { // 데이터가 존재하면, 기존 데이터 삭제하기
+
+            redisDB.delete(redisKey); // 데이터 삭제
+
+            log.info("삭제 성공!");
+
+        }
+    }
+
     @Override
     public int insertEventList(List<Map<String, Object>> rContent, String colNm) throws Exception {
 
@@ -31,25 +50,27 @@ public class RedisMapper implements IRedisMapper {
         int res;
 
         redisDB.setKeySerializer(new StringRedisSerializer());
-        redisDB.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+        redisDB.setValueSerializer(new StringRedisSerializer());
 
-        // 람다식으로 데이터 저장하기
-        rContent.forEach(event -> {
-            try {
-                redisDB.opsForList().leftPush(colNm, event);
-            } catch (Exception e) {
-                log.error("Error pushing event to Redis", e);
-            }
-        });
+        this.deleteRedisKey(colNm); // RedisDB 저장된 키 삭제
+
+        // 데이터 저장하기
+        String jsonString = convertToJson(rContent);
+        redisDB.opsForValue().set(colNm, jsonString);
 
         // 저장된 데이터는 1시간동안 보관하기
-        redisDB.expire(colNm, 1, TimeUnit.HOURS);
+        // 1시간이 지나면, 자동으로 데이터가 삭제되도록 설정함
+        redisDB.expire(colNm, 60, TimeUnit.MINUTES);
 
         res = 1;
 
         log.info(this.getClass().getName() + ".insertEventList End!");
 
         return res;
+    }
+
+    private String convertToJson(List<Map<String, Object>> rContent) throws JsonProcessingException {
+        return objectMapper.writeValueAsString(rContent);
     }
 
     @Override
@@ -60,30 +81,27 @@ public class RedisMapper implements IRedisMapper {
     }
 
     @Override
-    public List<Map<String, Object>> getEventList(String colNm) throws Exception {
+    public RedisDTO getEventList(String colNm) throws Exception {
         log.info(this.getClass().getName() + ".getEventList Start!");
 
+        // redisDB의 키의 데이터 타입을 String으로 정의(항상 String으로 설정함)
         redisDB.setKeySerializer(new StringRedisSerializer());
-        redisDB.setValueSerializer(new GenericJackson2JsonRedisSerializer());
 
-        List<Map<String, Object>> rContent = new ArrayList<>();
+        // RedisDTO에 저장된 데이터를 자동으로 JSON으로 변경하기
+        redisDB.setValueSerializer(new StringRedisSerializer());
 
-        // Redis에서 리스트 형태로 데이터 조회
-        List<Object> rawList = redisDB.opsForList().range(colNm, 0, -1);
-        if (rawList != null) {
-            ObjectMapper objectMapper = new ObjectMapper();
-            for (Object item : rawList) {
-                Map<String, Object> map = objectMapper.convertValue(item, new TypeReference<Map<String, Object>>() {});
-                rContent.add(map);
-            }
+        RedisDTO rDTO = null;
+
+        if (redisDB.hasKey(colNm)) { // 데이터가 존재하면, 조회하기
+            String contents = (String) redisDB.opsForValue().get(colNm); // redisKey 통해 조회하기
+            rDTO = RedisDTO.builder()
+                    .contents(contents)
+                    .build();
         }
-
-        // 저장된 데이터는 1시간동안 연장하기
-        redisDB.expire(colNm, 1, TimeUnit.HOURS);
 
         log.info(this.getClass().getName() + ".getEventList End!");
 
-        return rContent;
+        return rDTO;
     }
 
 }

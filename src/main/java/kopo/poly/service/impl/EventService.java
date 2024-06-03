@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import kopo.poly.dto.ApiDTO;
 import kopo.poly.dto.BookmarkDTO;
 import kopo.poly.dto.EventDTO;
+import kopo.poly.dto.RedisDTO;
 import kopo.poly.redis.IRedisMapper;
 import kopo.poly.repository.BookmarkRepository;
 import kopo.poly.repository.EventRespository;
@@ -57,14 +58,10 @@ public class EventService implements IEventService  {
      * @return 필터링된 문화행사
      */
     @Override
-    public ApiDTO getApiInfo(String uniqueIdentifier) throws Exception {
+    public ApiDTO getApiInfo(RedisDTO redisDTO, String uniqueIdentifier) throws Exception {
 
-        String apiParam = apiKey + "/" + "json" + "/" + "culturalEventInfo" + "/" + "1" + "/" + "500" + "/";
-        String json = NetworkUtil.get(IEventService.apiURL + apiParam);
         ObjectMapper objectMapper = new ObjectMapper();
-        Map<String, Object> rMap = objectMapper.readValue(json, LinkedHashMap.class);
-        Map<String, Object> culturalEventInfo = (Map<String, Object>) rMap.get("culturalEventInfo");
-        List<Map<String, Object>> rContent = (List<Map<String, Object>>) culturalEventInfo.get("row");
+        List<Map<String, Object>> rContent = objectMapper.readValue(redisDTO.contents(), new TypeReference<List<Map<String, Object>>>() {});
 
         log.info("Unique Identifier: " + uniqueIdentifier);
 
@@ -91,18 +88,14 @@ public class EventService implements IEventService  {
      * @return 필터링된 문화행사 리스트
      */
     @Override
-    public List<ApiDTO> getList(ApiDTO pDTO) throws JsonProcessingException {
+    public List<ApiDTO> getList(RedisDTO redisDTO, ApiDTO pDTO) throws JsonProcessingException {
 
         log.info(this.getClass().getName() + ".getList Start!");
 
-        String apiParam = apiKey + "/" + "json" + "/" + "culturalEventInfo" + "/" + "1" + "/" + "500" + "/";
-        String json = NetworkUtil.get(IEventService.apiURL + apiParam);
-
         ObjectMapper objectMapper = new ObjectMapper();
-        Map<String, Object> rMap = objectMapper.readValue(json, LinkedHashMap.class);
 
-        Map<String, Object> culturalEventInfo = (Map<String, Object>) rMap.get("culturalEventInfo");
-        List<Map<String, Object>> rContent = (List<Map<String, Object>>) culturalEventInfo.get("row");
+        // RedisDTO의 contents를 List<Map<String, Object>>로 변환
+        List<Map<String, Object>> rContent = objectMapper.readValue(redisDTO.contents(), new TypeReference<List<Map<String, Object>>>() {});
 
         // 날짜 및 시간을 처리할 수 있는 Formatter 정의
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
@@ -163,9 +156,12 @@ public class EventService implements IEventService  {
      *  @return 문화행사 리스트
      */
     @Override
-    public List<Map<String, Object>> getCulturalEvents(String colNm) throws Exception {
+    public RedisDTO getCulturalEvents(String colNm) throws Exception {
 
         List<Map<String, Object>> rContent;
+
+        // 저장 결과
+        RedisDTO rDTO = null;
 
         if (!redisMapper.getExistKey(colNm)) {
 
@@ -183,28 +179,36 @@ public class EventService implements IEventService  {
 
             redisMapper.insertEventList(rContent, colNm);
 
+            String contents = objectMapper.writeValueAsString(rContent);
+            rDTO = RedisDTO.builder()
+                    .contents(contents)
+                    .build();
+
         } else {
 
-            rContent = redisMapper.getEventList(colNm);
+            rDTO = redisMapper.getEventList(colNm);
 
         }
 
-        return rContent;
+        return rDTO;
     }
 
     /**
      * 오늘의 문화행사 리스트 검색
      *
-     *  @param rContent 문화행사 리스트
+     *  @param redisDTO 문화행사 리스트
      *  @param pDTO 필터링 조건
      *  @return 오늘의 문화행사 리스트
      */
     @Override
-    public List<ApiDTO> getTodayEventList(List<Map<String, Object>> rContent, ApiDTO pDTO) throws JsonProcessingException {
+    public List<ApiDTO> getTodayEventList(RedisDTO redisDTO, ApiDTO pDTO) throws JsonProcessingException {
 
         log.info(this.getClass().getName() + ".getTodayEventList Start!");
 
         ObjectMapper objectMapper = new ObjectMapper();
+
+        // RedisDTO의 contents를 List<Map<String, Object>>로 변환
+        List<Map<String, Object>> rContent = objectMapper.readValue(redisDTO.contents(), new TypeReference<List<Map<String, Object>>>() {});
 
         // 날짜 및 시간을 처리할 수 있는 Formatter 정의
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
@@ -253,12 +257,15 @@ public class EventService implements IEventService  {
     /**
      * 행사가 가장 많이 열리는 지역구 5개 추출 (그래프 용도)
      *
-     *  @param rContent 문화행사 리스트
+     *  @param redisDTO 문화행사 리스트
      *  @param pDTO 필터링 조건
      *  @return 행사가 가장 많이 열리는 지역구 리스트
      */
-    public Map<String, Long> getEventCountList(List<Map<String, Object>> rContent, ApiDTO pDTO) throws JsonProcessingException {
+    public Map<String, Long> getEventCountList(RedisDTO redisDTO, ApiDTO pDTO) throws JsonProcessingException {
         log.info(this.getClass().getName() + ".getEventCountList Start!");
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<Map<String, Object>> rContent = objectMapper.readValue(redisDTO.contents(), new TypeReference<List<Map<String, Object>>>() {});
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
 
@@ -303,12 +310,15 @@ public class EventService implements IEventService  {
     /**
      * 이벤트 유형 개수 추출 (그래프 용도)
      *
-     *  @param rContent 문화행사 리스트
+     *  @param redisDTO 문화행사 리스트
      *  @param pDTO 필터링 조건
      *  @return 이벤트 유형 리스트
      */
-    public Map<String, Long> getEventTypeCountList(List<Map<String, Object>> rContent, ApiDTO pDTO) throws JsonProcessingException {
+    public Map<String, Long> getEventTypeCountList(RedisDTO redisDTO, ApiDTO pDTO) throws JsonProcessingException {
         log.info(this.getClass().getName() + ".getEventTypeCountList Start!");
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<Map<String, Object>> rContent = objectMapper.readValue(redisDTO.contents(), new TypeReference<List<Map<String, Object>>>() {});
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
 
@@ -373,18 +383,10 @@ public class EventService implements IEventService  {
      * @return BookmarkSeq 기준 문화행사 리스트
      */
     @Override
-    public List<BookmarkDTO> getBookmarkDateList(List<String> BookMarkSeqList) throws JsonProcessingException {
-        // API 호출을 위한 파라미터 설정
-        String apiParam = apiKey + "/" + "json" + "/" + "culturalEventInfo" + "/" + "1" + "/" + "500" + "/";
-        String json = NetworkUtil.get(IEventService.apiURL + apiParam);
+    public List<BookmarkDTO> getBookmarkDateList(RedisDTO redisDTO, List<String> BookMarkSeqList) throws JsonProcessingException {
 
-        // JSON 응답을 객체로 변환
         ObjectMapper objectMapper = new ObjectMapper();
-        Map<String, Object> rMap = objectMapper.readValue(json, LinkedHashMap.class);
-
-        // "culturalEventInfo" 객체 내 "row" 배열 추출
-        Map<String, Object> culturalEventInfo = (Map<String, Object>) rMap.get("culturalEventInfo");
-        List<Map<String, Object>> rContent = (List<Map<String, Object>>) culturalEventInfo.get("row");
+        List<Map<String, Object>> rContent = objectMapper.readValue(redisDTO.contents(), new TypeReference<List<Map<String, Object>>>() {});
 
         // 필터링된 이벤트 정보를 담을 리스트
         List<BookmarkDTO> filteredEvents = new ArrayList<>();

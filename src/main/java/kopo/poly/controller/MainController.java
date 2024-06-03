@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import kopo.poly.dto.ApiDTO;
+import kopo.poly.dto.RedisDTO;
 import kopo.poly.dto.UserInfoDTO;
 import kopo.poly.service.IEventService;
 import kopo.poly.service.IUserInfoService;
@@ -39,13 +40,11 @@ public class MainController {
         log.info(this.getClass().getName() + ".main Start!");
 
         String userId = (String) session.getAttribute("SS_USER_ID");
-
         UserInfoDTO dto = userInfoService.getUserInfo(userId);
 
-        model.addAttribute("dto", dto);
-
+        RedisDTO redisDTO = null;
         String colNm = "EVENT_" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        List<Map<String, Object>> rContent = eventService.getCulturalEvents(colNm);
+        redisDTO = eventService.getCulturalEvents(colNm);
 
         String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         YearMonth currentYearMonth = YearMonth.now();
@@ -55,13 +54,14 @@ public class MainController {
         ApiDTO pDTO = ApiDTO.builder().startDate(currentDate).endDate(currentDate).build();
         ApiDTO pDTO2 = ApiDTO.builder().startDate(startDate).endDate(endDate).build();
 
-        List<ApiDTO> rList = Optional.ofNullable(eventService.getTodayEventList(rContent, pDTO))
+        List<ApiDTO> rList = Optional.ofNullable(eventService.getTodayEventList(redisDTO, pDTO))
                 .orElseGet(ArrayList::new);
-        Map<String, Long> topDistricts = eventService.getEventCountList(rContent, pDTO2);
-        Map<String, Long> eventTypeCount = eventService.getEventTypeCountList(rContent, pDTO2);
+        Map<String, Long> topDistricts = eventService.getEventCountList(redisDTO, pDTO2);
+        Map<String, Long> eventTypeCount = eventService.getEventTypeCountList(redisDTO, pDTO2);
 
         String currentMonth = String.valueOf(currentYearMonth.getMonthValue());
 
+        model.addAttribute("dto", dto);
         model.addAttribute("rList", rList);
         model.addAttribute("topDistricts", new ObjectMapper().writeValueAsString(topDistricts));
         model.addAttribute("eventTypeCount", new ObjectMapper().writeValueAsString(eventTypeCount));
