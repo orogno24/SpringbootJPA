@@ -16,6 +16,11 @@
             var file = fileInput.files[0];
             var userName = document.getElementById('userName').value;
 
+            if (userName.length > 16) {
+                alert('닉네임은 16자리 미만이어야 합니다.');
+                return;
+            }
+
             if (!userName) {
                 alert('닉네임을 입력해주세요.');
                 document.getElementById('userName').focus();
