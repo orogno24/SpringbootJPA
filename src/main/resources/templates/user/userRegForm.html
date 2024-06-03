@@ -104,6 +104,12 @@
                 return;
             }
 
+            if (f.userId.value.includes("@")) {
+                alert("아이디에 허용되지 않는 문자가 포함되었습니다.");
+                f.userId.focus();
+                return;
+            }
+
             if (userIdCheck !== "N") {
                 alert("아이디 중복 체크 및 중복되지 않은 아이디로 가입 바랍니다.");
                 f.userId.focus();
