@@ -104,6 +104,12 @@
                 return;
             }
 
+            if (f.userId.value.includes("@")) {
+                alert("아이디에 허용되지 않는 문자가 포함되었습니다.");
+                f.userId.focus();
+                return;
+            }
+
             if (userIdCheck !== "N") {
                 alert("아이디 중복 체크 및 중복되지 않은 아이디로 가입 바랍니다.");
                 f.userId.focus();
@@ -161,6 +167,12 @@
                 alert("닉네임을 입력하세요.");
                 f.userName.focus();
                 return false;
+            }
+
+            if (f.userName.value.length > 16) {
+                alert("닉네임은 16자리 미만이어야 합니다.");
+                f.userName.focus();
+                return;
             }
 
             // Ajax 호출해서 회원가입하기
@@ -399,7 +411,7 @@
         <div class="left">
             <div class="login">signUp</div>
             <div class="eula"><br>
-                <img src="/assets/img/logo.png" alt="Your Image" class="square-image" style="width: 32%; height: 32%; margin-left: -6%; margin-top: -19%">
+                <img src="/assets/img/logo.png" alt="Your Image" class="square-image" style="width: 35%; height: auto; margin-left: -6%; margin-top: -19%">
             </div>
         </div>
         <div class="right">

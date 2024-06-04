@@ -158,9 +158,9 @@
             window.location.href = "/user/userProfile/" + user_id;
         }
 
-        function goToUserProfile2() {
+        function goToUserProfile2(userId) {
 
-            var userId = document.getElementById('userId').value;
+            console.log("userId : " + userId)
 
             window.location.href = "/user/userProfile/" + userId;
 
@@ -329,8 +329,8 @@
                                     <div class="author-info">
                                         <img class="comment-image clickable" th:src="${dto.profilePath}"
                                              onerror="this.src='/assets/img/profile.png'"
-                                             alt="Comment Image" onclick="goToUserProfile2()"/>
-                                        <input type="hidden" id="userId" th:value="${dto.userId}"/>
+                                             alt="Comment Image" th:onclick="goToUserProfile2([[${dto.userId}]])"/>
+                                        <span th:value="${dto.userId}" id="ProfileUserId"></span>
                                         <div style="display: flex; flex-direction: column;">
                                             <div style="display: flex; align-items: center; gap: 4px;">
                                                 <span th:text="${dto.userName}" style="font-weight: bolder;"></span>
