@@ -13,7 +13,6 @@ import org.hibernate.annotations.DynamicUpdate;
 @DynamicUpdate // 값이 NULL이 아닌것만 UPDATE함
 @Builder
 //@Cacheable
-@Data
 @IdClass(ImagePK.class)
 @Entity
 public class NoticeImageEntity {

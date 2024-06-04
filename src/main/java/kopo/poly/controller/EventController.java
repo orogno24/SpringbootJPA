@@ -3,7 +3,6 @@ package kopo.poly.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import kopo.poly.dto.*;
-import kopo.poly.dto.EventDTO;
 import kopo.poly.service.IEventService;
 import kopo.poly.service.IUserInfoService;
 import kopo.poly.util.CmmUtil;

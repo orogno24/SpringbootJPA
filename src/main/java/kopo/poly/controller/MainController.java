@@ -72,12 +72,6 @@ public class MainController {
         return "main";
     }
 
-    @GetMapping("/awsUpload")
-    public String awsUpload() throws Exception {
-        log.info(this.getClass().getName() + ".awsUpload 함수 실행");
-        return "awsUpload";
-    }
-
     @GetMapping("/alert")
     public String redirectPage(HttpServletRequest request, ModelMap modelMap, HttpSession session) throws Exception {
         log.info(this.getClass().getName() + ".alert 페이지 보여주는 함수 실행");
