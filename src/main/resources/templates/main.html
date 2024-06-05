@@ -17,18 +17,16 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
 
-        /* 기본 이미지 스타일 */
         .da-img img {
-            width: 300px; /* 기본 너비 설정 */
-            height: auto; /* 높이는 비율에 맞게 자동 조절 */
-            border-radius: 15px; /* 테두리 둥글게 처리 */
+            width: 300px;
+            height: auto;
+            border-radius: 15px;
         }
 
-        /* 화면 너비가 767px 이하일 때 적용될 스타일 */
         @media (max-width: 767px) {
             .da-img img {
-                width: 100%; /* 이미지 너비를 부모 요소에 맞춤 */
-                height: auto; /* 높이는 자동으로 설정 */
+                width: 100%;
+                height: auto;
             }
         }
 
@@ -53,9 +51,9 @@
         }
 
         .chart-container {
-            width: 50%; /* 각 차트의 너비를 45%로 설정 */
-            height: 300px; /* 높이 설정 */
-            margin: auto; /* 가운데 정렬 */
+            width: 50%;
+            height: 300px;
+            margin: auto;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -63,53 +61,53 @@
 
         .chart-wrapper {
             height: 350px;
-            display: flex; /* Flexbox 사용 */
-            justify-content: space-around; /* 공간을 균등하게 분배 */
+            display: flex;
+            justify-content: space-around;
         }
 
         .chart-description {
             text-align: center;
-            margin-top: 10px; /* 그래프와 설명 사이의 간격 조정 */
+            margin-top: 10px;
         }
 
         #div1 {
             background-image: url("/assets/img/1.jpg");
-            background-size: cover; /* 배경 이미지를 화면 전체에 맞춥니다. */
-            background-repeat: no-repeat; /* 배경 이미지 반복 제거 */
+            background-size: cover;
+            background-repeat: no-repeat;
         }
 
         #div2 {
             background-image: url("/assets/img/2.jpg");
-            background-size: cover; /* 배경 이미지를 화면 전체에 맞춥니다. */
-            background-repeat: no-repeat; /* 배경 이미지 반복 제거 */
+            background-size: cover;
+            background-repeat: no-repeat;
         }
 
         #div3 {
             background-image: url("/assets/img/3.jpg");
-            background-size: cover; /* 배경 이미지를 화면 전체에 맞춥니다. */
-            background-repeat: no-repeat; /* 배경 이미지 반복 제거 */
+            background-size: cover;
+            background-repeat: no-repeat;
         }
 
         .da-slide h4 {
-            white-space: normal; /* 긴 제목의 자동 줄바꿈을 허용 */
-            word-wrap: break-word; /* 긴 단어도 줄바꿈 */
-            max-width: 400px; /* 최대 너비 설정 */
+            white-space: normal;
+            word-wrap: break-word;
+            max-width: 400px;
             margin-bottom: 10px;
         }
 
         .da-img img {
-            border-radius: 20px; /* 이미지 테두리를 둥글게 */
+            border-radius: 20px;
         }
 
         .da-slide p {
-            margin-top: 0; /* 상단 마진 제거 */
-            padding-top: 15px; /* 상단 패딩 추가 */
+            margin-top: 0;
+            padding-top: 15px;
         }
     </style>
     <script th:inline="javascript">
         /*<![CDATA[*/
         document.addEventListener("DOMContentLoaded", function () {
-            // 임의의 데이터 사용
+
             const topDistricts = /*[[${topDistricts}]]*/ {};
             const eventTypeCount = /*[[${eventTypeCount}]]*/ {};
 
@@ -125,8 +123,8 @@
                     datasets: [{
                         label: '개최된 문화행사 수',
                         data: data,
-                        backgroundColor: 'rgba(0, 255, 255, 0.4)', // 시안색 네온
-                        borderColor: 'rgba(0, 255, 255, 1)', // 시안색 네온
+                        backgroundColor: 'rgba(0, 255, 255, 0.4)',
+                        borderColor: 'rgba(0, 255, 255, 1)',
                         borderWidth: 1
                     }]
                 },
@@ -134,34 +132,34 @@
                     scales: {
                         y: {
                             grid: {
-                                display: false // y축 격자선을 숨깁니다.
+                                display: false
                             },
                             ticks: {
-                                display: false  // y축 틱 레이블을 숨깁니다.
+                                display: false
                             },
                             title: {
                                 display: true,
-                                color: '#3b5260'  // y축 제목 색상
+                                color: '#3b5260'
                             }
                         },
                         x: {
                             grid: {
-                                display: false // x축 격자선을 숨깁니다.
+                                display: false
                             },
                             ticks: {
-                                color: '#3b5260',  // x축 텍스트 색상
+                                color: '#3b5260',
                                 font: {
-                                    size: 16, // 여기에 폰트 사이즈를 지정
+                                    size: 16,
                                     family: 'NIXGONM-Vb',
                                 }
                             },
                             title: {
                                 display: false,
                                 font: {
-                                    size: 16, // 여기에 폰트 사이즈를 지정
+                                    size: 16,
                                     family: 'NIXGONM-Vb',
                                 },
-                                color: '#3b5260'  // x축 제목 색상
+                                color: '#3b5260'
                             }
                         }
                     },
@@ -186,20 +184,20 @@
                         label: '문화행사 유형',
                         data: eventTypeData,
                         backgroundColor: [
-                            'rgba(204, 153, 255, 0.4)', // 연보라색
-                            'rgba(153, 255, 153, 0.4)', // 연두색
-                            'rgba(153, 255, 255, 0.4)', // 연한 시안색
-                            'rgba(255, 204, 153, 0.4)', // 연한 주황색
-                            'rgba(255, 153, 153, 0.4)', // 연한 빨간색
-                            'rgba(153, 153, 255, 0.4)'  // 연한 파란색
+                            'rgba(204, 153, 255, 0.4)',
+                            'rgba(153, 255, 153, 0.4)',
+                            'rgba(153, 255, 255, 0.4)',
+                            'rgba(255, 204, 153, 0.4)',
+                            'rgba(255, 153, 153, 0.4)',
+                            'rgba(153, 153, 255, 0.4)'
                         ],
                         borderColor: [
-                            'rgba(204, 153, 255, 1)', // 연보라색
-                            'rgba(153, 255, 153, 1)', // 연두색
-                            'rgba(153, 255, 255, 1)', // 연한 시안색
-                            'rgba(255, 204, 153, 1)', // 연한 주황색
-                            'rgba(255, 153, 153, 1)', // 연한 빨간색
-                            'rgba(153, 153, 255, 1)'  // 연한 파란색
+                            'rgba(204, 153, 255, 1)',
+                            'rgba(153, 255, 153, 1)',
+                            'rgba(153, 255, 255, 1)',
+                            'rgba(255, 204, 153, 1)',
+                            'rgba(255, 153, 153, 1)',
+                            'rgba(153, 153, 255, 1)'
                         ],
                         borderWidth: 1
                     }]
@@ -211,10 +209,10 @@
                         legend: {
                             labels: {
                                 font: {
-                                    size: 16, // 여기에 폰트 사이즈를 지정
+                                    size: 16,
                                     family: 'NIXGONM-Vb',
                                 },
-                                color: '#3b5260'  // 범례 텍스트 색상
+                                color: '#3b5260'
                             }
                         }
                     }
@@ -249,12 +247,11 @@
                 .replace(/\s/g, '')
                 .replace(/(\d{4}\.\d{2}\.\d{2})\./, '$1');
 
-            // 모든 슬라이드에 날짜 삽입
             document.querySelectorAll('.da-slide h2').forEach(function (h2) {
                 const dateH2 = document.createElement('h2');
                 dateH2.style.cssText = "font-size: 20px; color: #3b5260; position: relative; top: 150px;";
                 dateH2.textContent = formattedDate;
-                h2.parentNode.insertBefore(dateH2, h2.nextSibling); // h2 다음에 날짜 삽입
+                h2.parentNode.insertBefore(dateH2, h2.nextSibling);
             });
 
             const links = document.querySelectorAll('.da-link');
@@ -262,8 +259,8 @@
                 const img = link.closest('.da-slide').querySelector('.da-img img');
                 if (img) {
                     const imgSrc = img.getAttribute('src');
-                    const fileId = imgSrc.split('atchFileId=')[1].split('&')[0];  // 파일 ID 추출
-                    link.href = `/event/apiInfo?nSeq=${fileId}`;  // 추출된 파일 ID를 링크에 적용
+                    const fileId = imgSrc.split('atchFileId=')[1].split('&')[0];
+                    link.href = `/event/apiInfo?nSeq=${fileId}`;
                 }
             });
         });
@@ -347,27 +344,21 @@
                 <div class="feature-grid">
                     <div class="feature" id="div1" onclick="location.href='/event/apiSearch';"
                          style="position: relative; overflow: hidden; transition: transform 0.3s ease; cursor: pointer;">
-                        <!--                        <img class="icon" src="/assets/img/icon1.png" style="position: absolute; width: 14%" alt="">-->
                         <h2 style="font-size: 22px; text-align: center; padding-top: 40px;">
                             <span style="color: #ffffff; background-color: #5d8198;">문화행사 찾기</span>
                         </h2>
-                        <!--                        <p style="text-align: center; transition: transform 0.3s ease; color: #3b5260; background-color: #b3ecec;">관심있는 문화행사의 정보를 확인할 수 있습니다.</p>-->
                         <br><br>
                     </div>
                     <div class="feature" id="div2" onclick="location.href='/culture/cultureMap';"
                          style="position: relative; overflow: hidden; transition: transform 0.3s ease; cursor: pointer;">
-                        <!--                        <img class="icon" src="/assets/img/icon2.png" style="position: absolute; width: 14%" alt="">-->
                         <h2 style="font-size: 22px; text-align: center; padding-top: 40px; transition: transform 0.3s ease;">
                             <span style="color: #ffffff; background-color: #5d8198;">문화시설 찾기</span>
                         </h2>
-                        <!--                        <p style="text-align: center; transition: transform 0.3s ease; color: #3b5260; background-color: #b3ecec;">근처의 문화시설 정보를 확인할 수 있습니다.</p>-->
                     </div>
                     <div class="feature" id="div3" onclick="location.href='/notice/noticeListUsingNativeQuery';"
                          style="position: relative; overflow: hidden; transition: transform 0.3s ease; cursor: pointer;">
-                        <!--                        <img class="icon" src="/assets/img/icon3.png" style="position: absolute; width: 14%" alt="">-->
                         <h2 style="font-size: 22px; text-align: center; padding-top: 40px; transition: transform 0.3s ease;">
                             <span style="color: #ffffff; background-color: #5d8198;">커뮤니티</span></h2>
-                        <!--                        <p style="text-align: center; transition: transform 0.3s ease; color: #3b5260; background-color: #b3ecec;">내 경험을 다른 사람들과 공유할 수 있습니다.</p>-->
                     </div>
                 </div>
             </div>
@@ -439,9 +430,8 @@
 
 </script>
 <script>
-    // YouTube API 키
-    var API_KEYS = ['AIzaSyDA9LFxcFVZSeLSemP3PS_p8hZ4f6hyHjM', 'AIzaSyC7Z6CURRfB6TPRSKaE66Q1VKb31kCJXUc', 'AIzaSyCq16BL6KkZ07QvpJ9XEMA8coki2_mPMdA']; // API 키 배열
-    var currentKeyIndex = 0; // 현재 사용 중인 키의 인덱스
+    var API_KEYS = ['AIzaSyDA9LFxcFVZSeLSemP3PS_p8hZ4f6hyHjM', 'AIzaSyC7Z6CURRfB6TPRSKaE66Q1VKb31kCJXUc', 'AIzaSyCq16BL6KkZ07QvpJ9XEMA8coki2_mPMdA'];
+    var currentKeyIndex = 0;
 
     function searchYouTube(searchTerm) {
         var encodedSearchTerm = encodeURIComponent(searchTerm);
@@ -453,10 +443,10 @@
             if (this.status == 200) {
                 var data = JSON.parse(this.responseText);
                 displayVideos(data.items);
-            } else if (this.status == 403) { // 한도 초과 오류 감지
-                currentKeyIndex = (currentKeyIndex + 1) % API_KEYS.length; // 다음 키로 전환
-                if (currentKeyIndex !== 0) { // 첫 번째 키로 돌아오지 않았는지 확인
-                    searchYouTube(searchTerm); // 재시도
+            } else if (this.status == 403) {
+                currentKeyIndex = (currentKeyIndex + 1) % API_KEYS.length;
+                if (currentKeyIndex !== 0) {
+                    searchYouTube(searchTerm);
                 } else {
                     console.error('모든 API 키의 한도가 초과됨');
                 }
@@ -471,8 +461,6 @@
         request.send();
     }
 
-
-    // 비디오 목록을 표시하는 함수
     function displayVideos(videos) {
         var container = document.getElementById('portfolio-grid');
         container.innerHTML = ''; // 컨테이너 초기화
@@ -481,13 +469,12 @@
             listItem.className = 'span4 mix web';
             listItem.innerHTML = '<div class="thumbnail">' +
                 '<iframe width="370" height="200" src="https://www.youtube.com/embed/' + video.id.videoId + '" frameborder="0" allowfullscreen></iframe>' +
-                '<h3>' + video.snippet.title + '</h3>' + // 영상 제목 추가
+                '<h3>' + video.snippet.title + '</h3>' +
                 '</div>';
             container.appendChild(listItem);
         });
     }
 
-    // 페이지 로드 시 기본 검색어로 유튜브 검색 실행
     window.onload = function () {
         searchYouTube('서울시 문화행사');
     };

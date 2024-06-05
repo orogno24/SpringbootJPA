@@ -174,8 +174,8 @@
                 return;
             }
 
-            // ws = new WebSocket("ws://" + location.host + "/ws/" + roomName + "/" + userName + "/ko");
-            ws = new WebSocket(wsUrl);
+            ws = new WebSocket("ws://" + location.host + "/ws/" + roomName + "/" + userName + "/ko");
+            // ws = new WebSocket(wsUrl);
 
             // 웹소켓 열기
             ws.onopen = function (event) {

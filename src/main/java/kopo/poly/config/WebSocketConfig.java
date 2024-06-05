@@ -52,7 +52,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
                                 // 채팅룸 이름은 해시 함수를 이용하여 영문명으로 변경함
                                 String roomNameHash = EncryptUtil.encHashSHA256(roomName);
 
-                                log.info("roomName : " + roomName + " / userName : + " + userName +
+                                log.info("roomName : " + roomName + " / userName : " + userName +
                                         " / langCode : " + langCode);
 
                                 attributes.put("roomName", roomName);
