@@ -1,11 +1,9 @@
 package kopo.poly.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.transaction.Transactional;
-import kopo.poly.dto.BookmarkDTO;
 import kopo.poly.dto.CommentDTO;
 import kopo.poly.dto.NoticeDTO;
 import kopo.poly.repository.CommentRepository;
@@ -21,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor

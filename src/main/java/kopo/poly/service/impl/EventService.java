@@ -8,7 +8,6 @@ import kopo.poly.dto.BookmarkDTO;
 import kopo.poly.dto.RedisDTO;
 import kopo.poly.redis.IRedisMapper;
 import kopo.poly.repository.BookmarkRepository;
-import kopo.poly.repository.EventRespository;
 import kopo.poly.repository.entity.BookmarkEntity;
 import kopo.poly.service.IEventService;
 import kopo.poly.util.CmmUtil;
@@ -33,8 +32,7 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 @Service
 public class EventService implements IEventService  {
-
-    private final EventRespository eventRepository;
+    
     private final BookmarkRepository bookmarkRepository;
     private final IRedisMapper redisMapper;
 

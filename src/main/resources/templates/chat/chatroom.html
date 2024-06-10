@@ -8,7 +8,6 @@
     <link rel="shortcut icon" href="/assets/img/logo.png" type="image/x-icon">
     <script type="text/javascript" src="/js/jquery-3.6.0.min.js"></script>
     <style>
-
         @font-face {
             font-family: 'NIXGONM-Vb';
             src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/NIXGONM-Vb.woff') format('woff');
@@ -20,21 +19,72 @@
             font-family: 'NIXGONM-Vb';
         }
 
+        .header {
+            width: 100%; /* header 너비를 화면 전체로 설정 */
+            padding: 0 16px;
+        }
+
         body {
             background-color: #d7f9ff;
             margin: 0;
             padding: 0;
             color: #3c1e1e;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-        h1 {
-            text-align: center;
-            color: #3c1e1e;
+
+        .container {
+            display: flex;
+            width: 90%;
+            max-width: 1200px;
         }
+
+        .room-list {
+            width: 30%;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-right: 20px;
+            max-height: 700px;
+            overflow-y: auto;
+        }
+
+        .room-list h2 {
+            margin: 0;
+            margin-bottom: 10px;
+            font-size: 20px;
+            border-bottom: 2px solid #5d8198;
+            padding-bottom: 10px;
+        }
+
+        .room-item {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s;
+        }
+
+        .room-item:hover {
+            background-color: #e6e6e6;
+        }
+
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            width: 70%;
+        }
+
         .divTable {
-            display: table;
-            width: 56%;
-            margin: 20px auto;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
         }
+
         .chat-box {
             display: flex;
             flex-direction: column;
@@ -61,7 +111,7 @@
             height: 40px;
             border-radius: 50%;
             margin-right: 10px;
-            margin-top: 5px; /* 이미지 위치를 아래로 조정 */
+            margin-top: 5px;
             cursor: pointer;
         }
 
@@ -69,8 +119,9 @@
             margin-left: 10px;
             margin-right: 0;
         }
+
         .chat-message {
-            display: inline-block; /* 내용에 따라 너비 조절 */
+            display: inline-block;
             min-width: 100px;
             min-height: 46px;
             max-width: 60%;
@@ -78,34 +129,40 @@
             padding: 10px;
             border-radius: 12px;
             background-color: #fff;
-            box-shadow: 0 2px 2px rgba(0,0,0,0.2);
-            overflow: hidden; /* 내용이 너무 길 경우를 대비 */
+            box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
         }
+
         .chat-message.self {
             margin-left: auto;
-            background-color: #ffeb00; /* 노란색 배경 */
-            color: black; /* 검은색 글씨 */
+            background-color: #ffeb00;
+            color: black;
         }
+
         .chat-message.admin {
             margin-right: auto;
-            background-color: #ffffff; /* 상대방 메시지 배경색 설정 */
-            color: black; /* 검은색 글씨 */
+            background-color: #ffffff;
+            color: black;
         }
+
         .sender-name {
             font-size: 0.9em;
             color: #333;
             font-weight: bold;
         }
+
         .message-content {
             font-size: 1em;
             color: #444;
         }
+
         .timestamp {
             font-size: 0.7em;
             color: gray;
             text-align: right;
             margin-top: 5px;
         }
+
         .input-container {
             display: flex;
             padding: 10px;
@@ -113,6 +170,7 @@
             border-radius: 0 0 10px 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
+
         input[type="text"] {
             flex: 1;
             padding: 10px;
@@ -120,6 +178,7 @@
             border: 1px solid #ccc;
             border-radius: 20px;
         }
+
         button {
             background-color: #5da5bb;
             color: #fff;
@@ -128,27 +187,47 @@
             border-radius: 20px;
             cursor: pointer;
         }
+
         button:hover {
             background-color: #4e899a;
         }
+
         .chat-box::-webkit-scrollbar {
-            width: 14px; /* 스크롤바의 너비 */
-            border-radius: 6px; /* 스크롤바의 둥근 모서리 */
-            box-shadow: inset 0 0 5px lightgrey; /* 연한 회색으로 내부 그림자 효과 */
+            width: 14px;
+            border-radius: 6px;
+            box-shadow: inset 0 0 5px lightgrey;
         }
 
-        /* #comments 요소의 스크롤바 트랙 (배경) 스타일 */
         .chat-box::-webkit-scrollbar-track {
             background: #f9f9f9;
-            border-radius: 6px; /* 트랙의 둥근 모서리 */
+            border-radius: 6px;
         }
 
-        /* #comments 요소의 스크롤바 핸들 (움직이는 부분) 스타일 */
         .chat-box::-webkit-scrollbar-thumb {
             background: #bbbbbb;
-            border-radius: 6px; /* 핸들의 둥근 모서리 */
-            border: 2px solid transparent; /* 투명한 테두리 추가 */
-            background-clip: padding-box; /* 테두리 내부만 배경 색 적용 */
+            border-radius: 6px;
+            border: 2px solid transparent;
+            background-clip: padding-box;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .leave-button, .delete-button {
+            background-color: #5da5bb;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            margin: 0 10px;
+        }
+
+        .leave-button:hover, .delete-button:hover {
+            background-color: #4e899a;
         }
     </style>
     <script th:inline="javascript">
@@ -160,6 +239,7 @@
         const ss_user_id = [[${session.SS_USER_ID}]];
         const user_id = [[${dto.userId}]];
         const roomName = /*[[${roomName}]]*/ 'defaultRoom'; // 채팅룸 이름
+        const roomOwner = [[${roomOwner}]];
         const userName = [[${dto.userName}]]; // 채팅유저 이름
         const userId = [[${dto.userId}]];
         const profilePath = [[${dto.profilePath}]];
@@ -167,6 +247,8 @@
         const wsUrl = protocol + "culturalsquare.site/ws/" + roomName + "/" + userName + "/ko";
 
         $(document).ready(function () {
+
+            getRoomList();
 
             // 웹소켓 객체를 생성하는 중
             if (ws !== undefined && ws.readyState !== WebSocket.CLOSED) {
@@ -236,7 +318,73 @@
                 let chatMsg = JSON.stringify(data); // JSON 형태로 변환하고 웹소켓을 통해 메시지 전송
                 $("#msg").val(""); // 입력 필드 초기화
             }
+
+            // 채팅방 나가기 버튼 클릭 이벤트
+            $("#leaveBtn").on("click", function () {
+                leaveRoom();
+            });
+
+            // 채팅방 삭제 버튼 클릭 이벤트
+            $("#deleteBtn").on("click", function () {
+                if (confirm("정말 채팅방을 삭제하시겠습니까?")) {
+                    deleteRoom();
+                }
+            });
+
+            function leaveRoom() {
+                if (ws) {
+                    ws.close(); // 웹소켓 연결을 닫습니다.
+                }
+                window.location.href = "/chat/intro";
+            }
+
+            function deleteRoom() {
+                $.ajax({
+                    url: "/chat/deleteRoom/" + roomName,
+                    type: "DELETE",
+                    success: function (result) {
+                        if (ws) {
+                            ws.close(); // 웹소켓 연결을 닫습니다.
+                        }
+                        window.location.href = "/chat/intro";
+                    },
+                    error: function (err) {
+                        alert("채팅방 삭제 중 오류가 발생했습니다.");
+                    }
+                });
+            }
+
+            // 채팅방 소유자만 삭제 버튼을 볼 수 있게 설정
+            if (ss_user_id === roomOwner) {
+                $("#deleteBtn").show();
+            } else {
+                $("#deleteBtn").hide();
+            }
         });
+
+        // 채팅방 리스트 가져오기
+        getRoomList();
+
+        // 3초마다 채팅방 리스트 갱신
+        setInterval(getRoomList, 3000);
+
+        function getRoomList() {
+            $.ajax({
+                url: "/chat/roomList",
+                type: "POST",
+                dataType: "JSON",
+                success: function (json) {
+                    $("#room_list").empty();
+                    for (let i = 0; i < json.length; i++) {
+                        $("#room_list").append("<div class='room-item' data-room='" + json[i] + "'>" + json[i] + "</div>");
+                    }
+                    $('.room-item').click(function () {
+                        var roomName = $(this).data('room');
+                        window.location.href = "/chat/chatroom/" + roomName;
+                    });
+                }
+            });
+        }
 
         function goToUserProfile(userId) {
             window.location.href = "/user/userProfile/" + userId;
@@ -247,7 +395,7 @@
 </head>
 <body>
 
-<div class="header" style="padding: 0 16px;">
+<div class="header">
     <a href="/main" class="logo">
         <img src="/assets/img/logo3.png" alt="Main Logo">
     </a>
@@ -260,13 +408,27 @@
 </div>
 
 <h1 th:text="${roomName} + ' 채팅방 입니다.'" style="margin-top: 30px"></h1>
-<div class="divTable">
-    <div class="chat-box" id="chat">
+
+<div class="container">
+    <div class="room-list">
+        <h2>현재 개설된 채팅방들</h2>
+        <div id="room_list"></div>
     </div>
-    <div class="input-container">
-        <input type="text" id="msg">
-        <button id="btnSend">전송</button>
+    <div class="chat-container">
+        <div class="divTable">
+            <div class="chat-box" id="chat">
+            </div>
+            <div class="input-container">
+                <input type="text" id="msg">
+                <button id="btnSend">전송</button>
+            </div>
+        </div>
     </div>
+</div>
+
+<div class="button-container">
+    <button class="leave-button" id="leaveBtn">채팅방 나가기</button>
+    <button class="delete-button" id="deleteBtn" style="display:none;">채팅방 삭제하기</button>
 </div>
 
 </body>

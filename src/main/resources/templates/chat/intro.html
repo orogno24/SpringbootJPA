@@ -110,11 +110,24 @@
       background-color: #4e899a;
     }
   </style>
-  <script type="text/javascript">
+  <script th:inline="javascript">
+    /*<![CDATA[*/
     $(document).ready(function () {
+
+      const ss_user_id = [[${session.SS_USER_ID}]];
+
       getRoomList();
 
       setInterval(getRoomList, 5000);
+
+      $("#f").submit(function(event) {
+        event.preventDefault();
+        var roomName = $("input[name='roomName']").val();
+        $.post("/chat/chatroom", { roomName: roomName, userId: ss_user_id }, function() {
+          console.log("roomName : " + roomName)
+          window.location.href = "/chat/chatroom/" + roomName;
+        });
+      });
     });
 
     function getRoomList() {
@@ -129,14 +142,12 @@
           }
           $('.room-item').click(function() {
             var roomName = $(this).data('room');
-            var form = $('<form action="/chat/chatroom" method="post">' +
-                    '<input type="hidden" name="roomName" value="' + roomName + '"></form>');
-            $('body').append(form);
-            form.submit();
+            window.location.href = "/chat/chatroom/" + roomName;
           });
         }
       });
     }
+    /*]]>*/
   </script>
 </head>
 <body>
@@ -161,11 +172,12 @@
     <div id="room_list"></div>
   </div>
   <div class="form-container">
-    <form name="f" id="f" method="post" th:action="@{/chat/chatroom}">
+    <form name="f" id="f" method="post">
       <input type="text" name="roomName" placeholder="채팅방 이름" required>
       <button type="submit">채팅방 만들기</button>
     </form>
   </div>
 </div>
+
 </body>
 </html>
