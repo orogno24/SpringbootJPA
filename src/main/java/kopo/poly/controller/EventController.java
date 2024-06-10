@@ -69,6 +69,7 @@ public class EventController {
         String isFree = CmmUtil.nvl(request.getParameter("isFree"));
         String startDate = CmmUtil.nvl(request.getParameter("startDate"));
         String endDate = CmmUtil.nvl(request.getParameter("endDate"));
+        String searchKeyword = CmmUtil.nvl(request.getParameter("searchKeyword"));
 
         log.info("guName : " + guName);
         log.info("codename : " + codename);
@@ -76,6 +77,7 @@ public class EventController {
         log.info("isFree : " + isFree);
         log.info("startDate : " + startDate);
         log.info("endDate : " + endDate);
+        log.info("searchKeyword : " + searchKeyword);
 
         ApiDTO pDTO = ApiDTO.builder().
                 guName(guName).
@@ -83,7 +85,8 @@ public class EventController {
                 themeCode(themeCode).
                 isFree(isFree).
                 startDate(startDate).
-                endDate(endDate)
+                endDate(endDate).
+                searchKeyword(searchKeyword)
                 .build();
 
         List<ApiDTO> rList = Optional.ofNullable(eventService.getList(redisDTO, pDTO))

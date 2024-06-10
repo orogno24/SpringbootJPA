@@ -132,6 +132,11 @@ public class EventService implements IEventService  {
             });
         }
 
+        // pDTO.searchKeyword가 설정되어 있고, 제목에 해당 키워드를 포함하는 경우만 필터링
+        if (pDTO.searchKeyword() != null && !pDTO.searchKeyword().isEmpty()) {
+            stream = stream.filter(e -> e.title().toLowerCase().contains(pDTO.searchKeyword().toLowerCase()));
+        }
+
         // 필터링된 결과를 리스트로 수집
         List<ApiDTO> pList = stream.collect(Collectors.toList());
 

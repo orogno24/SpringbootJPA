@@ -49,7 +49,8 @@ public record ApiDTO(
         @JsonProperty("IS_FREE")
         String isFree, // 유무료
         @JsonProperty("HMPG_ADDR")
-        String hmpgAddr // 문화포털상세URL
+        String hmpgAddr, // 문화포털상세URL
+        String searchKeyword
 ) {
 
 }
