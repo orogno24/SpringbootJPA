@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>문화행사 리스트</title>
+    <title>문화행사 선택</title>
     <link rel="stylesheet" href="/css/table.css"/>
     <link rel="stylesheet" href="/css/eventSearch.css"/>
     <link rel="stylesheet" href="/css/header.css"/>
@@ -66,6 +66,7 @@
                 listItem.className = 'eventItem';
 
                 var uniqueIdentifier = extractFileId(event.MAIN_IMG);
+                var uniqueIdentifier2 = event.TITLE;
 
                 listItem.innerHTML =
                     '<div class="eventThumbnail">' +
@@ -80,7 +81,7 @@
                     '</div>';
 
                 listItem.onclick = function () {
-                    doDetail(uniqueIdentifier);
+                    doDetail(uniqueIdentifier, uniqueIdentifier2);
                 };
 
                 container.appendChild(listItem);
@@ -118,8 +119,33 @@
             return match ? match[1] : null;
         }
 
-        function doDetail(uniqueIdentifier) {
-            location.href = "/event/apiInfo?nSeq=" + uniqueIdentifier;
+        function doDetail(uniqueIdentifier, uniqueIdentifier2) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const eventNameParam = urlParams.get('eventName');
+            const descriptionParam = urlParams.get('description');
+            const dateTimeParam = urlParams.get('dateTime');
+            const maxParticipantsParam = urlParams.get('maxParticipants');
+            const form = document.createElement('form');
+            form.method = 'post';
+            form.action = '/network/createNetwork';
+
+            form.appendChild(createHiddenInput('eventName', eventNameParam));
+            form.appendChild(createHiddenInput('description', descriptionParam));
+            form.appendChild(createHiddenInput('dateTime', dateTimeParam));
+            form.appendChild(createHiddenInput('maxParticipants', maxParticipantsParam));
+            form.appendChild(createHiddenInput('selectedEventId', uniqueIdentifier));
+            form.appendChild(createHiddenInput('selectedEventName', uniqueIdentifier2));
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+        function createHiddenInput(name, value) {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = name;
+            input.value = value;
+            return input;
         }
     </script>
     <style>
@@ -182,63 +208,63 @@
 </div>
 
 <div class="header-container" style="margin-left: 8%">
-<h2>문화행사 찾기</h2>
-<form id="searchForm">
-    <select name="guName">
-        <option value="">시군구 선택</option>
-        <option value="종로구">종로구</option>
-        <option value="중구">중구</option>
-        <option value="용산구">용산구</option>
-        <option value="성동구">성동구</option>
-        <option value="광진구">광진구</option>
-        <option value="동대문구">동대문구</option>
-        <option value="중랑구">중랑구</option>
-        <option value="성북구">성북구</option>
-        <option value="강북구">강북구</option>
-        <option value="도봉구">도봉구</option>
-        <option value="노원구">노원구</option>
-        <option value="은평구">은평구</option>
-        <option value="서대문구">서대문구</option>
-        <option value="마포구">마포구</option>
-        <option value="양천구">양천구</option>
-        <option value="강서구">강서구</option>
-        <option value="구로구">구로구</option>
-        <option value="금천구">금천구</option>
-        <option value="영등포구">영등포구</option>
-        <option value="동작구">동작구</option>
-        <option value="관악구">관악구</option>
-        <option value="서초구">서초구</option>
-        <option value="강남구">강남구</option>
-        <option value="송파구">송파구</option>
-        <option value="강동구">강동구</option>
-    </select>
-    <select name="codename">
-        <option value="">행사 타입 선택</option>
-        <option value="콘서트">콘서트</option>
-        <option value="축제-문화/예술">문화/예술</option>
-        <option value="교육/체험">교육/체험</option>
-        <option value="뮤지컬/오페라">뮤지컬/오페라</option>
-        <option value="전시/미술">전시/미술</option>
-        <option value="국악">국악</option>
-        <option value="기타">기타</option>
-    </select>
-    <select name="themeCode">
-        <option value="">테마</option>
-        <option value="어린이/청소년 문화행사">어린이/청소년</option>
-        <option value="여성 문화행사">여성</option>
-        <option value="어르신 문화행사">어르신</option>
-        <option value="가족 문화행사">가족</option>
-    </select>
-    <select name="isFree">
-        <option value="">비용</option>
-        <option value="무료">무료</option>
-        <option value="유료">유료</option>
-    </select>
-    <input type="date" style="font-family: 'NIXGONM-Vb'" id="startDate" name="startDate"/>
-    <input type="date" style="font-family: 'NIXGONM-Vb'" id="endDate" name="endDate"/>
-    <input type="text" id="searchKeyword" name="searchKeyword" style="padding-left: 10px;" placeholder="검색어를 입력해주세요."/>
-    <button type="button" onclick="displayEvents()">검색</button>
-</form>
+    <h2>문화행사 찾기</h2>
+    <form id="searchForm">
+        <select name="guName">
+            <option value="">시군구 선택</option>
+            <option value="종로구">종로구</option>
+            <option value="중구">중구</option>
+            <option value="용산구">용산구</option>
+            <option value="성동구">성동구</option>
+            <option value="광진구">광진구</option>
+            <option value="동대문구">동대문구</option>
+            <option value="중랑구">중랑구</option>
+            <option value="성북구">성북구</option>
+            <option value="강북구">강북구</option>
+            <option value="도봉구">도봉구</option>
+            <option value="노원구">노원구</option>
+            <option value="은평구">은평구</option>
+            <option value="서대문구">서대문구</option>
+            <option value="마포구">마포구</option>
+            <option value="양천구">양천구</option>
+            <option value="강서구">강서구</option>
+            <option value="구로구">구로구</option>
+            <option value="금천구">금천구</option>
+            <option value="영등포구">영등포구</option>
+            <option value="동작구">동작구</option>
+            <option value="관악구">관악구</option>
+            <option value="서초구">서초구</option>
+            <option value="강남구">강남구</option>
+            <option value="송파구">송파구</option>
+            <option value="강동구">강동구</option>
+        </select>
+        <select name="codename">
+            <option value="">행사 타입 선택</option>
+            <option value="콘서트">콘서트</option>
+            <option value="축제-문화/예술">문화/예술</option>
+            <option value="교육/체험">교육/체험</option>
+            <option value="뮤지컬/오페라">뮤지컬/오페라</option>
+            <option value="전시/미술">전시/미술</option>
+            <option value="국악">국악</option>
+            <option value="기타">기타</option>
+        </select>
+        <select name="themeCode">
+            <option value="">테마</option>
+            <option value="어린이/청소년 문화행사">어린이/청소년</option>
+            <option value="여성 문화행사">여성</option>
+            <option value="어르신 문화행사">어르신</option>
+            <option value="가족 문화행사">가족</option>
+        </select>
+        <select name="isFree">
+            <option value="">비용</option>
+            <option value="무료">무료</option>
+            <option value="유료">유료</option>
+        </select>
+        <input type="date" style="font-family: 'NIXGONM-Vb'" id="startDate" name="startDate"/>
+        <input type="date" style="font-family: 'NIXGONM-Vb'" id="endDate" name="endDate"/>
+        <input type="text" id="searchKeyword" name="searchKeyword" style="padding-left: 10px;" placeholder="검색어를 입력해주세요."/>
+        <button type="button" onclick="displayEvents()">검색</button>
+    </form>
 </div>
 
 <div id="loadingSpinner" style="display:none;">

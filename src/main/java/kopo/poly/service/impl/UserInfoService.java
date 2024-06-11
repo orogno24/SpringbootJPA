@@ -80,6 +80,7 @@ public class UserInfoService implements IUserInfoService {
         String userName = CmmUtil.nvl(pDTO.userName());
         String password = CmmUtil.nvl(pDTO.password());
         String email = CmmUtil.nvl(pDTO.email());
+        String profilePath = CmmUtil.nvl(pDTO.profilePath());
 
         log.info("pDTO : " + pDTO);
 
@@ -94,6 +95,7 @@ public class UserInfoService implements IUserInfoService {
                     .email(email)
                     .regId(userId).regDt(DateUtil.getDateTime("yyyy-MM-dd hh:mm:ss"))
                     .chgId(userId).chgDt(DateUtil.getDateTime("yyyy-MM-dd hh:mm:ss"))
+                    .profilePath(profilePath)
                     .build();
 
             userInfoRepository.save(pEntity);

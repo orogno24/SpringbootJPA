@@ -36,6 +36,12 @@ public class CultureController {
         return "culture/cultureMap";
     }
 
+    @GetMapping("selectCulture")
+    public String selectCulture() {
+        log.info(this.getClass().getName() + ".selectCulture 함수 실행");
+        return "culture/selectCulture";
+    }
+
     /**
      * 좌표 기준 문화시설 리스트 가져오기
      */

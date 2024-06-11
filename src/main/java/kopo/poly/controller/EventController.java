@@ -39,14 +39,23 @@ public class EventController {
     private final IUserInfoService userInfoService;
 
     @GetMapping(value = "apiSearch")
-    public String apiSearch()
-            throws Exception {
+    public String apiSearch() throws Exception {
 
         log.info(this.getClass().getName() + ".apiSearch Start!");
 
         log.info(this.getClass().getName() + ".apiSearch End!");
 
         return "event/apiSearch";
+    }
+
+    @GetMapping(value = "selectApi")
+    public String selectApi() throws Exception {
+
+        log.info(this.getClass().getName() + ".selectApi Start!");
+
+        log.info(this.getClass().getName() + ".selectApi End!");
+
+        return "event/selectApi";
     }
 
     /**

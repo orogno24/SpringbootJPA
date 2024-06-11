@@ -1,5 +1,8 @@
 package kopo.poly.controller;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
@@ -12,15 +15,15 @@ import kopo.poly.util.CmmUtil;
 import kopo.poly.util.EncryptUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @RequestMapping(value = "/user")
@@ -31,6 +34,8 @@ public class UserInfoController {
     // @RequiredArgsConstructor 를 통해 메모리에 올라간 서비스 객체를 Controller에서 사용할 수 있게 주입함
     private final IUserInfoService userInfoService;
     private final INoticeService noticeService;
+    private final AmazonS3 s3Client;
+    private final String bucketName;
 
     /**
      * 회원가입 화면으로 이동
@@ -76,7 +81,7 @@ public class UserInfoController {
      */
     @ResponseBody
     @PostMapping(value = "insertUserInfo")
-    public MsgDTO insertUserInfo(HttpServletRequest request) throws Exception {
+    public MsgDTO insertUserInfo(MultipartHttpServletRequest request) throws Exception {
 
         log.info(this.getClass().getName() + ".insertUserInfo Start!");
 
@@ -92,6 +97,23 @@ public class UserInfoController {
         log.info("password : " + password);
         log.info("email : " + email);
 
+        MultipartFile file = request.getFile("profileImage");
+
+        String imageUrl = "/assets/img/thumbnail.png";
+
+        if (file != null && !file.isEmpty()) {
+            try {
+                String extension = FilenameUtils.getExtension(file.getOriginalFilename());
+                String fileName = "profiles/" + userId + "_" + UUID.randomUUID().toString() + "." + extension;
+                s3Client.putObject(new PutObjectRequest(bucketName, fileName, file.getInputStream(), null)
+                        .withCannedAcl(CannedAccessControlList.PublicRead));
+                imageUrl = s3Client.getUrl(bucketName, fileName).toString();
+            } catch (Exception e) {
+                log.error("파일 업로드 실패: " + e.getMessage());
+                return MsgDTO.builder().result(0).msg("파일 업로드 실패").build();
+            }
+        }
+
         // 웹 (회원정보 입력화면)에서 받는 정보를 저장할 변수를 메모리에 올리기
         UserInfoDTO pDTO = UserInfoDTO.builder()
                 .userId(userId)
@@ -100,6 +122,7 @@ public class UserInfoController {
                 .email(EncryptUtil.encAES128CBC(email))
                 .regId(userId)
                 .chgId(userId)
+                .profilePath(imageUrl)
                 .build();
 
         // 회원가입 서비스 호출하여 결과 받기
@@ -233,6 +256,21 @@ public class UserInfoController {
 
         String userId = (String) session.getAttribute("SS_USER_ID");
         log.info("userId : " + userId);
+
+        UserInfoDTO userInfo = userInfoService.getUserInfo(userId);
+
+        if (userInfo != null && userInfo.profilePath() != null && !userInfo.profilePath().isEmpty()) {
+            try {
+                // 프로필 이미지 경로에서 파일 이름 추출
+                String fileName = userInfo.profilePath().substring(userInfo.profilePath().lastIndexOf("/") + 1);
+
+                // S3에서 파일 삭제
+                s3Client.deleteObject(bucketName, "profiles/" + fileName);
+                log.info("S3 버킷에서 파일 삭제 성공: " + fileName);
+            } catch (Exception e) {
+                log.error("S3 버킷에서 파일 삭제 실패: " + e.getMessage());
+            }
+        }
 
         UserInfoDTO pDTO = UserInfoDTO.builder().userId(userId).build();
 

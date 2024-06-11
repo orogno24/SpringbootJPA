@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import kopo.poly.dto.UserInfoDTO;
 import kopo.poly.service.IUserInfoService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,18 +22,12 @@ import java.util.UUID;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 public class FileUploadController {
 
     private final AmazonS3 s3Client;
     private final String bucketName;
     private final IUserInfoService userInfoService;
-
-    @Autowired
-    public FileUploadController(AmazonS3 s3Client, String bucketName, IUserInfoService userInfoService) {
-        this.s3Client = s3Client;
-        this.bucketName = bucketName;
-        this.userInfoService = userInfoService;
-    }
 
     // 프로필 사진 아마존 버킷에 업로드
     @PostMapping("/profileChange")

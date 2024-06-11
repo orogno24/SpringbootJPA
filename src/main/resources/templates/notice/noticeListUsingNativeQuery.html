@@ -20,6 +20,18 @@
             font-style: normal;
         }
 
+        @media (max-width: 1200px) {
+            .card-title {
+                font-size: 16px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .card-title {
+                font-size: 14px;
+            }
+        }
+
         * {
             font-family: 'NIXGONM-Vb';
         }
@@ -85,9 +97,17 @@
             box-sizing: border-box;
         }
 
+        .card-title {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: block;
+        }
+
         .card-text {
             display: flex;
-            align-items: center; /* 모든 요소를 세로축 중앙으로 정렬 */
+            align-items: center;
+            flex-wrap: wrap;
         }
 
         .profile-image img {

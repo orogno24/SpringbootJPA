@@ -39,6 +39,13 @@
                 f.userId.focus();
                 return;
             }
+
+            if (f.userId.value.includes("@")) {
+                alert("아이디에 '@' 특수문자를 포함할 수 없습니다.");
+                f.userId.focus();
+                return;
+            }
+
             // Ajax 호출해서 회원가입하기
             $.ajax({
                     url: "/user/getUserIdExists",
@@ -58,10 +65,22 @@
             )
         }
 
+        // 이메일 형식 확인
+        function validateEmail(email) {
+            const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            return emailPattern.test(email);
+        }
+
         // 이메일 중복 체크
         function emailExists(f) {
             if (f.email.value === "") {
                 alert("이메일을 입력하세요.");
+                f.email.focus();
+                return;
+            }
+
+            if (!validateEmail(f.email.value)) {
+                alert("유효한 이메일 주소를 입력해주세요.");
                 f.email.focus();
                 return;
             }
@@ -105,7 +124,7 @@
             }
 
             if (f.userId.value.includes("@")) {
-                alert("아이디에 허용되지 않는 문자가 포함되었습니다.");
+                alert("아이디에 '@' 특수문자를 포함할 수 없습니다.");
                 f.userId.focus();
                 return;
             }
@@ -115,6 +134,7 @@
                 f.userId.focus();
                 return;
             }
+
             if (f.password.value === "") {
                 alert("비밀번호를 입력하세요.");
                 f.password.focus();
@@ -138,13 +158,21 @@
                 f.password2.focus();
                 return;
             }
+
             if (f.password.value !== f.password2.value) {
                 alert("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
                 f.password.focus();
                 return;
             }
+
             if (f.email.value === "") {
                 alert("이메일을 입력하세요.");
+                f.email.focus();
+                return;
+            }
+
+            if (!validateEmail(f.email.value)) {
+                alert("유효한 이메일 주소를 입력해주세요.");
                 f.email.focus();
                 return;
             }
@@ -175,12 +203,17 @@
                 return;
             }
 
+            // FormData 객체 생성하여 파일 데이터 포함
+            let formData = new FormData(f);
+
             // Ajax 호출해서 회원가입하기
             $.ajax({
                     url: "/user/insertUserInfo",
                     type: "post", // 전송방식은 Post
                     dataType: "JSON", // 전송 결과는 JSON으로 받기
-                    data: $("#f").serialize(), // form 태그 내 input 등 객체를 자동으로 전송할 형태로 변경하기
+                    data: formData,
+                    processData: false,
+                    contentType: false,
                     success: function (json) { // /user/insertUserInfo 호출이 성공했다면..
                         if (json.result === 1) { // 회원가입 성공
                             alert(json.msg); // 메시지 띄우기
@@ -216,28 +249,32 @@
         font-weight: normal;
         font-style: normal;
     }
-    *{
+
+    * {
         font-family: 'NIXGONM-Vb';
     }
 
-    @import url("//fonts.googleapis.com/earlyaccess/nanumgothic.css" );
+    @import url("//fonts.googleapis.com/earlyaccess/nanumgothic.css");
     /* 비번 입력시 공백문자 뜨는 문제 해결 */
-    input[type=password]{
-        font-family:"Nanum Gothic", sans-serif !important;
+    input[type=password] {
+        font-family: "Nanum Gothic", sans-serif !important;
     }
 
     @import url('https://rsms.me/inter/inter-ui.css');
     ::selection {
         background: #2D2F36;
     }
+
     ::-moz-selection {
         background: #2D2F36;
     }
+
     body {
         background: white;
         margin: 0;
         padding: 20px;
     }
+
     .page {
         background: #d7f9ff;
         display: flex;
@@ -247,6 +284,7 @@
         place-content: center;
         width: calc(100% - 40px);
     }
+
     @media (max-width: 767px) {
         .page {
             height: 100%;
@@ -254,12 +292,14 @@
             padding-bottom: 20px;
         }
     }
+
     .container {
         display: flex;
         height: 680px;
         margin: 0 auto;
         width: 970px;
     }
+
     @media (max-width: 767px) {
         .container {
             flex-direction: column;
@@ -267,6 +307,7 @@
             width: 320px;
         }
     }
+
     .left {
         background: #c3eee6;
         height: calc(100% - 40px);
@@ -274,6 +315,7 @@
         position: relative;
         width: 70%;
     }
+
     @media (max-width: 767px) {
         .left {
             height: 100%;
@@ -282,17 +324,20 @@
             max-height: 270px;
         }
     }
+
     .login {
         font-size: 25px;
         color: #564F47;
         margin: 50px 40px 40px;
     }
+
     .eula {
         color: #656579;
         font-size: 20px;
         line-height: 1.5;
         margin: 40px;
     }
+
     .right {
         background: #7ea6e7;
         box-shadow: 0px 0px 40px 16px rgba(159, 149, 149, 0.22);
@@ -301,6 +346,7 @@
         width: 70%;
 
     }
+
     @media (max-width: 767px) {
         .right {
             flex-shrink: 0;
@@ -309,20 +355,24 @@
             max-height: 600px;
         }
     }
+
     svg {
         position: absolute;
         width: 320px;
     }
+
     path {
         fill: none;
         stroke: url(#linearGradient);;
         stroke-width: 4;
         stroke-dasharray: 240 1386;
     }
+
     .form {
         margin: 40px;
         position: absolute;
     }
+
     label {
         color: #fff;
         display: block;
@@ -331,16 +381,18 @@
         margin-top: 20px;
         margin-bottom: 5px;
     }
+
     input {
-        background: transparent;
+        background: #7ea6e7;
         border: 0;
         color: #f2f2f2;
         font-size: 20px;
         height: 30px;
         line-height: 30px;
         outline: none !important;
-        width: 120%;
+        width: 100%;
     }
+
     input::-moz-focus-inner {
         border: 0;
     }
@@ -353,65 +405,36 @@
         background-color: #fff; /* 선의 색상 */
     }
 
+    .file-upload-label {
+        margin-bottom: -15px;
+        display: inline-block;
+        padding: 8px 14px;
+        background-color: #5c80b7;
+        color: white;
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .file-upload-label:hover {
+        background-color: #44628d;
+    }
+
+    .file-upload-input {
+        display: none;
+    }
+
+
 </style>
-<script>
-    var current = null;
-    document.querySelector('#email').addEventListener('focus', function(e) {
-        if (current) current.pause();
-        current = anime({
-            targets: 'path',
-            strokeDashoffset: {
-                value: 0,
-                duration: 700,
-                easing: 'easeOutQuart'
-            },
-            strokeDasharray: {
-                value: '240 1386',
-                duration: 700,
-                easing: 'easeOutQuart'
-            }
-        });
-    });
-    document.querySelector('#password').addEventListener('focus', function(e) {
-        if (current) current.pause();
-        current = anime({
-            targets: 'path',
-            strokeDashoffset: {
-                value: -336,
-                duration: 700,
-                easing: 'easeOutQuart'
-            },
-            strokeDasharray: {
-                value: '240 1386',
-                duration: 700,
-                easing: 'easeOutQuart'
-            }
-        });
-    });
-    document.querySelector('#submit').addEventListener('focus', function(e) {
-        if (current) current.pause();
-        current = anime({
-            targets: 'path',
-            strokeDashoffset: {
-                value: -730,
-                duration: 700,
-                easing: 'easeOutQuart'
-            },
-            strokeDasharray: {
-                value: '530 1386',
-                duration: 700,
-                easing: 'easeOutQuart'
-            }
-        });
-    });
-</script>
 <body>
 <div class="page">
     <div class="container">
         <div class="left">
             <div class="login">signUp</div>
             <div class="eula"><br>
-                <img src="/assets/img/logo.png" alt="Your Image" class="square-image" style="width: 35%; height: auto; margin-left: -6%; margin-top: -19%">
+                <img src="/assets/img/logo.png" alt="Your Image" class="square-image"
+                     style="width: 35%; height: auto; margin-left: -6%; margin-top: -19%">
             </div>
         </div>
         <div class="right">
@@ -425,11 +448,11 @@
                     <hr>
 
                     <label for="password">비밀번호를 입력해주세요.</label>
-                    <input type="password" name="password" id="password" minlength="4"  maxlength="20" >
+                    <input type="password" name="password" id="password" minlength="4" maxlength="20">
                     <hr>
 
                     <label for="password2">비밀번호를 확인해주세요.</label>
-                    <input type="password" name="password2" id="password2" minlength="4"  maxlength="20">
+                    <input type="password" name="password2" id="password2" minlength="4" maxlength="20">
                     <hr>
 
                     <label for="email" style="display: inline-block">이메일을 입력해주세요.</label>&nbsp;&nbsp;
@@ -445,7 +468,14 @@
                     <input type="text" name="userName" id="userName">
                     <hr>
 
-                    <button id="submit" type="button" style="margin-top: 20px; padding: 8px 14px;" onclick="doSubmit(this.form)">회원가입</button>
+                    <label for="profileImage" class="file-upload-label">프로필 사진 업로드</label>
+                    <input type="file" name="profileImage" id="profileImage" class="file-upload-input" accept="image/*">
+                    <span id="fileName" class="file-upload-filename">선택된 파일 없음</span>
+                    <br>
+
+                    <button id="submit" type="button" style="margin-top: 20px; padding: 8px 14px;"
+                            onclick="doSubmit(this.form)">회원가입
+                    </button>
 
                     <h5 style="color: #44628d">이미 계정이 있으신가요?&nbsp;<a href="/user/login"><strong>로그인하기</strong></a></h5>
                 </div>
@@ -453,6 +483,25 @@
         </div>
     </div>
 </div>
+<script>
+    const profileImageInput = document.getElementById('profileImage');
+    const fileNameSpan = document.getElementById('fileName');
 
+    profileImageInput.addEventListener('change', function() {
+        const file = this.files[0];
+        const validExtensions = ['image/jpeg', 'image/png'];
+        if (file) {
+            if (!validExtensions.includes(file.type)) {
+                alert('JPG 및 PNG 파일만 업로드 가능합니다.');
+                this.value = ''; // 선택된 파일을 초기화합니다.
+                fileNameSpan.textContent = '선택된 파일 없음';
+            } else {
+                fileNameSpan.textContent = file.name;
+            }
+        } else {
+            fileNameSpan.textContent = '선택된 파일 없음';
+        }
+    });
+</script>
 </body>
 </html>
