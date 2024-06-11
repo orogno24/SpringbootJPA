@@ -124,7 +124,6 @@
         event.preventDefault();
         var roomName = $("input[name='roomName']").val();
         $.post("/chat/chatroom", { roomName: roomName, userId: ss_user_id }, function() {
-          console.log("roomName : " + roomName)
           window.location.href = "/chat/chatroom/" + roomName;
         });
       });

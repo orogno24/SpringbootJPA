@@ -1,16 +1,21 @@
 package kopo.poly.dto;
 
 import lombok.Builder;
-import java.time.LocalDateTime;
 
 @Builder
 public record NetworkDTO(
-        int networkSeq,
+        Long networkSeq,
         String userId,
         String name,
         String contents,
-        LocalDateTime dateTime,
-        int maxParticipants,
+        String dateTime,
+        Long maxParticipants,
         String eventSeq,
-        String cultureSeq
+        String eventName,
+        String imagePath,
+        String regDt,
+        String userName,
+        String profilePath,
+
+        String type
 ) {}

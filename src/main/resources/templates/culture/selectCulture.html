@@ -305,6 +305,7 @@
 
                     var uniqueIdentifier =culture.num;
                     var uniqueIdentifier2 = culture.facName;
+                    var uniqueIdentifier3 = culture.mainImg;
 
                     listItem.innerHTML =
                         '<div class="cultureThumbnail">' +
@@ -318,7 +319,7 @@
                     container.appendChild(listItem);
 
                     listItem.onclick = function () {
-                        doDetail(uniqueIdentifier, uniqueIdentifier2);
+                        doDetail(uniqueIdentifier, uniqueIdentifier2, uniqueIdentifier3);
                     };
 
                 });
@@ -330,7 +331,7 @@
         })
     }
 
-    function doDetail(uniqueIdentifier, uniqueIdentifier2) {
+    function doDetail(uniqueIdentifier, uniqueIdentifier2, uniqueIdentifier3) {
         const urlParams = new URLSearchParams(window.location.search);
         const eventNameParam = urlParams.get('eventName');
         const descriptionParam = urlParams.get('description');
@@ -346,6 +347,7 @@
         form.appendChild(createHiddenInput('maxParticipants', maxParticipantsParam));
         form.appendChild(createHiddenInput('selectedEventId', uniqueIdentifier));
         form.appendChild(createHiddenInput('selectedEventName', uniqueIdentifier2));
+        form.appendChild(createHiddenInput('ImagePath', uniqueIdentifier3));
 
         document.body.appendChild(form);
         form.submit();

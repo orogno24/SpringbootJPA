@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Network Events</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+    <script type="text/javascript" src="/js/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .event-card {
+            cursor: pointer;
+            margin-bottom: 20px;
+            background: white;
+            border: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .event-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .event-img {
+            height: 200px;
+            width: 100%;
+            object-fit: cover;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .event-card-body {
+            padding: 15px;
+        }
+
+        .profile-img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-name {
+            margin-right: 10px;
+            font-size: 1rem; /* Adjust font size as needed */
+        }
+
+        .event-info {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .event-name {
+            color: #333;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+<div class="container py-4">
+    <h1 class="mb-4">Upcoming Network Events</h1>
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link active" id="event-tab" href="#event-list" onclick="showTab('event-list')">Events</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="culture-tab" href="#culture-list" onclick="showTab('culture-list')">Culture</a>
+        </li>
+    </ul>
+    <div class="tab-content active" id="event-list">
+        <div class="row g-4">
+            <div th:each="dto : ${eventList}" class="col-md-4">
+                <div class="event-card" th:onclick="doDetailEvent([[${dto.eventSeq}]], [[${dto.networkSeq}]])">
+                    <img th:src="${dto.imagePath}" onerror="this.src='/assets/img/thumbnail.png'" alt="Event image"
+                         class="event-img">
+                    <div class="event-card-body">
+                        <h5 class="event-name" th:text="${dto.name}">Event Name</h5>
+                        <p class="event-info" th:text="${dto.eventName}">Event Description</p>
+                        <div class="user-info">
+                            <span class="user-name" th:text="${dto.userName}">Username</span>
+                            <img th:src="${dto.profilePath}" onerror="this.src='/assets/img/profile.png'"
+                                 alt="Profile Image" class="profile-img">
+                        </div>
+                        <p class="event-info" th:text="${dto.dateTime}">Date and Time</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tab-content" id="culture-list">
+        <div class="row g-4">
+            <div th:each="dto : ${cultureList}" class="col-md-4">
+                <div class="event-card" th:onclick="doDetailCulture([[${dto.eventSeq()}]])">
+                    <img th:src="${dto.imagePath}" onerror="this.src='/assets/img/thumbnail.png'" alt="Event image"
+                         class="event-img">
+                    <div class="event-card-body">
+                        <h5 class="event-name" th:text="${dto.name}">Event Name</h5>
+                        <p class="event-info" th:text="${dto.eventName}">Event Description</p>
+                        <div class="user-info">
+                            <span class="user-name" th:text="${dto.userName}">Username</span>
+                            <img th:src="${dto.profilePath}" onerror="this.src='/assets/img/profile.png'"
+                                 alt="Profile Image" class="profile-img">
+                        </div>
+                        <p class="event-info" th:text="${dto.dateTime}">Date and Time</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showTab(tabId) {
+        var tabs = document.querySelectorAll('.tab-content');
+        tabs.forEach(function (tab) {
+            tab.classList.remove('active');
+        });
+        document.getElementById(tabId).classList.add('active');
+
+        var navLinks = document.querySelectorAll('.nav-link');
+        navLinks.forEach(function (navLink) {
+            navLink.classList.remove('active');
+        });
+        var activeLink = document.getElementById(tabId + '-tab');
+        if (activeLink) {
+            activeLink.classList.add('active');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        showTab('event-list');
+    });
+</script>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    function doDetailEvent(eventSeq, networkSeq) {
+        location.href = "/network/networkEventInfo?nSeq=" + eventSeq + "&networkSeq=" + networkSeq;
+    }
+
+    function doDetailCulture(seq) {
+        location.href = "/network/networkCultureInfo?nSeq=" + seq;
+    }
+    /*]]>*/
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

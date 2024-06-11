@@ -134,6 +134,8 @@ public class UserInfoController {
             msg = "회원가입되었습니다.";
         } else if (res == 2) {
             msg = "이미 가입된 아이디입니다.";
+        } else if (res == 3) {
+            msg = "이미 가입된 이메일입니다.";
         } else {
             msg = "오류로 인해 회원가입이 실패하였습니다.";
         }

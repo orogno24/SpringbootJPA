@@ -1,7 +1,10 @@
 package kopo.poly.repository.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -14,7 +17,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @Builder
 //@Cacheable
 @Entity
-public class NetworkEntity {
+public class NetworkSQLEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,13 +48,16 @@ public class NetworkEntity {
     @Column(name = "image_path")
     private String imagePath;
 
+    @Column(name = "type")
+    private String type;
+
     @Column(name = "reg_dt", updatable = false)
     private String regDt;
 
-    @Column(name = "type", updatable = false)
-    private String type;
+    @Column(name = "user_name") // NativeQuery 결과를 저장하기 위한 변수
+    private String userName;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", insertable = false, updatable = false)
-    private UserInfoEntity userInfoEntity;
+    @Column(name = "profile_path") // NativeQuery 결과를 저장하기 위한 변수
+    private String profilePath;
+
 }

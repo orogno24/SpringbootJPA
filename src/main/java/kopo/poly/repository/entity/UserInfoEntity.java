@@ -5,8 +5,6 @@ import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import java.io.Serializable;
-
 @Getter
 @NoArgsConstructor(force = true)
 @AllArgsConstructor
@@ -14,9 +12,9 @@ import java.io.Serializable;
 @DynamicInsert // 값이 NULL이 아닌것만 INSERT함
 @DynamicUpdate // 값이 NULL이 아닌것만 UPDATE함
 @Builder
-@Cacheable
+//@Cacheable
 @Entity
-public class UserInfoEntity implements Serializable {
+public class UserInfoEntity {
 
     @Id
     @Column(name = "user_id")
@@ -48,7 +46,6 @@ public class UserInfoEntity implements Serializable {
     @Column(name = "profile_path")
     private String profilePath;
 
-    // OAuth2 로그인 지원을 위한 필드 추가
     @Column(name = "provider")
     private String provider;
 

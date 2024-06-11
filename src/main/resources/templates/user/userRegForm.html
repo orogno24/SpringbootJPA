@@ -20,6 +20,16 @@
 
             let f = document.getElementById("f"); // form 태그
 
+            $("#userId").change(function () {
+                // 아이디가 변경되면 userIdCheck를 "Y"로 설정
+                userIdCheck = "Y";
+            });
+
+            $("#email").change(function () {
+                // 이메일이 변경되면 이메일 인증번호를 초기화하고 인증 상태를 무효화
+                emailAuthNumber = "";  // 인증번호 초기화
+            });
+
             // 아이디 중복체크
             $("#btnUserId").on("click", function () { // 버튼 클릭했을때, 발생되는 이벤트 생성함(onclick 이벤트와 동일함)
                 userIdExists(f)

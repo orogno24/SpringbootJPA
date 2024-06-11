@@ -111,7 +111,6 @@ public class EventController {
 
         log.info(this.getClass().getName() + ".apiInfo Start!");
 
-        // 고유 식별자를 받는 방식에 따라 변경 필요
         String uniqueIdentifier = CmmUtil.nvl(request.getParameter("nSeq"), "");
         String userId = (String) session.getAttribute("SS_USER_ID");
         String eventSeq = uniqueIdentifier;

@@ -67,6 +67,7 @@
 
                 var uniqueIdentifier = extractFileId(event.MAIN_IMG);
                 var uniqueIdentifier2 = event.TITLE;
+                var uniqueIdentifier3 = event.MAIN_IMG;
 
                 listItem.innerHTML =
                     '<div class="eventThumbnail">' +
@@ -81,7 +82,7 @@
                     '</div>';
 
                 listItem.onclick = function () {
-                    doDetail(uniqueIdentifier, uniqueIdentifier2);
+                    doDetail(uniqueIdentifier, uniqueIdentifier2, uniqueIdentifier3);
                 };
 
                 container.appendChild(listItem);
@@ -119,7 +120,7 @@
             return match ? match[1] : null;
         }
 
-        function doDetail(uniqueIdentifier, uniqueIdentifier2) {
+        function doDetail(uniqueIdentifier, uniqueIdentifier2, uniqueIdentifier3) {
             const urlParams = new URLSearchParams(window.location.search);
             const eventNameParam = urlParams.get('eventName');
             const descriptionParam = urlParams.get('description');
@@ -135,6 +136,7 @@
             form.appendChild(createHiddenInput('maxParticipants', maxParticipantsParam));
             form.appendChild(createHiddenInput('selectedEventId', uniqueIdentifier));
             form.appendChild(createHiddenInput('selectedEventName', uniqueIdentifier2));
+            form.appendChild(createHiddenInput('ImagePath', uniqueIdentifier3));
 
             document.body.appendChild(form);
             form.submit();

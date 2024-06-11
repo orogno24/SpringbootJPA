@@ -85,9 +85,12 @@ public class UserInfoService implements IUserInfoService {
         log.info("pDTO : " + pDTO);
 
         Optional<UserInfoEntity> rEntity = userInfoRepository.findByUserId(userId);
+        Optional<UserInfoEntity> emailCheckEntity = userInfoRepository.findByEmail(email);
 
         if (rEntity.isPresent()) {
             res = 2;
+        } else if (emailCheckEntity.isPresent()) {
+            res = 3;
         } else {
             UserInfoEntity pEntity = UserInfoEntity.builder()
                     .userId(userId).userName(userName)

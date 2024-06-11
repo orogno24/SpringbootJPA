@@ -2,9 +2,10 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Create Event</title>
+    <script type="text/javascript" src="/js/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-<form id="createEventForm" action="/network/createNetwork" method="post">
+<form id="createEventForm">
     <label for="eventName">Event Name:</label>
     <input type="text" id="eventName" name="eventName" th:value="${eventName}"><br>
 
@@ -17,27 +18,56 @@
     <label for="maxParticipants">Max Participants:</label>
     <input type="number" id="maxParticipants" name="maxParticipants" th:value="${maxParticipants}"><br>
 
-    <!-- Hidden fields to store selected event info -->
     <input type="hidden" id="selectedEventId" name="selectedEventId" th:value="${selectedEventId}">
     <input type="hidden" id="selectedEventName" name="selectedEventName" th:value="${selectedEventName}">
-
+    <input type="hidden" id="ImagePath" name="ImagePath" th:value="${ImagePath}">
     <button type="button" onclick="window.location.href='/event/selectApi?eventName=' + document.getElementById('eventName').value + '&description=' + document.getElementById('description').value + '&dateTime=' + document.getElementById('dateTime').value + '&maxParticipants=' + document.getElementById('maxParticipants').value">Select Event</button>
     <button type="button" onclick="window.location.href='/culture/selectCulture?eventName=' + document.getElementById('eventName').value + '&description=' + document.getElementById('description').value + '&dateTime=' + document.getElementById('dateTime').value + '&maxParticipants=' + document.getElementById('maxParticipants').value">Select Culture</button>
-    <input type="submit" value="Create Event">
+    <button type="button" onclick="submitForm()">Create Event</button>
 </form>
 
+<script>
+    function submitForm() {
+        $.ajax({
+            url: '/network/insertNetwork', // 서버의 URL
+            type: 'POST', // 메서드 타입
+            data: $('#createEventForm').serialize(), // 폼 데이터 직렬화
+            success: function(json) {
+                alert(json.msg); // 성공 메시지
+                window.location.href = "/network/networkList"; // 페이지 리다이렉션
+            },
+            error: function(xhr, status, error) {
+                alert('Error: ' + error.message); // 에러 메시지
+            }
+        });
+    }
+</script>
+
 <div id="selectedEventInfo">
-    <!-- 조건부 렌더링을 위한 JavaScript 사용 -->
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {
             var selectedEventName = document.getElementById('selectedEventName').value;
+            var ImagePath = document.getElementById('ImagePath').value; // 이미지 URL을 가져옵니다.
+
             if (selectedEventName) {
                 var selectedEventInfoDiv = document.getElementById('selectedEventInfo');
+
+                // 이벤트 이름을 표시하는 <p> 요소를 생성합니다.
                 var p = document.createElement('p');
                 p.textContent = 'Selected Event: ' + selectedEventName;
                 selectedEventInfoDiv.appendChild(p);
+
+                // 이미지를 표시하는 <img> 요소를 생성합니다.
+                if (ImagePath) {
+                    var img = document.createElement('img');
+                    img.src = ImagePath; // 이미지의 src 속성을 설정합니다.
+                    img.alt = 'Event Image'; // 대체 텍스트를 설정합니다.
+                    img.style.maxWidth = '100%'; // 이미지 크기 조정을 위한 스타일 설정
+                    selectedEventInfoDiv.appendChild(img);
+                }
             }
         });
+
     </script>
 </div>
 </body>
