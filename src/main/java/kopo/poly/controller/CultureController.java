@@ -30,12 +30,18 @@ public class CultureController {
     private final ICultureService cultureService;
     private final NaverSearchService naverSearchService;
 
+    /**
+     * 문화시설 검색 페이지
+     */
     @GetMapping("cultureMap")
     public String cultureMap() {
         log.info(this.getClass().getName() + ".cultureMap 함수 실행");
         return "culture/cultureMap";
     }
 
+    /**
+     * 일정에 문화시설 추가
+     */
     @GetMapping("selectCulture")
     public String selectCulture() {
         log.info(this.getClass().getName() + ".selectCulture 함수 실행");
@@ -94,6 +100,9 @@ public class CultureController {
         return "culture/cultureInfo";
     }
 
+    /**
+     * 해당 문화시설의 네이버 블로그 검색 결과 조회
+     */
     @GetMapping("/facilities/{name}")
     public ResponseEntity<String> getFacilityDetails(@PathVariable String name) {
         try {

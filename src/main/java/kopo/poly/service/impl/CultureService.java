@@ -16,6 +16,9 @@ public class CultureService implements ICultureService {
 
     private final ICultureMapper cultureMapper; // MongoDB에 저장할 Mapper
 
+    /**
+     * 좌표 기준 문화시설 리스트 가져오기
+     */
     @Override
     public List<CultureDTO> getCultureListNearby(CultureDTO pDTO) throws Exception {
 
@@ -31,6 +34,9 @@ public class CultureService implements ICultureService {
         return rList;
     }
 
+    /**
+     * 문화시설 상세정보 조회
+     */
     @Override
     public CultureDTO getCultureInfo(String nSeq) throws Exception {
 

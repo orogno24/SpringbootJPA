@@ -17,6 +17,9 @@ public class ChatService implements IChatService {
 
     private final ChatRepository chatRepository;
 
+    /**
+     * 해당 채팅방 존재 여부 확인
+     */
     @Override
     public boolean findByRoomName(String roomName) throws Exception {
 
@@ -29,6 +32,9 @@ public class ChatService implements IChatService {
         return rEntity.isPresent();
     }
 
+    /**
+     * 채팅방 이름 저장
+     */
     @Override
     public void insertRoomName(String roomName, String userId) throws Exception {
 
@@ -44,6 +50,9 @@ public class ChatService implements IChatService {
         log.info(this.getClass().getName() + ".insertRoomName End!");
     }
 
+    /**
+     * 채팅방 이름 삭제
+     */
     @Override
     @Transactional
     public void deleteRoomName(String roomName) throws Exception {
@@ -56,6 +65,9 @@ public class ChatService implements IChatService {
 
     }
 
+    /**
+     * 채팅방 개설자 불러오기
+     */
     @Override
     public String getRoomOwner(String roomName) throws Exception {
 

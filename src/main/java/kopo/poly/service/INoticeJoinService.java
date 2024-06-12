@@ -30,7 +30,7 @@ public interface INoticeJoinService {
     List<NoticeDTO> getUserNoticeListUsingNativeQuery(String userId);
 
     /**
-     * QueryDSL 활용한 공지사항 싱세 정보가져오기
+     * QueryDSL 활용한 공지사항 상세 정보가져오기
      *
      * @param pDTO 공지사항 상세 가져오기 위한 정보
      * @param type 조회수 증가여부(true : 증가, false : 증가안함

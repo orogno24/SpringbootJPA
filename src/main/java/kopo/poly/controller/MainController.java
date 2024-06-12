@@ -31,9 +31,9 @@ public class MainController {
     private final IEventService eventService;
     private final IUserInfoService userInfoService;
 
-    @Value("${data.api.key}")
-    private String apiKey;
-
+    /**
+     * 메인 페이지
+     */
     @GetMapping("/main")
     public String main(HttpSession session, ModelMap model) throws Exception {
 
@@ -72,6 +72,15 @@ public class MainController {
         return "main";
     }
 
+    /**
+     * 로딩 페이지
+     */
+    @GetMapping("/index")
+    public String index() throws Exception {
+        log.info(this.getClass().getName() + ".index 함수 실행");
+        return "index";
+    }
+
     @GetMapping("/alert")
     public String redirectPage(HttpServletRequest request, ModelMap modelMap, HttpSession session) throws Exception {
         log.info(this.getClass().getName() + ".alert 페이지 보여주는 함수 실행");
@@ -94,24 +103,5 @@ public class MainController {
         return "/alert2";
     }
 
-    @GetMapping("/index")
-    public String index() throws Exception {
-        log.info(this.getClass().getName() + ".index 함수 실행");
-        return "index";
-    }
-
-    // 로딩 페이지
-    @GetMapping("/redirect")
-    public String intro() throws Exception {
-        log.info(this.getClass().getName() + ".redirect 함수 실행");
-        return "/redirect";
-    }
-
-    // 로딩 페이지
-    @GetMapping("/redirect2")
-    public String intro2() throws Exception {
-        log.info(this.getClass().getName() + ".redirect2 함수 실행");
-        return "redirect2";
-    }
 
 }

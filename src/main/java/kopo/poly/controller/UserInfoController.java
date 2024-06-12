@@ -434,7 +434,10 @@ public class UserInfoController {
         return dto;
     }
 
-    @GetMapping(value = "searchUserId")         // 아이디 찾기
+    /**
+     * 아이디 찾기 페이지
+     */
+    @GetMapping(value = "searchUserId")
     public String searchUserId() {
         log.info(this.getClass().getName() + ".user/searchUserId Start!");
 
@@ -443,8 +446,11 @@ public class UserInfoController {
         return "user/searchUserId";
     }
 
+    /**
+     * 아이디 찾기
+     */
     @ResponseBody
-    @PostMapping(value = "searchUserIdProc")        // 아이디 찾기 함수
+    @PostMapping(value = "searchUserIdProc")
     public MsgDTO searchUserIdProc(HttpServletRequest request, ModelMap model) throws Exception {
 
         log.info(this.getClass().getName() + ".user/searchUserIdProc Start!");
@@ -479,8 +485,11 @@ public class UserInfoController {
         return dto;
     }
 
+    /**
+     * 이메일 중복찾기
+     */
     @ResponseBody
-    @PostMapping(value = "getEmailExists")          // 이메일 중복찾기
+    @PostMapping(value = "getEmailExists")
     public UserInfoDTO getEmailExists(HttpServletRequest request) throws Exception {
 
         log.info(this.getClass().getName() + ".getEmailExists Start!");
@@ -500,7 +509,10 @@ public class UserInfoController {
         return rDTO;
     }
 
-    @GetMapping(value = "searchPassword")           // 비밀번호 찾기 페이지
+    /**
+     * 비밀번호 찾기 페이지
+     */
+    @GetMapping(value = "searchPassword")
     public String searchPassword(HttpSession session) {
         log.info(this.getClass().getName() + ".user/searchPassword Start!");
 
@@ -512,7 +524,10 @@ public class UserInfoController {
         return "user/searchPassword";
     }
 
-    @PostMapping(value = "searchPasswordProc") // 비밀번호 찾기
+    /**
+     * 비밀번호 찾기
+     */
+    @PostMapping(value = "searchPasswordProc")
     public String searchPasswordProc(HttpServletRequest request, ModelMap model, HttpSession session) throws Exception {
         log.info(this.getClass().getName() + ".user/searchPasswordProc start!");
 
@@ -542,6 +557,9 @@ public class UserInfoController {
         return "user/newPassword";
     }
 
+    /**
+     * 닉네임 변경 페이지
+     */
     @GetMapping(value = "changeUserName")
     public String changeUserName() throws Exception {
         log.info(this.getClass().getName() + ".changeUserName Start!");
@@ -549,8 +567,11 @@ public class UserInfoController {
         return "user/changeUserName";
     }
 
+    /**
+     * 닉네임 변경하기
+     */
     @ResponseBody
-    @PostMapping(value = "newUserNameProc")         // 닉네임 변경하기
+    @PostMapping(value = "newUserNameProc")
     public MsgDTO newUserNameProc(HttpServletRequest request, HttpSession session) throws Exception {
 
         log.info(this.getClass().getName() + ".newUserNameProc Start!");
@@ -589,9 +610,11 @@ public class UserInfoController {
         return dto;
     }
 
-
+    /**
+     * 비밀번호 변경
+     */
     @ResponseBody
-    @PostMapping(value = "newPasswordProc") // 비밀번호 변경
+    @PostMapping(value = "newPasswordProc")
     public MsgDTO newPasswordProc(HttpServletRequest request, HttpSession session) throws Exception {
         log.info(this.getClass().getName() + ".user/newPasswordProc Start!");
         String msg = "";
@@ -632,6 +655,9 @@ public class UserInfoController {
         return dto;
     }
 
+    /**
+     * 특정 유저의 팔로우 리스트
+     */
     @Transactional
     @GetMapping(value = "followList/{userId}")
     public String followList(@PathVariable("userId") String userId, ModelMap model)
@@ -654,6 +680,9 @@ public class UserInfoController {
         return "user/followList";
     }
 
+    /**
+     * 특정 유저의 팔로잉 리스트
+     */
     @Transactional
     @GetMapping(value = "followingList/{userId}")
     public String followingList(@PathVariable("userId") String userId, ModelMap model)

@@ -26,6 +26,9 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
     private final UserInfoRepository userInfoRepository;
 
+    /**
+     * 소셜 로그인을 위한 로직
+     */
     @Override
     @SneakyThrows
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -64,6 +67,9 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                 "name");
     }
 
+    /**
+     * 소셜 로그인 사용자의 최신 프로필 정보 반영
+     */
     private void saveOrUpdateUser(UserInfoEntity pEntity) {
         Optional<UserInfoEntity> rEntityOptional = userInfoRepository.findByEmail(pEntity.getEmail());
         if (rEntityOptional.isPresent()) {

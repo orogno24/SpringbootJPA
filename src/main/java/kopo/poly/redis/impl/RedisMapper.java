@@ -1,20 +1,15 @@
 package kopo.poly.redis.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kopo.poly.dto.RedisDTO;
 import kopo.poly.redis.IRedisMapper;
-import kopo.poly.util.DateUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -25,7 +20,6 @@ import java.util.concurrent.TimeUnit;
 public class RedisMapper implements IRedisMapper {
 
     private final RedisTemplate<String, Object> redisDB;
-
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
@@ -42,8 +36,11 @@ public class RedisMapper implements IRedisMapper {
         }
     }
 
+    /**
+     * ReidsDB에 문화행사 리스트 저장
+     */
     @Override
-    public int insertEventList(List<Map<String, Object>> rContent, String colNm) throws Exception {
+    public void insertEventList(List<Map<String, Object>> rContent, String colNm) throws Exception {
 
         log.info(this.getClass().getName() + ".insertEventList Start!");
 
@@ -66,13 +63,18 @@ public class RedisMapper implements IRedisMapper {
 
         log.info(this.getClass().getName() + ".insertEventList End!");
 
-        return res;
     }
 
+    /**
+     * Json으로 변환
+     */
     private String convertToJson(List<Map<String, Object>> rContent) throws JsonProcessingException {
         return objectMapper.writeValueAsString(rContent);
     }
 
+    /**
+     * ReidsDB에 동일한 이름의 컬렉션이 있는지 조회
+     */
     @Override
     public boolean getExistKey(String colNm) throws Exception {
         boolean getExistKey = redisDB.hasKey(colNm);
@@ -80,6 +82,9 @@ public class RedisMapper implements IRedisMapper {
         return getExistKey;
     }
 
+    /**
+     * ReidsDB에서 문화행사 리스트 가져오기
+     */
     @Override
     public RedisDTO getEventList(String colNm) throws Exception {
         log.info(this.getClass().getName() + ".getEventList Start!");

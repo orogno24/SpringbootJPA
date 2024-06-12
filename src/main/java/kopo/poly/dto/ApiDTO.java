@@ -5,7 +5,6 @@ import lombok.Builder;
 
 @Builder
 public record ApiDTO(
-
         @JsonProperty("CODENAME")
         String codename, // 분류
         @JsonProperty("GUNAME")

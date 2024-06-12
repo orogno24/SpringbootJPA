@@ -36,6 +36,9 @@ public class NoticeJoinController {
     private final INoticeService noticeService;
     private final INoticeJoinService noticeJoinService;
 
+    /**
+     * QueryDSL을 사용한 게시글 리스트 조회
+     */
     @GetMapping(value = "noticeListUsingQueryDSL")
     public String noticeListUsingQueryDSL(HttpSession session, ModelMap model)
             throws Exception {
@@ -52,6 +55,9 @@ public class NoticeJoinController {
         return "notice/noticeListUsingQueryDSL";
     }
 
+    /**
+     * NativeQuery를 사용한 게시글 리스트 조회
+     */
     @GetMapping(value = "noticeListUsingNativeQuery")
     public String noticeListUsingNativeQuery(HttpSession session, ModelMap model)
             throws Exception {
@@ -68,6 +74,9 @@ public class NoticeJoinController {
         return "notice/noticeListUsingNativeQuery";
     }
 
+    /**
+     * 내가 팔로우한 사용자들의 게시글 조회
+     */
     @GetMapping("/noticeFollowList")
     public String noticeFollowList(HttpSession session, ModelMap model) throws Exception {
 
@@ -90,6 +99,9 @@ public class NoticeJoinController {
         return "notice/noticeFollowList";
     }
 
+    /**
+     * 특정 사용자의 게시글 조회
+     */
     @GetMapping(value = "userNoticeList/{userId}")
     public String userNoticeList(@PathVariable("userId") String userId, HttpSession session, ModelMap model)
             throws Exception {
@@ -109,6 +121,9 @@ public class NoticeJoinController {
         return "notice/userNoticeList";
     }
 
+    /**
+     * QueryDSL을 사용한 게시글 상세보기 페이지
+     */
     @GetMapping(value = "noticeInfoUsingQueryDSL")
     public String noticeInfo(HttpServletRequest request, ModelMap model) throws Exception {
 
@@ -141,6 +156,10 @@ public class NoticeJoinController {
 
         return "notice/noticeInfoUsingQueryDSL";
     }
+
+    /**
+     * 댓글 수정
+     */
     @ResponseBody
     @PostMapping("updateComment")
     public Map<String, String> updateComment(@RequestParam("commentSeq") int commentSeq, @RequestParam("contents") String contents, @RequestParam("noticeSeq") int noticeSeq) {
@@ -173,6 +192,9 @@ public class NoticeJoinController {
         return response;
     }
 
+    /**
+     * 댓글 삭제
+     */
     @ResponseBody
     @PostMapping(value = "deleteComment")
     public MsgDTO deleteComment(HttpServletRequest request) {
@@ -214,6 +236,10 @@ public class NoticeJoinController {
 
         return dto;
     }
+
+    /**
+     * 댓글 작성
+     */
     @ResponseBody
     @Transactional
     @PostMapping(value = "insertComment")

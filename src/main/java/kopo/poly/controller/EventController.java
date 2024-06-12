@@ -38,6 +38,9 @@ public class EventController {
     private final IEventService eventService;
     private final IUserInfoService userInfoService;
 
+    /**
+     * 문화행사 검색 페이지
+     */
     @GetMapping(value = "apiSearch")
     public String apiSearch() throws Exception {
 
@@ -48,6 +51,9 @@ public class EventController {
         return "event/apiSearch";
     }
 
+    /**
+     * 일정에 문화행사 추가
+     */
     @GetMapping(value = "selectApi")
     public String selectApi() throws Exception {
 
@@ -59,7 +65,7 @@ public class EventController {
     }
 
     /**
-     * 문화행사 리스트 + 그래프를 위한 구별 문화행사 타입 개수 조회
+     * 그래프를 위한 구별 문화행사 타입 개수 조회
      */
     @ResponseBody
     @GetMapping(value = "getList")
@@ -106,6 +112,9 @@ public class EventController {
         return rList;
     }
 
+    /**
+     * 문화행사 상세보기 페이지
+     */
     @GetMapping(value = "apiInfo")
     public String apiInfo(HttpServletRequest request, ModelMap model, HttpSession session) throws Exception {
 
@@ -143,16 +152,9 @@ public class EventController {
         return "event/apiInfo";
     }
 
-    @GetMapping("/eventCalendar")
-    public String eventCalendar() throws Exception {
-
-        log.info(this.getClass().getName() + ".eventCalendar Start!");
-
-        log.info(this.getClass().getName() + ".eventCalendar End!");
-
-        return "event/eventCalendar";
-    }
-
+    /**
+     * 북마크한 문화행사 조회 페이지
+     */
     @GetMapping("/eventCalendarList/{userId}")
     public String eventCalendarList(@PathVariable("userId") String userId, ModelMap model) throws Exception {
 
@@ -167,26 +169,9 @@ public class EventController {
         return "event/eventCalendarList";
     }
 
-    @ResponseBody
-    @GetMapping("/getCalendarDate")
-    public List<BookmarkDTO> getCalendarDate(HttpSession session, ModelMap model) throws Exception {
-
-        log.info(this.getClass().getName() + ".getCalendarDate Start!");
-
-        String userId = CmmUtil.nvl((String) session.getAttribute("SS_USER_ID"));
-
-        BookmarkDTO pDTO = BookmarkDTO.builder().userId(userId).build();
-
-        List<BookmarkDTO> rList = Optional.ofNullable(eventService.getBookmarkSeq(pDTO))
-                .orElseGet(ArrayList::new);
-
-        log.info("rList : " + rList);
-
-        log.info(this.getClass().getName() + ".getCalendarDate End!");
-
-        return rList;
-    }
-
+    /**
+     * 달력에 문화행사 일정 추가
+     */
     @ResponseBody
     @GetMapping("/getCalendarDateList")
     public List<BookmarkDTO> getCalendarDateList(@RequestParam("userId") String userId, HttpSession session) throws Exception {
@@ -221,6 +206,9 @@ public class EventController {
         return eventDetails;
     }
 
+    /**
+     * 북마크 추가
+     */
     @ResponseBody
     @PostMapping("/addBookmark")
     public MsgDTO addBookmark(HttpServletRequest request, HttpSession session) {
@@ -264,6 +252,9 @@ public class EventController {
 
     }
 
+    /**
+     * 북마크 해제
+     */
     @ResponseBody
     @PostMapping(value = "removeBookmark")
     public MsgDTO removeBookmark(HttpServletRequest request, HttpSession session) {

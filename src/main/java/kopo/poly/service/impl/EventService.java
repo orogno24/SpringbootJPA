@@ -179,7 +179,6 @@ public class EventService implements IEventService  {
             rDTO = RedisDTO.builder()
                     .contents(contents)
                     .build();
-
         } else {
 
             rDTO = redisMapper.getEventList(colNm);

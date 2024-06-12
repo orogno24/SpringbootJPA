@@ -7,7 +7,7 @@ import java.util.List;
 public interface ICultureMapper {
 
     /**
-     * 좌표 기준 반경 3km 문화시설 조회
+     * 좌표 기준 문화시설 리스트 조회
      *
      * @param colNm 조회할 컬렉션 이름
      * @param pDTO 검색할 조건 목록

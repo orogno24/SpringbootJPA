@@ -8,11 +8,6 @@ import java.util.List;
 public interface INoticeService {
 
     /**
-     * 공지사항 전체 가져오기
-     */
-    List<NoticeDTO> getNoticeList();
-
-    /**
      * 공지사항 상세 정보가져오기
      *
      * @param pDTO 공지사항 상세 가져오기 위한 정보
@@ -57,7 +52,7 @@ public interface INoticeService {
     /**
      * 게시글 이미지 삭제
      */
-    public void deleteImageById(NoticeImageDTO pDTO) throws Exception;
+    void deleteImageById(NoticeImageDTO pDTO) throws Exception;
 
     /**
      * 게시글 이미지 S3에서 삭제하기 위해 이미지 url를 추출
@@ -69,7 +64,9 @@ public interface INoticeService {
      */
     List<NoticeImageDTO> getImagePathList(Long noticeSeq) throws Exception;
 
-    // 특정 userId 기준 게시글 개수 조회
+    /**
+     * 특정 userId 기준 게시글 개수 조회
+     */
     long countByUserId(String userId) throws Exception;
 
 }

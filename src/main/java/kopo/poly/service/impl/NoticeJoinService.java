@@ -31,6 +31,9 @@ public class NoticeJoinService implements INoticeJoinService {
 
     private final JPAQueryFactory queryFactory;
 
+    /**
+     * QueryDSL 활용한 Fetch Join 적용된 공지사항 전체 가져오기
+     */
     @Transactional
     @Override
     public List<NoticeDTO> getNoticeListForQueryDSL() {
@@ -68,6 +71,9 @@ public class NoticeJoinService implements INoticeJoinService {
         return nList;
     }
 
+    /**
+     * NativeQuery 사용하여 전체 게시글 가져오기
+     */
     @Override
     public List<NoticeDTO> getNoticeListUsingNativeQuery() {
 
@@ -86,6 +92,9 @@ public class NoticeJoinService implements INoticeJoinService {
         return nList;
     }
 
+    /**
+     * 팔로우한 사용자의 게시글만 가져오기
+     */
     @Override
     public List<NoticeDTO> getFollowNoticeList(List<String> followUserIdList) {
 
@@ -104,6 +113,9 @@ public class NoticeJoinService implements INoticeJoinService {
         return nList;
     }
 
+    /**
+     * NativeQuery 사용하여 내 게시글만 가져오기
+     */
     @Override
     public List<NoticeDTO> getUserNoticeListUsingNativeQuery(String userId) {
 
@@ -122,6 +134,12 @@ public class NoticeJoinService implements INoticeJoinService {
         return nList;
     }
 
+    /**
+     * QueryDSL 활용한 공지사항 상세 정보가져오기
+     *
+     * @param pDTO 공지사항 상세 가져오기 위한 정보
+     * @param type 조회수 증가여부(true : 증가, false : 증가안함
+     */
     @Transactional
     @Override
     public NoticeDTO getNoticeInfoForQueryDSL(NoticeDTO pDTO, boolean type) throws Exception {
@@ -163,6 +181,11 @@ public class NoticeJoinService implements INoticeJoinService {
         return rDTO;
     }
 
+    /**
+     * 해당 댓글 수정
+     *
+     * @param pDTO 댓글 수정하기 위한 정보
+     */
     @Transactional
     @Override
     public List<CommentDTO> getCommentForQueryDSL(CommentDTO cDTO) {
@@ -197,6 +220,11 @@ public class NoticeJoinService implements INoticeJoinService {
         return nList;
     }
 
+    /**
+     * 해당 댓글 수정
+     *
+     * @param pDTO 댓글 수정하기 위한 정보
+     */
     @Override
     public void updateComment(CommentDTO pDTO) throws Exception {
 
@@ -224,6 +252,11 @@ public class NoticeJoinService implements INoticeJoinService {
 
     }
 
+    /**
+     * 해당 댓글 삭제하기
+     *
+     * @param pDTO 댓글 삭제하기 위한 정보
+     */
     @Override
     public void deleteComment(CommentDTO pDTO) throws Exception {
         log.info(this.getClass().getName() + ".deleteComment Start!");
@@ -244,6 +277,11 @@ public class NoticeJoinService implements INoticeJoinService {
         log.info(this.getClass().getName() + ".deleteComment End!");
     }
 
+    /**
+     * 해당 댓글 저장하기
+     *
+     * @param pDTO 댓글 저장하기 위한 정보
+     */
     @Override
     public void insertComment(CommentDTO pDTO) throws Exception {
 

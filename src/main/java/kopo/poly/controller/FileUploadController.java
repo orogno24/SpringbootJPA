@@ -29,7 +29,9 @@ public class FileUploadController {
     private final String bucketName;
     private final IUserInfoService userInfoService;
 
-    // 프로필 사진 아마존 버킷에 업로드
+    /**
+     * 프로필 사진 s3 버킷에 업로드
+     */
     @PostMapping("/profileChange")
     public ResponseEntity<?> profileChange(HttpServletRequest request,
                                            @RequestParam(value = "file", required = false) MultipartFile file,
@@ -83,7 +85,9 @@ public class FileUploadController {
         return ResponseEntity.ok("프로필 업데이트 성공!");
     }
 
-    // 게시글에 이미지 업로드
+    /**
+     * 게시글에 이미지 업로드
+     */
     @PostMapping("/uploadNoticeImage")
     public ResponseEntity<?> uploadNoticeImage(@RequestParam("file") MultipartFile file, @RequestParam("noticeSeq") Long noticeSeq, HttpSession session) {
         log.info(this.getClass().getName() + ".uploadNoticeImage Start!");

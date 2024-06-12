@@ -3,7 +3,6 @@ package kopo.poly.controller;
 import jakarta.servlet.http.HttpSession;
 import kopo.poly.chat.ChatHandler;
 import kopo.poly.dto.UserInfoDTO;
-import kopo.poly.repository.entity.ChatEntitiy;
 import kopo.poly.service.IChatService;
 import kopo.poly.service.IUserInfoService;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +13,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
-import java.util.Optional;
 import java.util.Set;
 
 @Slf4j
@@ -27,7 +25,7 @@ public class ChatController {
     private final IChatService chatService;
 
     /**
-     * 채팅창 입장 전
+     * 채팅창 목록 조회 페이지
      */
     @GetMapping(value = "intro")
     public String intro() {
@@ -75,7 +73,7 @@ public class ChatController {
     }
 
     /**
-     * 채팅방 접속
+     * 개설된 채팅방 접속
      */
     @GetMapping("/chatroom/{roomName}")
     public String chatroom(@PathVariable("roomName") String roomName,
@@ -117,7 +115,7 @@ public class ChatController {
     /**
      * 채팅방 삭제
      */
-    @DeleteMapping(value = "deleteRoom/{roomName}")
+    @GetMapping(value = "deleteRoom/{roomName}")
     @ResponseBody
     public String deleteRoom(@PathVariable("roomName") String roomName) throws Exception {
         log.info(this.getClass().getName() + ".deleteRoom Start!");

@@ -34,6 +34,9 @@ public class NetworkController {
     private final IEventService eventService;
     private final IChatService chatService;
 
+    /**
+     * 일정 추가 페이지
+     */
     @GetMapping("/createNetwork")
     public String createNetwork(@RequestParam(required = false) String eventName,
                                 @RequestParam(required = false) String description,
@@ -56,6 +59,9 @@ public class NetworkController {
         return "network/createNetwork";
     }
 
+    /**
+     * 일정 추가 페이지
+     */
     @PostMapping("/createNetwork")
     public String createNetwork(@RequestParam String eventName,
                               @RequestParam String description,
@@ -79,6 +85,9 @@ public class NetworkController {
         return "network/createNetwork";
     }
 
+    /**
+     * 일정 추가
+     */
     @ResponseBody
     @Transactional
     @PostMapping("/insertNetwork")
@@ -125,6 +134,9 @@ public class NetworkController {
         return dto;
     }
 
+    /**
+     * 일정 리스트 조회 페이지
+     */
     @GetMapping(value = "networkList")
     public String networkList(ModelMap model) throws Exception {
 
@@ -147,6 +159,9 @@ public class NetworkController {
         return "network/networkList";
     }
 
+    /**
+     * 일정 상세보기(문화행사 일정)
+     */
     @GetMapping(value = "networkEventInfo")
     public String networkEventInfo(HttpServletRequest request, ModelMap model, HttpSession session) throws Exception {
 
@@ -193,6 +208,9 @@ public class NetworkController {
         return "network/networkEventInfo";
     }
 
+    /**
+     * 일정 상세보기(문화시설 일정)
+     */
     @GetMapping(value = "networkCultureInfo")
     public String networkCultureInfo(HttpServletRequest request, ModelMap model, HttpSession session) throws Exception {
         return "network/networkCultureInfo";

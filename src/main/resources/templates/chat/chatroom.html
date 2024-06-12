@@ -341,7 +341,7 @@
             function deleteRoom() {
                 $.ajax({
                     url: "/chat/deleteRoom/" + roomName,
-                    type: "DELETE",
+                    type: "GET",
                     success: function (result) {
                         if (ws) {
                             ws.close(); // 웹소켓 연결을 닫습니다.

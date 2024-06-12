@@ -26,6 +26,13 @@ public class CultureMapper extends AbstractMongoDBComon implements ICultureMappe
 
     private final MongoTemplate mongodb;
 
+    /**
+     * 좌표 기준 문화시설 리스트 조회
+     *
+     * @param colNm 조회할 컬렉션 이름
+     * @param pDTO 검색할 조건 목록
+     * @return 문화시설 리스트
+     */
     @Override
     public List<CultureDTO> getCultureListNearby(String colNm, CultureDTO pDTO) throws Exception {
         log.info(this.getClass().getName() + "getCultureListNearby Start!");
@@ -90,6 +97,12 @@ public class CultureMapper extends AbstractMongoDBComon implements ICultureMappe
         return rList;
     }
 
+    /**
+     * 문화시설 상세정보 조회
+     *
+     * @param colNm 조회할 컬렉션 이름
+     * @return 문화시설 리스트
+     */
     @Override
     public CultureDTO getCultureInfo(String colNm, String nSeq) throws Exception {
 
