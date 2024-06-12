@@ -8,14 +8,13 @@ public record NetworkDTO(
         String userId,
         String name,
         String contents,
-        String dateTime,
-        Long maxParticipants,
+        String startDate,
+        String endDate,
         String eventSeq,
         String eventName,
         String imagePath,
         String regDt,
         String userName,
         String profilePath,
-
         String type
 ) {}

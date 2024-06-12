@@ -18,7 +18,10 @@
         let data = {}; // 전송 데이터(JSON)
         let ws; // 웹소켓 객체
 
+        const ss_user_id = [[${session.SS_USER_ID}]];
         var title = /*[[${rDTO.title}]]*/ 'defaultTitle';
+        const eventName  = [[${nDTO.eventName}]];
+        const networkSeq = [[${nDTO.networkSeq}]];
         const startDate = [[${rDTO.startDate}]];
         const endDate = [[${rDTO.endDate}]];
         const roomName = /*[[${roomName}]]*/ 'defaultRoom'; // 채팅룸 이름
@@ -28,22 +31,6 @@
         var uniqueIdentifier = extractFileId([[${rDTO.mainImg}]]);
 
         $(document).ready(function () {
-
-            // if (ws !== undefined && ws.readyState !== WebSocket.CLOSED) {
-            //     console.log("WebSocket is already opened.");
-            //     return;
-            // }
-            //
-            // ws = new WebSocket("ws://" + location.host + "/ws/" + roomName + "/" + userName + "/ko");
-            //
-            // // 웹소켓 열기
-            // ws.onopen = function (event) {
-            //     if (event.data === undefined)
-            //         return;
-            //
-            //     console.log(event.data);
-            // };
-
             $("#btnAddBookmark").on("click", function () {
                 $(this).find('i').addClass('pulse-animation').one('animationend', function() {
                     $(this).removeClass('pulse-animation');
@@ -70,9 +57,18 @@
 
             });
 
-            updateBookmarkButton();
+            $("#btnJoinChat").on("click", function () {
+                openWebSocket();
+            });
 
+            updateBookmarkButton();
         });
+
+        function openWebSocket() {
+            $.post("/chat/chatroom", { roomName: roomName, userId: ss_user_id }, function() {
+                window.location.href = "/chat/chatroom/" + roomName;
+            });
+        }
 
         function updateBookmarkButton() {
             var existsYn = /*[[${hDTO.existsYn}]]*/ 'N';
@@ -98,9 +94,6 @@
                 dataType: "JSON",
                 data: {
                     eventSeq: uniqueIdentifier
-                    // title: title,
-                    // startDate: startDate,
-                    // endDate: endDate
                 },
                 success: function (json) {
                     $("#btnAddBookmark").hide();
@@ -149,7 +142,7 @@
     </script>
 
 </head>
-<body onload="initMap()" style="background-color: #d7f9ff">
+<body onload="initMap()" style="background-color: #d7ffd9">
 <div class="header" style="padding: 0 16px;">
     <a href="/main" class="logo">
         <img src="/assets/img/logo3.png" alt="Main Logo">
@@ -176,7 +169,13 @@
             </button>
         </div>
     </div>
-
+    <p style="font-size: 14px; color: #666; margin-top: 4px;">
+        <strong>기간:</strong> <span th:text="${nDTO.startDate}"></span> ~ <span th:text="${nDTO.endDate}"></span>
+    </p>
+    <p th:text="${nDTO.contents}" style="font-size: 16px; color: #555; margin-top: 12px; white-space: pre;"></p>
+    <br>
+    <hr class="custom-hr">
+    <br>
     <div style="display: flex;">
         <div class="image-container">
             <img src="" th:src="${rDTO.mainImg}" alt="문화행사 이미지">
@@ -208,21 +207,13 @@
         </div>
     </div>
     <br>
-    <hr class="custom-hr">
-    <br>
-    <p th:text="${nDTO.contents}" style="white-space: pre; margin-top: 12px">댓글 내용</p>
-<!--    <p th:text="${dto.contents}" style="white-space: pre; margin-top: 12px">댓글 내용</p>-->
-<!--    <p th:text="${dto.contents}" style="white-space: pre; margin-top: 12px">댓글 내용</p>-->
-    <hr class="custom-hr">
-    <br>
-    <h2 style="margin-top: 4px; text-align: center">위치안내</h2>
     <div id="map"></div>
     <div class="button-container">
         <button id="btnList" type="button" style="font-family: 'NIXGONM-Vb';">문화행사 목록으로 이동</button>
         <button id="btnBookmark" type="button" style="font-family: 'NIXGONM-Vb';">북마크 페이지로 이동</button>
+        <button id="btnJoinChat" type="button" style="font-family: 'NIXGONM-Vb';">채팅방 참여</button>
     </div>
 
 </div>
 </body>
 </html>
-

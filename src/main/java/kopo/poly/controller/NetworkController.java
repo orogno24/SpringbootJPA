@@ -9,6 +9,7 @@ import kopo.poly.service.INetworkService;
 import kopo.poly.util.CmmUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -19,6 +20,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,8 +37,8 @@ public class NetworkController {
     @GetMapping("/createNetwork")
     public String createNetwork(@RequestParam(required = false) String eventName,
                                 @RequestParam(required = false) String description,
-                                @RequestParam(required = false) String dateTime,
-                                @RequestParam(required = false) String maxParticipants,
+                                @RequestParam(required = false) String startDate,
+                                @RequestParam(required = false) String endDate,
                                 @RequestParam(required = false) String selectedEventId,
                                 @RequestParam(required = false) String selectedEventName,
                                 @RequestParam(required = false) String ImagePath,
@@ -45,8 +47,8 @@ public class NetworkController {
 
         model.addAttribute("eventName", eventName);
         model.addAttribute("description", description);
-        model.addAttribute("dateTime", dateTime);
-        model.addAttribute("maxParticipants", maxParticipants);
+        model.addAttribute("startDate", startDate);
+        model.addAttribute("endDate", endDate);
         model.addAttribute("selectedEventId", selectedEventId);
         model.addAttribute("selectedEventName", selectedEventName);
         model.addAttribute("ImagePath", ImagePath);
@@ -57,8 +59,8 @@ public class NetworkController {
     @PostMapping("/createNetwork")
     public String createNetwork(@RequestParam String eventName,
                               @RequestParam String description,
-                              @RequestParam String dateTime,
-                              @RequestParam String maxParticipants,
+                              @RequestParam String startDate,
+                              @RequestParam String endDate,
                               @RequestParam(required = false) String selectedEventId,
                               @RequestParam(required = false) String selectedEventName,
                               @RequestParam(required = false) String ImagePath,
@@ -68,8 +70,8 @@ public class NetworkController {
 
         model.addAttribute("eventName", eventName);
         model.addAttribute("description", description);
-        model.addAttribute("dateTime", dateTime);
-        model.addAttribute("maxParticipants", maxParticipants);
+        model.addAttribute("startDate", startDate);
+        model.addAttribute("endDate", endDate);
         model.addAttribute("selectedEventId", selectedEventId);
         model.addAttribute("selectedEventName", selectedEventName);
         model.addAttribute("ImagePath", ImagePath);
@@ -82,8 +84,8 @@ public class NetworkController {
     @PostMapping("/insertNetwork")
     public MsgDTO insertNetwork(@RequestParam String eventName,
                                 @RequestParam String description,
-                                @RequestParam String dateTime,
-                                @RequestParam String maxParticipants,
+                                @RequestParam String startDate,
+                                @RequestParam String endDate,
                                 @RequestParam(required = false) String selectedEventId,
                                 @RequestParam(required = false) String selectedEventName,
                                 @RequestParam(required = false) String ImagePath,
@@ -95,14 +97,15 @@ public class NetworkController {
 
         try {
             String userId = CmmUtil.nvl((String) session.getAttribute("SS_USER_ID"));
-            String selectedTime = CmmUtil.nvl(dateTime);
+            String selectedStartDate = CmmUtil.nvl(startDate);
+            String selectedEndDate = CmmUtil.nvl(endDate);
 
             NetworkDTO pDTO = NetworkDTO.builder()
                     .userId(userId)
                     .name(eventName)
                     .contents(description)
-                    .dateTime(selectedTime)
-                    .maxParticipants(Long.valueOf(maxParticipants))
+                    .startDate(selectedStartDate)
+                    .endDate(selectedEndDate)
                     .eventSeq(selectedEventId)
                     .eventName(selectedEventName)
                     .imagePath(ImagePath)
@@ -169,13 +172,21 @@ public class NetworkController {
 
         String networkSeq = CmmUtil.nvl(request.getParameter("networkSeq"), "");
         NetworkDTO nDTO = networkService.getNetworkInfo(networkSeq);
+        String roomName = "커뮤니티 채팅방 " + networkSeq;
+
+        if (chatService.findByRoomName(roomName)) {
+            log.info("exists");
+        } else {
+            chatService.insertRoomName(roomName, userId);
+            log.info("success");
+        }
 
         // 조회된 결과값 넣어주기
         model.addAttribute("rDTO", rDTO);
         model.addAttribute("hDTO", hDTO);
         model.addAttribute("nDTO", nDTO);
         model.addAttribute("userId", userId);
-//        model.addAttribute("roomName", networkSeq);
+        model.addAttribute("roomName", roomName);
 
         log.info(this.getClass().getName() + ".networkEventInfo End!");
 

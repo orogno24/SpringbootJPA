@@ -33,11 +33,11 @@ public class NetworkSQLEntity {
     @Column(name = "contents", length = 1000)
     private String contents;
 
-    @Column(name = "date_time", nullable = false)
-    private String dateTime;
+    @Column(name = "start_date", nullable = false)
+    private String startDate;
 
-    @Column(name = "max_participants", nullable = false)
-    private Long maxParticipants;
+    @Column(name = "end_date", nullable = false)
+    private String endDate;
 
     @Column(name = "event_seq", length = 100)
     private String eventSeq;

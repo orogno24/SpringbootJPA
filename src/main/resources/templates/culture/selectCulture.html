@@ -335,16 +335,16 @@
         const urlParams = new URLSearchParams(window.location.search);
         const eventNameParam = urlParams.get('eventName');
         const descriptionParam = urlParams.get('description');
-        const dateTimeParam = urlParams.get('dateTime');
-        const maxParticipantsParam = urlParams.get('maxParticipants');
+        const startDateParam = urlParams.get('startDate');
+        const endDateParam = urlParams.get('endDate');
         const form = document.createElement('form');
         form.method = 'post';
         form.action = '/network/createNetwork';
 
         form.appendChild(createHiddenInput('eventName', eventNameParam));
         form.appendChild(createHiddenInput('description', descriptionParam));
-        form.appendChild(createHiddenInput('dateTime', dateTimeParam));
-        form.appendChild(createHiddenInput('maxParticipants', maxParticipantsParam));
+        form.appendChild(createHiddenInput('startDate', startDateParam));
+        form.appendChild(createHiddenInput('endDate', endDateParam));
         form.appendChild(createHiddenInput('selectedEventId', uniqueIdentifier));
         form.appendChild(createHiddenInput('selectedEventName', uniqueIdentifier2));
         form.appendChild(createHiddenInput('ImagePath', uniqueIdentifier3));

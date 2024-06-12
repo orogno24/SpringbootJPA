@@ -100,7 +100,9 @@
                             <img th:src="${dto.profilePath}" onerror="this.src='/assets/img/profile.png'"
                                  alt="Profile Image" class="profile-img">
                         </div>
-                        <p class="event-info" th:text="${dto.dateTime}">Date and Time</p>
+                        <p class="event-info">
+                            <strong>기간:</strong> <span th:text="${dto.startDate}"></span> ~ <span th:text="${dto.endDate}"></span>
+                        </p>
                     </div>
                 </div>
             </div>
@@ -120,7 +122,9 @@
                             <img th:src="${dto.profilePath}" onerror="this.src='/assets/img/profile.png'"
                                  alt="Profile Image" class="profile-img">
                         </div>
-                        <p class="event-info" th:text="${dto.dateTime}">Date and Time</p>
+                        <p class="event-info">
+                            <strong>기간:</strong> <span th:text="${dto.startDate}"></span> ~ <span th:text="${dto.endDate}"></span>
+                        </p>
                     </div>
                 </div>
             </div>
