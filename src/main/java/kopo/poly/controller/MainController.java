@@ -73,7 +73,7 @@ public class MainController {
     }
 
     /**
-     * 로딩 페이지
+     * 로딩 페이지 (인덱스)
      */
     @GetMapping("/index")
     public String index() throws Exception {

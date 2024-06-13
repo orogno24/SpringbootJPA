@@ -514,41 +514,4 @@ public class EventService implements IEventService  {
 
     }
 
-
-//    @Transactional
-//    @Override
-//    public ApiDTO parseUniqueIdentifierToDTO(String uniqueIdentifier) {
-//
-//        log.info(this.getClass().getName() + ".parseUniqueIdentifierToDTO Start!");
-//
-//        log.info("Unique Identifier: " + uniqueIdentifier);
-//
-//        // 예시 구현: uniqueIdentifier는 'title_startDate_place' 형식으로 구성되어 있다고 가정
-//        String[] parts = uniqueIdentifier.split("cSeq");
-//        if (parts.length != 3) {
-//            // 식별자 형식이 올바르지 않은 경우, 빈 DTO 반환 또는 예외 처리
-//            return ApiDTO.builder().build();
-//        }
-//
-//        String title = parts[0];
-//        String startDate = parts[1];
-//        String place = parts[2];
-//
-//        // EventDTO 객체 생성 및 필드 값 설정
-//        ApiDTO pDTO = ApiDTO.builder()
-//                .title(title)
-//                .startDate(startDate) // 이 필드는 예시이며, 실제 DTO 필드와 일치해야 합니다.
-//                .place(place) // 이 필드는 예시이며, 실제 DTO 필드와 일치해야 합니다.
-//                .build();
-//
-//        log.info("title : " + title);
-//        log.info("startDate : " + startDate);
-//        log.info("place : " + place);
-//
-//        log.info(this.getClass().getName() + ".parseUniqueIdentifierToDTO End!");
-//
-//        return pDTO;
-//    }
-
-
 }

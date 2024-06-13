@@ -83,15 +83,24 @@ public class ChatController {
         log.info(this.getClass().getName() + ".chatroom Start!");
 
         String userId = (String) session.getAttribute("SS_USER_ID");
-        UserInfoDTO dto = userInfoService.getUserInfo(userId);
-        String roomOwner = chatService.getRoomOwner(roomName);
 
-        log.info("chatroom roomName: " + roomName);
-        log.info("chatroom roomOwner: " + roomOwner);
+        if (userId.length() > 0) {
 
-        model.addAttribute("roomName", roomName);
-        model.addAttribute("dto", dto);
-        model.addAttribute("roomOwner", roomOwner);
+            UserInfoDTO dto = userInfoService.getUserInfo(userId);
+            String roomOwner = chatService.getRoomOwner(roomName);
+
+            log.info("chatroom roomName: " + roomName);
+            log.info("chatroom roomOwner: " + roomOwner);
+
+            model.addAttribute("roomName", roomName);
+            model.addAttribute("dto", dto);
+            model.addAttribute("roomOwner", roomOwner);
+
+        } else {
+
+            return "redirect:/user/login";
+
+        }
 
         log.info(this.getClass().getName() + ".chatroom End!");
         return "chat/chatroom";

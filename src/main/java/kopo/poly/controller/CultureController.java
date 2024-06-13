@@ -34,18 +34,33 @@ public class CultureController {
      * 문화시설 검색 페이지
      */
     @GetMapping("cultureMap")
-    public String cultureMap() {
+    public String cultureMap(HttpSession session) {
         log.info(this.getClass().getName() + ".cultureMap 함수 실행");
-        return "culture/cultureMap";
+
+        String userId = CmmUtil.nvl((String) session.getAttribute("SS_USER_ID"));
+
+        if (userId.length() > 0) {
+            return "culture/cultureMap";
+        } else {
+            return "redirect:/user/login";
+        }
+
     }
 
     /**
      * 일정에 문화시설 추가
      */
     @GetMapping("selectCulture")
-    public String selectCulture() {
+    public String selectCulture(HttpSession session) {
         log.info(this.getClass().getName() + ".selectCulture 함수 실행");
-        return "culture/selectCulture";
+
+        String userId = CmmUtil.nvl((String) session.getAttribute("SS_USER_ID"));
+
+        if (userId.length() > 0) {
+            return "culture/selectCulture";
+        } else {
+            return "redirect:/user/login";
+        }
     }
 
     /**
@@ -86,14 +101,22 @@ public class CultureController {
         String nSeq = CmmUtil.nvl(request.getParameter("nSeq"), "");
         String userId = (String) session.getAttribute("SS_USER_ID");
 
-        log.info("nSeq: " + nSeq);
-        log.info("userId: " + userId);
+        if (userId.length() > 0) {
 
-        CultureDTO rDTO = Optional.ofNullable(cultureService.getCultureInfo(nSeq))
-                .orElseGet(() -> CultureDTO.builder().build());
+            log.info("nSeq: " + nSeq);
+            log.info("userId: " + userId);
 
-        // 조회된 결과값 넣어주기
-        model.addAttribute("rDTO", rDTO);
+            CultureDTO rDTO = Optional.ofNullable(cultureService.getCultureInfo(nSeq))
+                    .orElseGet(() -> CultureDTO.builder().build());
+
+            // 조회된 결과값 넣어주기
+            model.addAttribute("rDTO", rDTO);
+
+        }  else {
+
+            return "redirect:/user/login";
+
+        }
 
         log.info(this.getClass().getName() + ".cultureInfo End!");
 

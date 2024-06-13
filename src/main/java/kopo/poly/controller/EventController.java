@@ -42,26 +42,36 @@ public class EventController {
      * 문화행사 검색 페이지
      */
     @GetMapping(value = "apiSearch")
-    public String apiSearch() throws Exception {
+    public String apiSearch(HttpSession session) throws Exception {
 
         log.info(this.getClass().getName() + ".apiSearch Start!");
 
-        log.info(this.getClass().getName() + ".apiSearch End!");
+        String userId = CmmUtil.nvl((String) session.getAttribute("SS_USER_ID"));
 
-        return "event/apiSearch";
+        if (userId.length() > 0) {
+            return "event/apiSearch";
+        } else {
+            return "redirect:/user/login";
+        }
+
     }
 
     /**
      * 일정에 문화행사 추가
      */
     @GetMapping(value = "selectApi")
-    public String selectApi() throws Exception {
+    public String selectApi(HttpSession session) throws Exception {
 
         log.info(this.getClass().getName() + ".selectApi Start!");
 
-        log.info(this.getClass().getName() + ".selectApi End!");
+        String userId = CmmUtil.nvl((String) session.getAttribute("SS_USER_ID"));
 
-        return "event/selectApi";
+        if (userId.length() > 0) {
+            return "event/selectApi";
+        } else {
+            return "redirect:/user/login";
+        }
+
     }
 
     /**
@@ -128,28 +138,36 @@ public class EventController {
         log.info("userId: " + userId);
         log.info("eventSeq: " + eventSeq);
 
-        uniqueIdentifier = "https://culture.seoul.go.kr/cmmn/file/getImage.do?atchFileId=" + uniqueIdentifier + "&thumb=Y";
+        if (userId.length() > 0) {
 
-        RedisDTO redisDTO = null;
-        String colNm = "EVENT_" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        redisDTO = eventService.getCulturalEvents(colNm);
+            uniqueIdentifier = "https://culture.seoul.go.kr/cmmn/file/getImage.do?atchFileId=" + uniqueIdentifier + "&thumb=Y";
 
-        ApiDTO rDTO = Optional.ofNullable(eventService.getApiInfo(redisDTO, uniqueIdentifier))
-                .orElseGet(() -> ApiDTO.builder().build());
+            RedisDTO redisDTO = null;
+            String colNm = "EVENT_" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+            redisDTO = eventService.getCulturalEvents(colNm);
 
-        BookmarkDTO gDTO = BookmarkDTO.builder().userId(userId).eventSeq(eventSeq).build();
+            ApiDTO rDTO = Optional.ofNullable(eventService.getApiInfo(redisDTO, uniqueIdentifier))
+                    .orElseGet(() -> ApiDTO.builder().build());
 
-        BookmarkDTO hDTO = Optional.ofNullable(eventService.getBookmarkExists(gDTO))
-                .orElseGet(() -> BookmarkDTO.builder().build());
+            BookmarkDTO gDTO = BookmarkDTO.builder().userId(userId).eventSeq(eventSeq).build();
 
-        // 조회된 결과값 넣어주기
-        model.addAttribute("rDTO", rDTO);
-        model.addAttribute("hDTO", hDTO);
-        model.addAttribute("userId", userId);
+            BookmarkDTO hDTO = Optional.ofNullable(eventService.getBookmarkExists(gDTO))
+                    .orElseGet(() -> BookmarkDTO.builder().build());
 
-        log.info(this.getClass().getName() + ".apiInfo End!");
+            // 조회된 결과값 넣어주기
+            model.addAttribute("rDTO", rDTO);
+            model.addAttribute("hDTO", hDTO);
+            model.addAttribute("userId", userId);
 
-        return "event/apiInfo";
+            return "event/apiInfo";
+
+        } else {
+
+            return "redirect:/user/login";
+
+        }
+
+
     }
 
     /**

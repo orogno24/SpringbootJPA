@@ -1,26 +1,35 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Create Event</title>
+    <title>일정 생성하기</title>
     <script type="text/javascript" src="/js/jquery-3.6.0.min.js"></script>
+    <link rel="icon" href="/assets/img/logo.png" type="image/x-icon">
+    <link rel="shortcut icon" href="/assets/img/logo.png" type="image/x-icon">
+    <link rel="stylesheet" href="/css/header.css"/>
     <style>
         body {
-            font-family: Arial, sans-serif;
             background-color: #f4f4f4;
             margin: 0;
             padding: 0;
-            display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+        }
+
+        header {
+            margin-top: 30px;
+            padding: 20px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
         }
 
         form {
+            margin: 20px auto;
             background-color: #ffffff;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            max-width: 500px;
+            max-width: 800px;
             width: 100%;
         }
 
@@ -47,8 +56,8 @@
             border-radius: 4px;
             cursor: pointer;
             font-size: 16px;
-            margin: 5px 0;
-            width: 100%;
+            margin: 5px auto;
+            width: 50%;
             box-sizing: border-box;
         }
 
@@ -57,42 +66,116 @@
         }
 
         #selectedEventInfo {
-            margin-top: 20px;
             text-align: center;
+            background-color: #ffffff;
         }
 
         #selectedEventInfo p {
+            font-weight: bold;
             font-size: 18px;
             color: #333;
             margin-bottom: 10px;
         }
 
         #selectedEventInfo img {
-            max-width: 100%;
+            height: 300px; /* 이미지 높이를 200px로 고정 */
             border-radius: 8px;
+            display: block;
+            margin: 0 auto; /* 중앙 정렬 */
         }
+
+        .date-container {
+            display: flex;
+            justify-content: space-between; /* 필요에 따라 간격 조정 */
+            align-items: center;
+            width: 100%; /* 전체 폼 너비 사용 */
+        }
+
+        .date-container label, .date-container input {
+            flex: 1; /* 라벨과 입력 필드가 동일한 공간을 차지하도록 설정 */
+        }
+
+        textarea {
+            white-space: pre;
+        }
+
     </style>
 </head>
-<body>
+<body style="background-color: #d7f9ff">
+
+<div class="header" style="padding: 0 16px;">
+    <a href="/main" class="logo">
+        <img src="/assets/img/logo3.png" alt="Main Logo">
+    </a>
+    <ul class="nav" id="top-navigation">
+        <li><a href="/main">메인 페이지</a></li>
+        <li><a href="/event/apiSearch">문화행사 찾기</a></li>
+        <li><a href="/culture/cultureMap">문화시설 찾기</a></li>
+        <li><a href="/network/networkList">일정 등록하기</a></li>
+        <li><a href="/chat/intro">실시간 채팅</a></li>
+        <li><a href="/notice/noticeListUsingNativeQuery">커뮤니티</a></li>
+    </ul>
+</div>
+
+<header>일정 생성하기</header>
 <form id="createEventForm">
-    <label for="eventName">Event Name:</label>
-    <input type="text" id="eventName" name="eventName" th:value="${eventName}"><br>
+    <label for="eventName">제목 추가:</label>
+    <input type="text" id="eventName" name="eventName" th:value="${eventName}" required><br>
 
-    <label for="description">Description:</label>
-    <input type="text" id="description" name="description" th:value="${description}"><br>
+    <label for="startDate">일정:</label>
+    <div class="date-container">
+        <input type="datetime-local" id="startDate" name="startDate" th:value="${startDate}"><br>
+        <input type="datetime-local" id="endDate" name="endDate" th:value="${endDate}"><br>
+    </div>
 
-    <label for="startDate">Start Date and Time:</label>
-    <input type="datetime-local" id="startDate" name="startDate" th:value="${startDate}"><br>
-
-    <label for="endDate">End Date and Time:</label>
-    <input type="datetime-local" id="endDate" name="endDate" th:value="${endDate}"><br>
-
+    <label for="description">내용:</label>
+    <textarea name="description" id="description" class="form-control" placeholder="간단한 설명, 참여 인원, 이동 수단, 비용 등의 항목을 입력해주세요."
+              style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ddd; height: 300px; border-radius: 4px; box-sizing: border-box;"
+              required>[[${description}]]</textarea>
     <input type="hidden" id="selectedEventId" name="selectedEventId" th:value="${selectedEventId}">
     <input type="hidden" id="selectedEventName" name="selectedEventName" th:value="${selectedEventName}">
     <input type="hidden" id="ImagePath" name="ImagePath" th:value="${ImagePath}">
-    <button type="button" onclick="window.location.href='/event/selectApi?eventName=' + document.getElementById('eventName').value + '&description=' + document.getElementById('description').value + '&startDate=' + document.getElementById('startDate').value + '&endDate=' + document.getElementById('endDate').value">Select Event</button>
-    <button type="button" onclick="window.location.href='/culture/selectCulture?eventName=' + document.getElementById('eventName').value + '&description=' + document.getElementById('description').value + '&startDate=' + document.getElementById('startDate').value + '&endDate=' + document.getElementById('endDate').value">Select Culture</button>
-    <button type="button" onclick="submitForm()">Create Event</button>
+
+    <div id="selectedEventInfo">
+        <script>
+            document.addEventListener('DOMContentLoaded', (event) => {
+                var selectedEventName = document.getElementById('selectedEventName').value;
+                var ImagePath = document.getElementById('ImagePath').value; // 이미지 URL을 가져옵니다.
+
+                if (selectedEventName) {
+                    var selectedEventInfoDiv = document.getElementById('selectedEventInfo');
+
+                    // 이벤트 이름을 표시하는 <p> 요소를 생성합니다.
+                    var p = document.createElement('p');
+                    p.textContent = '일정에 추가됨: ' + selectedEventName;
+                    selectedEventInfoDiv.appendChild(p);
+
+                    // 이미지를 표시하는 <img> 요소를 생성합니다.
+                    if (ImagePath) {
+                        var img = document.createElement('img');
+                        img.src = ImagePath; // 이미지의 src 속성을 설정합니다.
+                        img.alt = 'Event Image'; // 대체 텍스트를 설정합니다.
+                        selectedEventInfoDiv.appendChild(img);
+                    }
+                }
+            });
+        </script>
+    </div>
+
+    <div style="margin-top: 20px">
+<!--    <button type="button"-->
+<!--            onclick="window.location.href='/event/selectApi?eventName=' + document.getElementById('eventName').value + '&description=' + document.getElementById('description').value + '&startDate=' + document.getElementById('startDate').value + '&endDate=' + document.getElementById('endDate').value">-->
+<!--        일정에 문화행사 추가하기-->
+<!--    </button>-->
+<!--    <button type="button"-->
+<!--            onclick="window.location.href='/culture/selectCulture?eventName=' + document.getElementById('eventName').value + '&description=' + document.getElementById('description').value + '&startDate=' + document.getElementById('startDate').value + '&endDate=' + document.getElementById('endDate').value">-->
+<!--        일정에 문화시설 추가하기-->
+<!--    </button>-->
+        <div style="text-align: center;">
+            <button type="button" onclick="submitForm()">일정 등록</button>
+        </div>
+    </div>
+
 </form>
 
 <script>
@@ -101,7 +184,7 @@
         var endDate = new Date(document.getElementById('endDate').value);
 
         if (startDate >= endDate) {
-            alert('Start date must be before the end date.');
+            alert('종료일이 시작일보다 앞에 있습니다.');
             return;
         }
 
@@ -109,42 +192,16 @@
             url: '/network/insertNetwork', // 서버의 URL
             type: 'POST', // 메서드 타입
             data: $('#createEventForm').serialize(), // 폼 데이터 직렬화
-            success: function(json) {
+            success: function (json) {
                 alert(json.msg); // 성공 메시지
                 window.location.href = "/network/networkList"; // 페이지 리다이렉션
             },
-            error: function(xhr, status, error) {
+            error: function (xhr, status, error) {
                 alert('Error: ' + error.message); // 에러 메시지
             }
         });
     }
 </script>
 
-<div id="selectedEventInfo">
-    <script>
-        document.addEventListener('DOMContentLoaded', (event) => {
-            var selectedEventName = document.getElementById('selectedEventName').value;
-            var ImagePath = document.getElementById('ImagePath').value; // 이미지 URL을 가져옵니다.
-
-            if (selectedEventName) {
-                var selectedEventInfoDiv = document.getElementById('selectedEventInfo');
-
-                // 이벤트 이름을 표시하는 <p> 요소를 생성합니다.
-                var p = document.createElement('p');
-                p.textContent = 'Selected Event: ' + selectedEventName;
-                selectedEventInfoDiv.appendChild(p);
-
-                // 이미지를 표시하는 <img> 요소를 생성합니다.
-                if (ImagePath) {
-                    var img = document.createElement('img');
-                    img.src = ImagePath; // 이미지의 src 속성을 설정합니다.
-                    img.alt = 'Event Image'; // 대체 텍스트를 설정합니다.
-                    img.style.maxWidth = '100%'; // 이미지 크기 조정을 위한 스타일 설정
-                    selectedEventInfoDiv.appendChild(img);
-                }
-            }
-        });
-    </script>
-</div>
 </body>
 </html>

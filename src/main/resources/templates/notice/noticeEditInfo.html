@@ -116,7 +116,7 @@
 
             $.ajax({
                 url: '/notice/deleteImage/' + imageSeq,
-                type: 'DELETE',
+                type: 'GET',
                 data: { nSeq: nSeq },
                 success: function (response) {
                     $('#image-container-' + imageSeq).hide();
