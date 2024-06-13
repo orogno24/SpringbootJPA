@@ -123,6 +123,10 @@
       $("#f").submit(function(event) {
         event.preventDefault();
         var roomName = $("input[name='roomName']").val();
+        if (roomName.includes("커뮤니티 채팅방")) {
+          alert("채팅방 이름에 '커뮤니티 채팅방'을 포함할 수 없습니다.");
+          return;
+        }
         $.post("/chat/chatroom", { roomName: roomName, userId: ss_user_id }, function() {
           window.location.href = "/chat/chatroom/" + roomName;
         });
@@ -159,6 +163,8 @@
     <li><a href="/main">메인 페이지</a></li>
     <li><a href="/event/apiSearch">문화행사 찾기</a></li>
     <li><a href="/culture/cultureMap">문화시설 찾기</a></li>
+    <li><a href="/network/networkList">일정 등록하기</a></li>
+    <li><a href="/chat/intro">실시간 채팅</a></li>
     <li><a href="/notice/noticeListUsingNativeQuery">커뮤니티</a></li>
   </ul>
 </div>

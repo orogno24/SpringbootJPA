@@ -17,10 +17,16 @@
         /*<![CDATA[*/
         const networkSeq = [[${nDTO.networkSeq}]];
 
+        function goToUserProfile(userId) {
+
+            window.location.href = "/user/userProfile/" + userId;
+
+        }
+
         $(document).ready(function () {
 
             $("#btnList").on("click", function () {
-                location.href = "/culture/cultureMap";
+                location.href = "/netwrok/networkList";
             });
 
             $("#btnAddBookmark").on("click", function () {
@@ -36,6 +42,7 @@
                 });
                 removeBookmark();
             });
+
 
             $("#btnBookmark").on("click", function () {
 
@@ -137,6 +144,7 @@
 
 </head>
 <body onload="initMap()" style="background-color: #d7f9ff">
+
 <div class="header" style="padding: 0 16px;">
     <a href="/main" class="logo">
         <img src="/assets/img/logo3.png" alt="Main Logo">
@@ -145,9 +153,12 @@
         <li><a href="/main">메인 페이지</a></li>
         <li><a href="/event/apiSearch">문화행사 찾기</a></li>
         <li><a href="/culture/cultureMap">문화시설 찾기</a></li>
+        <li><a href="/network/networkList">일정 등록하기</a></li>
+        <li><a href="/chat/intro">실시간 채팅</a></li>
         <li><a href="/notice/noticeListUsingNativeQuery">커뮤니티</a></li>
     </ul>
 </div>
+
 <span id="latitude" th:text="${rDTO.xCoord}" style="display:none;"></span>
 <span id="longitude" th:text="${rDTO.yCoord}" style="display:none;"></span>
 <div class="content">
@@ -166,9 +177,9 @@
 
     <div class="user-info">
         <p style="font-weight: bold">개설자:&nbsp;</p>
-        <span class="user-name" style="font-weight: bold" th:text="${dto.userName}"></span>
-        <img th:src="${dto.profilePath}" onerror="this.src='/assets/img/profile.png'"
-             alt="Profile Image" class="profile-img">
+        <span class="user-name" th:text="${dto.userName}"></span>
+        <img th:src="${dto.profilePath}" onerror="this.src='/assets/img/profile.png'" style="cursor: pointer"
+             alt="Profile Image" class="profile-img" th:onclick="goToUserProfile([[${dto.userId}]])">
     </div>
 
     <div>

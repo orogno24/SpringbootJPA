@@ -28,6 +28,12 @@
         const userName = "ongoro";
         const protocol = location.protocol === "https:" ? "wss://" : "ws://"; // 프로토콜 설정
 
+        function goToUserProfile(userId) {
+
+            window.location.href = "/user/userProfile/" + userId;
+
+        }
+
         $(document).ready(function () {
             $("#btnAddBookmark").on("click", function () {
                 $(this).find('i').addClass('pulse-animation').one('animationend', function() {
@@ -192,9 +198,9 @@
 
     <div class="user-info">
         <p style="font-weight: bold">개설자:&nbsp;</p>
-        <span class="user-name" style="font-weight: bold" th:text="${dto.userName}"></span>
-        <img th:src="${dto.profilePath}" onerror="this.src='/assets/img/profile.png'"
-             alt="Profile Image" class="profile-img">
+        <span class="user-name" th:text="${dto.userName}"></span>
+        <img th:src="${dto.profilePath}" onerror="this.src='/assets/img/profile.png'" style="cursor: pointer"
+             alt="Profile Image" class="profile-img" th:onclick="goToUserProfile([[${dto.userId}]])">
     </div>
 
     <div>

@@ -116,7 +116,7 @@
 
             $.ajax({
                 url: '/notice/deleteImage/' + imageSeq,
-                type: 'GET',
+                type: 'DELETE',
                 data: { nSeq: nSeq },
                 success: function (response) {
                     $('#image-container-' + imageSeq).hide();
@@ -195,7 +195,7 @@
 </head>
 <body>
 
-<div class="header">
+<div class="header" style="padding: 0 16px;">
     <a href="/main" class="logo">
         <img src="/assets/img/logo3.png" alt="Main Logo">
     </a>
@@ -203,6 +203,8 @@
         <li><a href="/main">메인 페이지</a></li>
         <li><a href="/event/apiSearch">문화행사 찾기</a></li>
         <li><a href="/culture/cultureMap">문화시설 찾기</a></li>
+        <li><a href="/network/networkList">일정 등록하기</a></li>
+        <li><a href="/chat/intro">실시간 채팅</a></li>
         <li><a href="/notice/noticeListUsingNativeQuery">커뮤니티</a></li>
     </ul>
 </div>

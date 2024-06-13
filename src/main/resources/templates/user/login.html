@@ -8,7 +8,6 @@
     <title>로그인</title>
     <link rel="icon" href="/assets/img/logo.png" type="image/x-icon">
     <link rel="shortcut icon" href="/assets/img/logo.png" type="image/x-icon">
-
     <style>
         @font-face {
             font-family: 'NIXGONM-Vb';
@@ -343,8 +342,8 @@
                         success: function (json) {
 
                             if (json.result === 1) {
-                                alert(json.msg);
-                                location.href = "/main";
+                                // alert(json.msg);
+                                location.href = "/alert";
                             } else {
                                 alert(json.msg);
                                 $("#userId").focus();

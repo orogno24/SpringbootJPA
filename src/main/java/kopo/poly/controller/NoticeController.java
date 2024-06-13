@@ -65,15 +65,18 @@ public class NoticeController {
      * GetMapping(value = "notice/noticeReg") =>  GET방식을 통해 접속되는 URL이 notice/noticeReg 경우 아래 함수를 실행함
      */
     @GetMapping(value = "noticeReg")
-    public String noticeReg() {
+    public String noticeReg(HttpSession session) {
 
         log.info(this.getClass().getName() + ".noticeReg Start!");
 
-        log.info(this.getClass().getName() + ".noticeReg End!");
+        String userId = CmmUtil.nvl((String) session.getAttribute("SS_USER_ID"));
 
-        // 함수 처리가 끝나고 보여줄 HTML (Thymeleaf) 파일명
-        // templates/notice/noticeReg.html
-        return "notice/noticeReg";
+        if (userId.length() > 0) {
+            return "notice/noticeReg";
+        } else {
+            return "redirect:/user/login";
+        }
+
     }
 
     /**
@@ -135,27 +138,34 @@ public class NoticeController {
      * 게시판 수정 보기
      */
     @GetMapping(value = "noticeEditInfo")
-    public String noticeEditInfo(HttpServletRequest request, ModelMap model) throws Exception {
+    public String noticeEditInfo(HttpServletRequest request, ModelMap model, HttpSession session) throws Exception {
 
         log.info(this.getClass().getName() + ".noticeEditInfo Start!");
 
-        String nSeq = CmmUtil.nvl(request.getParameter("nSeq")); // 공지글번호(PK)
+        String userId = CmmUtil.nvl((String) session.getAttribute("SS_USER_ID"));
 
-        log.info("nSeq : " + nSeq);
+        if (userId.length() > 0) {
+            String nSeq = CmmUtil.nvl(request.getParameter("nSeq")); // 공지글번호(PK)
 
-        NoticeDTO pDTO = NoticeDTO.builder().noticeSeq(Long.parseLong(nSeq)).build();
-        NoticeDTO rDTO = Optional.ofNullable(noticeService.getNoticeInfo(pDTO, false))
-                .orElseGet(() -> NoticeDTO.builder().build());
+            log.info("nSeq : " + nSeq);
 
-        List<NoticeImageDTO> iList = Optional.ofNullable(noticeService.getImageList(pDTO))
-                .orElseGet(ArrayList::new);
+            NoticeDTO pDTO = NoticeDTO.builder().noticeSeq(Long.parseLong(nSeq)).build();
+            NoticeDTO rDTO = Optional.ofNullable(noticeService.getNoticeInfo(pDTO, false))
+                    .orElseGet(() -> NoticeDTO.builder().build());
 
-        model.addAttribute("rDTO", rDTO);
-        model.addAttribute("iList", iList);
+            List<NoticeImageDTO> iList = Optional.ofNullable(noticeService.getImageList(pDTO))
+                    .orElseGet(ArrayList::new);
 
-        log.info(this.getClass().getName() + ".noticeEditInfo End!");
+            model.addAttribute("rDTO", rDTO);
+            model.addAttribute("iList", iList);
 
-        return "notice/noticeEditInfo";
+            log.info(this.getClass().getName() + ".noticeEditInfo End!");
+
+            return "notice/noticeEditInfo";
+        } else {
+            return "redirect:/user/login";
+        }
+
     }
 
     /**

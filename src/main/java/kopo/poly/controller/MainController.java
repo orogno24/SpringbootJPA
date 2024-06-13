@@ -92,16 +92,7 @@ public class MainController {
         modelMap.addAttribute("msg", msg);
         modelMap.addAttribute("url", "/main");
 
-        return "/alert";
+        return "alert";
     }
-
-    @GetMapping("/alert2")
-    public String redirectPage2(HttpServletRequest request, ModelMap modelMap) throws Exception {
-        log.info(this.getClass().getName() + ".alert2 페이지 보여주는 함수 실행");
-        String msg = CmmUtil.nvl(request.getParameter("msg"), "로그인 페이지로 이동합니다.");
-        modelMap.addAttribute("msg", msg);
-        return "/alert2";
-    }
-
 
 }

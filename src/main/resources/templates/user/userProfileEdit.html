@@ -11,6 +11,11 @@
 
         const user_id = [[${pDTO.userId}]];
 
+        function isValidFileType(file) {
+            const allowedExtensions = ['image/png', 'image/jpeg'];
+            return allowedExtensions.includes(file.type);
+        }
+
         function profileChange() {
             var fileInput = document.getElementById('profileImage');
             var file = fileInput.files[0];
@@ -24,6 +29,11 @@
             if (!userName) {
                 alert('닉네임을 입력해주세요.');
                 document.getElementById('userName').focus();
+                return;
+            }
+
+            if (file && !isValidFileType(file)) {
+                alert(file.name + ' 파일은 지원되지 않는 형식입니다. PNG 또는 JPG 파일만 업로드해주세요.');
                 return;
             }
 
@@ -243,7 +253,7 @@
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet"/>
 </head>
 <body>
-<div class="header" style="padding: 0 16px;">
+<div class="header">
     <a href="/main" class="logo">
         <img src="/assets/img/logo3.png" alt="Main Logo">
     </a>
@@ -251,9 +261,12 @@
         <li><a href="/main">메인 페이지</a></li>
         <li><a href="/event/apiSearch">문화행사 찾기</a></li>
         <li><a href="/culture/cultureMap">문화시설 찾기</a></li>
+        <li><a href="/network/networkList">일정 등록하기</a></li>
+        <li><a href="/chat/intro">실시간 채팅</a></li>
         <li><a href="/notice/noticeListUsingNativeQuery">커뮤니티</a></li>
     </ul>
 </div>
+
 <h2 style="text-align: center; color:#333333; margin-top: 50px; margin-bottom: -38px">프로필 수정</h2>
 <div class="center-container">
     <div class="profile-card">
@@ -271,7 +284,7 @@
             </div>
             <div class="buttons">
                     <label for="profileImage" class="change-photo">사진 업로드</label>
-                    <input type="file" id="profileImage" name="file" accept="image/*" required onchange="previewProfileImage(this);" style="display:none;">
+                <input type="file" id="profileImage" name="file" accept=".png, .jpg, .jpeg" required onchange="previewProfileImage(this);" style="display:none;">
                 <button type="button" onclick="profileChange()">변경사항 적용</button>
             </div>
         </form>

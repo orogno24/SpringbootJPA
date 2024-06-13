@@ -159,6 +159,7 @@ public class EventService implements IEventService  {
         // 저장 결과
         RedisDTO rDTO = null;
 
+        // redisDB에 데이터가 없으면 저장
         if (!redisMapper.getExistKey(colNm)) {
 
             // API 호출을 위한 파라미터 설정
@@ -180,7 +181,7 @@ public class EventService implements IEventService  {
                     .contents(contents)
                     .build();
         } else {
-
+        // redisDB에 데이터가 있다면 조회하기
             rDTO = redisMapper.getEventList(colNm);
 
         }

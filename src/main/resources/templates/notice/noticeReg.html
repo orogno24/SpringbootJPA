@@ -60,7 +60,11 @@
             $('#image').on('change', function() {
                 // 선택된 파일들을 배열에 추가
                 Array.from(this.files).forEach(file => {
-                    currentFiles.push(file);
+                    if (isValidFileType(file)) {
+                        currentFiles.push(file);
+                    } else {
+                        alert(file.name + ' 파일은 지원되지 않는 형식입니다. PNG 또는 JPG 파일만 업로드해주세요.');
+                    }
                 });
                 displayFileList(); // 파일 리스트 업데이트
             });
@@ -75,6 +79,11 @@
                 displayFileList(); // 파일 리스트 업데이트
             });
         })
+
+        function isValidFileType(file) {
+            const allowedExtensions = ['image/png', 'image/jpeg'];
+            return allowedExtensions.includes(file.type);
+        }
 
         function displayFileList() {
             const fileList = document.getElementById('fileList');
@@ -189,9 +198,12 @@
         <li><a href="/main">메인 페이지</a></li>
         <li><a href="/event/apiSearch">문화행사 찾기</a></li>
         <li><a href="/culture/cultureMap">문화시설 찾기</a></li>
+        <li><a href="/network/networkList">일정 등록하기</a></li>
+        <li><a href="/chat/intro">실시간 채팅</a></li>
         <li><a href="/notice/noticeListUsingNativeQuery">커뮤니티</a></li>
     </ul>
 </div>
+
 
 <div class="container">
     <div style="z-index: 10" class="card">
@@ -211,7 +223,7 @@
                 </div>
                 <div class="form-group">
                     <label for="image">이미지 파일 추가</label>
-                    <input type="file" name="images" id="image" class="form-control-file" multiple>
+                    <input type="file" name="images" id="image" class="form-control-file" multiple accept=".png, .jpg, .jpeg">
                     <small class="form-text text-muted">파일을 선택하고 나서 다시 선택하면 추가로 파일을 업로드할 수 있습니다.</small>
                 </div>
                 <div class="form-group">

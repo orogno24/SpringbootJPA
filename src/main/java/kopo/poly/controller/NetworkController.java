@@ -46,15 +46,20 @@ public class NetworkController {
                                 Model model) throws Exception {
         log.info(this.getClass().getName() + ".createNetwork 함수 실행");
 
-        model.addAttribute("eventName", eventName);
-        model.addAttribute("description", description);
-        model.addAttribute("startDate", startDate);
-        model.addAttribute("endDate", endDate);
-        model.addAttribute("selectedEventId", selectedEventId);
-        model.addAttribute("selectedEventName", selectedEventName);
-        model.addAttribute("ImagePath", ImagePath);
+        if (selectedEventId != null) {
+            model.addAttribute("eventName", eventName);
+            model.addAttribute("description", description);
+            model.addAttribute("startDate", startDate);
+            model.addAttribute("endDate", endDate);
+            model.addAttribute("selectedEventId", selectedEventId);
+            model.addAttribute("selectedEventName", selectedEventName);
+            model.addAttribute("ImagePath", ImagePath);
 
-        return "network/createNetwork";
+            return "network/createNetwork";
+        } else {
+            return "redirect:/user/login";
+        }
+
     }
 
     /**
@@ -72,6 +77,7 @@ public class NetworkController {
 
         log.info(this.getClass().getName() + ".createNetwork 함수 실행");
 
+        if (selectedEventId != null) {
         model.addAttribute("eventName", eventName);
         model.addAttribute("description", description);
         model.addAttribute("startDate", startDate);
@@ -81,6 +87,9 @@ public class NetworkController {
         model.addAttribute("ImagePath", ImagePath);
 
         return "network/createNetwork";
+        } else {
+            return "redirect:/user/login";
+        }
     }
 
     /**
@@ -136,10 +145,13 @@ public class NetworkController {
      * 일정 리스트 조회 페이지
      */
     @GetMapping(value = "networkList")
-    public String networkList(ModelMap model) throws Exception {
+    public String networkList(ModelMap model, HttpSession session) throws Exception {
 
         log.info(this.getClass().getName() + ".networkList Start!");
 
+        String userId = CmmUtil.nvl((String) session.getAttribute("SS_USER_ID"));
+
+        if (userId.length() > 0) {
         String event = "EVENT";
         String culture = "CULTURE";
 
@@ -155,6 +167,10 @@ public class NetworkController {
         log.info(this.getClass().getName() + ".networkList End!");
 
         return "network/networkList";
+        } else {
+            return "redirect:/user/login";
+        }
+
     }
 
     /**
@@ -168,6 +184,8 @@ public class NetworkController {
 
         String uniqueIdentifier = CmmUtil.nvl(request.getParameter("nSeq"), "");
         String userId = (String) session.getAttribute("SS_USER_ID");
+
+        if (userId.length() > 0) {
 
         uniqueIdentifier = "https://culture.seoul.go.kr/cmmn/file/getImage.do?atchFileId=" + uniqueIdentifier + "&thumb=Y";
 
@@ -209,6 +227,11 @@ public class NetworkController {
         log.info(this.getClass().getName() + ".networkEventInfo End!");
 
         return "network/networkEventInfo";
+
+        } else {
+            return "redirect:/user/login";
+        }
+
     }
 
     /**
@@ -222,6 +245,7 @@ public class NetworkController {
         String nSeq = CmmUtil.nvl(request.getParameter("nSeq"), "");
         String userId = (String) session.getAttribute("SS_USER_ID");
 
+        if (userId.length() > 0) {
         log.info("nSeq: " + nSeq);
         log.info("userId: " + userId);
 
@@ -258,6 +282,10 @@ public class NetworkController {
         log.info(this.getClass().getName() + ".networkCultureInfo End!");
 
         return "network/networkCultureInfo";
+
+        } else {
+            return "redirect:/user/login";
+        }
     }
 
     /**
