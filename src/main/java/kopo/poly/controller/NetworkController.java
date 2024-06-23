@@ -13,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -203,11 +204,11 @@ public class NetworkController {
         if (chatService.findByRoomName(roomName)) {
             log.info("exists");
         } else {
-            chatService.insertRoomName(roomName, userId);
+            chatService.insertRoomName(roomName, userId, Long.valueOf(networkSeq));
             log.info("success");
         }
 
-        ScheduleDTO gDTO = ScheduleDTO.builder().userId(userId).eventSeq(networkSeq).build();
+        ScheduleDTO gDTO = ScheduleDTO.builder().userId(userId).networkSeq(Long.valueOf(networkSeq)).build();
 
         ScheduleDTO hDTO = Optional.ofNullable(networkService.getBookmarkExists(gDTO))
                 .orElseGet(() -> ScheduleDTO.builder().build());
@@ -254,7 +255,7 @@ public class NetworkController {
 
         String networkSeq = CmmUtil.nvl(request.getParameter("networkSeq"), "");
 
-        ScheduleDTO gDTO = ScheduleDTO.builder().userId(userId).eventSeq(networkSeq).build();
+        ScheduleDTO gDTO = ScheduleDTO.builder().userId(userId).networkSeq(Long.valueOf(networkSeq)).build();
 
         ScheduleDTO hDTO = Optional.ofNullable(networkService.getBookmarkExists(gDTO))
                 .orElseGet(() -> ScheduleDTO.builder().build());
@@ -267,7 +268,7 @@ public class NetworkController {
         if (chatService.findByRoomName(roomName)) {
             log.info("exists");
         } else {
-            chatService.insertRoomName(roomName, userId);
+            chatService.insertRoomName(roomName, userId, Long.valueOf(networkSeq));
             log.info("success");
         }
 
@@ -286,6 +287,47 @@ public class NetworkController {
         } else {
             return "redirect:/user/login";
         }
+    }
+
+    /**
+     * 일정 삭제
+     */
+    @ResponseBody
+    @PostMapping(value = "networkDelete")
+    public MsgDTO networkDelete(HttpServletRequest request) {
+
+        log.info(this.getClass().getName() + ".networkDelete Start!");
+
+        String msg = "";
+        MsgDTO dto = null;
+
+        try {
+
+            String networkSeq = CmmUtil.nvl(request.getParameter("networkSeq"));
+
+            log.info("networkSeq : " + networkSeq);
+
+            NetworkDTO pDTO = NetworkDTO.builder().networkSeq(Long.parseLong(networkSeq)).build();
+
+            networkService.networkDelete(pDTO);
+
+            msg = "삭제되었습니다.";
+
+        } catch (Exception e) {
+
+            msg = "실패하였습니다. : " + e.getMessage();
+            log.info(e.toString());
+            e.printStackTrace();
+
+        } finally {
+
+            dto = MsgDTO.builder().msg(msg).build();
+
+            log.info(this.getClass().getName() + ".networkDelete End!");
+
+        }
+
+        return dto;
     }
 
     /**
@@ -309,7 +351,7 @@ public class NetworkController {
 
             ScheduleDTO pDTO = ScheduleDTO.builder()
                     .userId(userId)
-                    .eventSeq(eventSeq)
+                    .networkSeq(Long.valueOf(eventSeq))
                     .build();
 
             networkService.insertBookmark(pDTO);
@@ -353,7 +395,7 @@ public class NetworkController {
             log.info("userId : " + userId);
             log.info("eventSeq : " + eventSeq);
 
-            ScheduleDTO pDTO = ScheduleDTO.builder().userId(userId).eventSeq(eventSeq).build();
+            ScheduleDTO pDTO = ScheduleDTO.builder().userId(userId).networkSeq(Long.valueOf(eventSeq)).build();
 
             networkService.removeBookmark(pDTO);
 
@@ -392,8 +434,8 @@ public class NetworkController {
         List<ScheduleDTO> rList = Optional.ofNullable(networkService.getScheduleSeq(pDTO))
                 .orElseGet(ArrayList::new);
 
-        List<String> ScheduleSeqList = rList.stream()
-                .map(ScheduleDTO::eventSeq)
+        List<Long> ScheduleSeqList = rList.stream()
+                .map(ScheduleDTO::networkSeq)
                 .collect(Collectors.toList());
 
         log.info("rList : " + rList);

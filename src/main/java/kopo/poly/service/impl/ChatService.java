@@ -36,13 +36,16 @@ public class ChatService implements IChatService {
      * 채팅방 이름 저장
      */
     @Override
-    public void insertRoomName(String roomName, String userId) throws Exception {
+    public void insertRoomName(String roomName, String userId, Long networkSeq) throws Exception {
 
         log.info(this.getClass().getName() + ".insertRoomName Start!");
+
+        log.info("networkSeq : " + networkSeq);
 
         ChatEntitiy pEntity = ChatEntitiy.builder()
                 .roomName(roomName)
                 .userId(userId)
+                .networkSeq(networkSeq)
                 .build();
 
         chatRepository.save(pEntity);

@@ -11,7 +11,7 @@ public record ScheduleDTO(
 
         String regDt,
 
-        String eventSeq,
+        Long networkSeq,
 
         String eventTitle,
 

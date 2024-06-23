@@ -15,6 +15,14 @@
             src="//dapi.kakao.com/v2/maps/sdk.js?appkey=cdd7525d620bba7f274e368acf8f2962&libraries=services"></script>
     <script th:inline="javascript">
         /*<![CDATA[*/
+        let data = {}; // 전송 데이터(JSON)
+        let ws; // 웹소켓 객체
+
+        const ss_user_id = [[${session.SS_USER_ID}]];
+        const roomName = /*[[${roomName}]]*/ 'defaultRoom'; // 채팅룸 이름
+        const user_id = [[${dto.userId}]];
+        const userName = [[${dto.userName}]];
+        const protocol = location.protocol === "https:" ? "wss://" : "ws://"; // 프로토콜 설정
         const networkSeq = [[${nDTO.networkSeq}]];
 
         function goToUserProfile(userId) {
@@ -25,8 +33,12 @@
 
         $(document).ready(function () {
 
+            if (ss_user_id !== user_id) {
+                $("#btnDelete").hide();
+            }
+
             $("#btnList").on("click", function () {
-                location.href = "/netwrok/networkList";
+                location.href = "/network/networkList";
             });
 
             $("#btnAddBookmark").on("click", function () {
@@ -43,7 +55,6 @@
                 removeBookmark();
             });
 
-
             $("#btnBookmark").on("click", function () {
 
                 var userId = document.getElementById('userId').value;
@@ -52,8 +63,37 @@
 
             });
 
+            $("#btnJoinChat").on("click", function () {
+                openWebSocket();
+            });
+
+            $("#btnDelete").on("click", function () {
+                doDelete();
+            });
+
             updateBookmarkButton();
         });
+
+        function openWebSocket() {
+            $.post("/chat/chatroom", { roomName: roomName, userId: ss_user_id, networkSeq: networkSeq}, function() {
+                window.location.href = "/chat/chatroom/" + roomName;
+            });
+        }
+
+        function doDelete() {
+            if (confirm("해당 일정을 삭제하시겠습니까?")) {
+                $.ajax({
+                    url: "/network/networkDelete",
+                    type: "post",
+                    dataType: "JSON",
+                    data: {"networkSeq": networkSeq},
+                    success: function (json) {
+                        alert(json.msg);
+                        location.href = "/network/networkList";
+                    }
+                });
+            }
+        }
 
         function updateBookmarkButton() {
             var existsYn = /*[[${hDTO.existsYn}]]*/ 'N';
@@ -216,6 +256,7 @@
         <button id="btnList" type="button" style="font-family: 'NIXGONM-Vb'; margin-top: -12px">일정 목록으로 이동</button>
         <button id="btnBookmark" type="button" style="font-family: 'NIXGONM-Vb';">북마크 페이지로 이동</button>
         <button id="btnJoinChat" type="button" style="font-family: 'NIXGONM-Vb';">채팅방 참여</button>
+        <button id="btnDelete" type="button" style="font-family: 'NIXGONM-Vb';">내 일정 삭제</button>
     </div>
 
 </div>

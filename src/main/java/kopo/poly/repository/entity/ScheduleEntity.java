@@ -25,11 +25,10 @@ public class ScheduleEntity {
     @Column(name = "user_id", nullable = false)
     private String userId;
 
+    @Column(name = "network_seq", nullable = false)
+    private Long networkSeq;
+
     @Column(name = "reg_dt", updatable = false)
     private String regDt;
-
-    @NonNull
-    @Column(name = "event_seq", nullable = false)
-    private String eventSeq;
 
 }

@@ -33,6 +33,11 @@ public interface INetworkService {
     NetworkDTO getNetworkInfo(String networkSeq) throws Exception;
 
     /**
+     * 해당 일정 삭제하기
+     */
+    void networkDelete(NetworkDTO pDTO) throws Exception;
+
+    /**
      * 일정 북마크 추가하기
      * @param pDTO 북마크 정보
      */
@@ -67,6 +72,6 @@ public interface INetworkService {
     /**
      * Seq List를 기준으로 전체 데이터 필터링
      */
-    List<NetworkDTO> getNetworkDateList(List<NetworkDTO> networkList, List<String> BookMarkSeqList) throws JsonProcessingException;
+    List<NetworkDTO> getNetworkDateList(List<NetworkDTO> networkList, List<Long> BookMarkSeqList) throws JsonProcessingException;
 
 }

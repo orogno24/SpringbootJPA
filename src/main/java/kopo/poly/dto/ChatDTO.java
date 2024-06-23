@@ -15,6 +15,8 @@ public class ChatDTO {
 
     private String userId;
 
+    private Long networkSeq;
+
     private String profilePath;
 
 }

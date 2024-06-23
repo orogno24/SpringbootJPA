@@ -108,17 +108,33 @@ public class NetworkService implements INetworkService {
     }
 
     @Override
+    public void networkDelete(NetworkDTO pDTO) throws Exception {
+
+        log.info(this.getClass().getName() + ".networkDelete Start!");
+
+        Long networkSeq = pDTO.networkSeq();
+
+        log.info("networkSeq : " + networkSeq);
+
+        // 데이터 수정하기
+        networkRepository.deleteById(networkSeq);
+
+        log.info(this.getClass().getName() + ".networkDelete End!");
+
+    }
+
+    @Override
     public void insertBookmark(ScheduleDTO pDTO) throws Exception {
         String userId = CmmUtil.nvl(pDTO.userId());
-        String eventSeq = CmmUtil.nvl(pDTO.eventSeq());
+        Long networkSeq = pDTO.networkSeq();
 
         log.info("userId : " + userId);
-        log.info("eventSeq : " + eventSeq);
+        log.info("networkSeq : " + networkSeq);
 
         ScheduleEntity pEntity = ScheduleEntity.builder()
                 .userId(userId)
                 .regDt(DateUtil.getDateTime("yyyy-MM-dd hh:mm:ss"))
-                .eventSeq(eventSeq)
+                .networkSeq(networkSeq)
                 .build();
 
         scheduleRepository.save(pEntity);
@@ -131,12 +147,12 @@ public class NetworkService implements INetworkService {
         log.info(this.getClass().getName() + ".removeBookmark Start!");
 
         String userId = pDTO.userId();
-        String eventSeq = pDTO.eventSeq();
+        Long networkSeq = pDTO.networkSeq();
 
         log.info("userId : " + userId);
-        log.info("eventSeq : " + eventSeq);
+        log.info("networkSeq : " + networkSeq);
 
-        Optional<ScheduleEntity> rEntity = scheduleRepository.findByUserIdAndEventSeq(userId, eventSeq);
+        Optional<ScheduleEntity> rEntity = scheduleRepository.findByUserIdAndNetworkSeq(userId, networkSeq);
 
         Long bookmarkSeq = rEntity.get().getScheduleSeq();
 
@@ -155,12 +171,12 @@ public class NetworkService implements INetworkService {
         ScheduleDTO rDTO;
 
         String userId= CmmUtil.nvl(pDTO.userId());
-        String eventSeq= CmmUtil.nvl(pDTO.eventSeq());
+        Long networkSeq = pDTO.networkSeq();
 
         log.info("userId : " + userId);
-        log.info("eventSeq : " + eventSeq);
+        log.info("networkSeq : " + networkSeq);
 
-        Optional<ScheduleEntity> rEntity = scheduleRepository.findByUserIdAndEventSeq(userId, eventSeq);
+        Optional<ScheduleEntity> rEntity = scheduleRepository.findByUserIdAndNetworkSeq(userId, networkSeq);
 
         if (rEntity.isPresent()) {
             rDTO = ScheduleDTO.builder().existsYn("Y").build();
@@ -209,14 +225,10 @@ public class NetworkService implements INetworkService {
     }
 
     @Override
-    public List<NetworkDTO> getNetworkDateList(List<NetworkDTO> networkList, List<String> scheduleSeqList) throws JsonProcessingException {
-
-        List<Long> scheduleSeqLongList = scheduleSeqList.stream()
-                .map(Long::parseLong)
-                .collect(Collectors.toList());
+    public List<NetworkDTO> getNetworkDateList(List<NetworkDTO> networkList, List<Long> scheduleSeqList) throws JsonProcessingException {
 
         List<NetworkDTO> filteredList = networkList.stream()
-                .filter(network -> scheduleSeqLongList.contains(network.networkSeq()))
+                .filter(network -> scheduleSeqList.contains(network.networkSeq()))
                 .map(network -> NetworkDTO.builder()
                         .name(network.name())
                         .startDate(network.startDate())

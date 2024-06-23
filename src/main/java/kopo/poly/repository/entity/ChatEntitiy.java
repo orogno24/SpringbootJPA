@@ -27,6 +27,9 @@ public class ChatEntitiy implements Serializable {
     @Column(name = "user_id", nullable = false)
     private String userId;
 
+    @Column(name = "network_seq")
+    private Long networkSeq;
+
     @Column(name = "room_name")
     private String roomName;
 

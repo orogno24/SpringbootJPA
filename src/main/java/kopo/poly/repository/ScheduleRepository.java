@@ -10,7 +10,7 @@ import java.util.Optional;
 @Repository
 public interface ScheduleRepository extends JpaRepository<ScheduleEntity, Long> {
 
-    Optional<ScheduleEntity> findByUserIdAndEventSeq(String userId, String eventSeq);
+    Optional<ScheduleEntity> findByUserIdAndNetworkSeq(String userId, Long networkSeq);
 
     List<ScheduleEntity> findAllByUserId(String userId);
 
