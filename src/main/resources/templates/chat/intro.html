@@ -127,7 +127,7 @@
           alert("채팅방 이름에 '커뮤니티 채팅방'을 포함할 수 없습니다.");
           return;
         }
-        $.post("/chat/chatroom", { roomName: roomName, userId: ss_user_id }, function() {
+        $.post("/chat/chatroom", { roomName: roomName, userId: ss_user_id}, function() {
           window.location.href = "/chat/chatroom/" + roomName;
         });
       });

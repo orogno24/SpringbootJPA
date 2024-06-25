@@ -42,7 +42,8 @@ public class ChatController {
      */
     @PostMapping("/chatroom")
     @ResponseBody
-    public ResponseEntity<?> createChatRoom(@RequestParam("roomName") String roomName, @RequestParam("userId") String userId, @RequestParam("networkSeq") Long networkSeq, HttpSession session, Model model) {
+    public ResponseEntity<?> createChatRoom(@RequestParam("roomName") String roomName, @RequestParam("userId") String userId, @RequestParam(value = "networkSeq", required = false) Long networkSeq
+            , HttpSession session, Model model) {
         try {
 
             log.info(this.getClass().getName() + ".createChatRoom Start!");
@@ -63,7 +64,12 @@ public class ChatController {
                 log.info("exists");
                 return ResponseEntity.ok().body(Collections.singletonMap("status", "exists"));
             } else {
-                chatService.insertRoomName(roomName, userId, networkSeq);
+                if (networkSeq != null) {
+                    chatService.insertRoomNameWithSeq(roomName, userId, networkSeq);
+                    log.info("success");
+                } else {
+                    chatService.insertRoomName(roomName, userId);
+                }
                 log.info("success");
                 return ResponseEntity.ok().body(Collections.singletonMap("status", "success"));
             }

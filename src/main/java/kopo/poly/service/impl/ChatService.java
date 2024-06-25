@@ -36,7 +36,7 @@ public class ChatService implements IChatService {
      * 채팅방 이름 저장
      */
     @Override
-    public void insertRoomName(String roomName, String userId, Long networkSeq) throws Exception {
+    public void insertRoomNameWithSeq(String roomName, String userId, Long networkSeq) throws Exception {
 
         log.info(this.getClass().getName() + ".insertRoomName Start!");
 
@@ -46,6 +46,24 @@ public class ChatService implements IChatService {
                 .roomName(roomName)
                 .userId(userId)
                 .networkSeq(networkSeq)
+                .build();
+
+        chatRepository.save(pEntity);
+
+        log.info(this.getClass().getName() + ".insertRoomName End!");
+    }
+
+    /**
+     * 채팅방 이름 저장
+     */
+    @Override
+    public void insertRoomName(String roomName, String userId) throws Exception {
+
+        log.info(this.getClass().getName() + ".insertRoomName Start!");
+
+        ChatEntitiy pEntity = ChatEntitiy.builder()
+                .roomName(roomName)
+                .userId(userId)
                 .build();
 
         chatRepository.save(pEntity);

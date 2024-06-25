@@ -204,7 +204,7 @@ public class NetworkController {
         if (chatService.findByRoomName(roomName)) {
             log.info("exists");
         } else {
-            chatService.insertRoomName(roomName, userId, Long.valueOf(networkSeq));
+            chatService.insertRoomNameWithSeq(roomName, userId, Long.valueOf(networkSeq));
             log.info("success");
         }
 
@@ -268,7 +268,7 @@ public class NetworkController {
         if (chatService.findByRoomName(roomName)) {
             log.info("exists");
         } else {
-            chatService.insertRoomName(roomName, userId, Long.valueOf(networkSeq));
+            chatService.insertRoomNameWithSeq(roomName, userId, Long.valueOf(networkSeq));
             log.info("success");
         }
 
