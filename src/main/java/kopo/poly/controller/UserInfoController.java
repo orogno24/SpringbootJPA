@@ -6,9 +6,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
-import kopo.poly.dto.MsgDTO;
-import kopo.poly.dto.UserFollowDTO;
-import kopo.poly.dto.UserInfoDTO;
+import kopo.poly.dto.*;
 import kopo.poly.service.INoticeService;
 import kopo.poly.service.IUserInfoService;
 import kopo.poly.util.CmmUtil;
@@ -23,7 +21,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequestMapping(value = "/user")
@@ -81,7 +82,7 @@ public class UserInfoController {
      */
     @ResponseBody
     @PostMapping(value = "insertUserInfo")
-    public MsgDTO insertUserInfo(MultipartHttpServletRequest request) throws Exception {
+    public MsgDTO insertUserInfo(MultipartHttpServletRequest request, HttpSession session) throws Exception {
 
         log.info(this.getClass().getName() + ".insertUserInfo Start!");
 
@@ -132,6 +133,7 @@ public class UserInfoController {
 
         if (res == 1) {
             msg = "회원가입되었습니다.";
+            session.setAttribute("SS_USER_ID", userId);
         } else if (res == 2) {
             msg = "이미 가입된 아이디입니다.";
         } else if (res == 3) {
@@ -158,6 +160,100 @@ public class UserInfoController {
         log.info(this.getClass().getName() + ".user/login End!");
 
         return "user/login";
+    }
+
+    /**
+     * 키워드 추가 페이지
+     */
+    @GetMapping(value = "addKeyword")
+    public String addKeyword() {
+        log.info(this.getClass().getName() + ".user/addKeyword Start!");
+
+        log.info(this.getClass().getName() + ".user/addKeyword End!");
+
+        return "user/addKeyword";
+    }
+
+    /**
+     * 키워드 수정 페이지
+     */
+    @GetMapping(value = "keywordChange")
+    public String keywordChange() {
+        log.info(this.getClass().getName() + ".user/keywordChange Start!");
+
+        log.info(this.getClass().getName() + ".user/keywordChange End!");
+
+        return "user/keywordChange";
+    }
+
+    /**
+     * 키워드 추가 로직
+     */
+    @PostMapping("/addKeywordProc")
+    public ResponseEntity<?> addKeywords(@RequestBody List<String> keywords, HttpSession session) {
+
+        String userId = CmmUtil.nvl((String) session.getAttribute("SS_USER_ID"));
+
+        if (userId == null) {
+            return ResponseEntity.badRequest().body("사용자 인증이 필요합니다.");
+        }
+
+        try {
+            // 키워드 저장 서비스 호출
+            userInfoService.saveKeywordsForUser(userId, keywords);
+            session.setAttribute("SS_USER_ID", "");
+            session.removeAttribute("SS_USER_ID");
+            return ResponseEntity.ok("키워드가 성공적으로 저장되었습니다.");
+        } catch (Exception e) {
+            // 로깅 추가
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body("키워드 저장 중 오류가 발생했습니다.");
+        }
+    }
+
+    /**
+     * 키워드 수정 로직
+     */
+    @PostMapping("/updateKeywords")
+    public ResponseEntity<?> updateKeywords(@RequestBody List<String> keywords, HttpSession session) {
+
+        String userId = CmmUtil.nvl((String) session.getAttribute("SS_USER_ID"));
+
+        if (userId == null) {
+            return ResponseEntity.badRequest().body("사용자 인증이 필요합니다.");
+        }
+        try {
+            userInfoService.updateKeywords(userId, keywords);
+            return ResponseEntity.ok("키워드가 성공적으로 업데이트되었습니다.");
+        } catch (Exception e) {
+            log.error("키워드 업데이트 중 오류 발생", e);
+            return ResponseEntity.internalServerError().body("키워드 업데이트 중 오류가 발생했습니다.");
+        }
+    }
+
+    /**
+     * 키워드 조회 로직
+     */
+    @ResponseBody
+    @GetMapping(value = "getKeywords")
+    public List<String> getKeywords(HttpServletRequest request, HttpSession session)
+            throws Exception {
+
+        log.info(this.getClass().getName() + ".getKeywords start!");
+
+        String userId = CmmUtil.nvl((String) session.getAttribute("SS_USER_ID"));
+
+        List<UserInterestsDTO> rList = Optional.ofNullable(userInfoService.getKeywordList(userId))
+                .orElseGet(ArrayList::new);
+
+        // keywords 리스트에서 keyword 항목만 추출하여 List<String> 타입으로 변환
+        List<String> interestKeywords = rList.stream()
+                .map(UserInterestsDTO::keyword) // UserInterestsDTO 객체에서 keyword 항목을 추출
+                .collect(Collectors.toList());
+
+        log.info(this.getClass().getName() + ".getKeywords end!");
+
+        return interestKeywords;
     }
 
     /**

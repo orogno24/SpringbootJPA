@@ -3,6 +3,7 @@ package kopo.poly.service;
 import kopo.poly.dto.BookmarkDTO;
 import kopo.poly.dto.UserFollowDTO;
 import kopo.poly.dto.UserInfoDTO;
+import kopo.poly.dto.UserInterestsDTO;
 
 import java.util.List;
 
@@ -23,6 +24,29 @@ public interface IUserInfoService {
      * @return 회원가입 결과
      */
     int insertUserInfo(UserInfoDTO pDTO) throws Exception;
+
+    /**
+     * 키워드 추가 로직
+     *
+     * @param userId 회원 아이디
+     * @param keywords 해당 회원이 입력한 키워드
+     */
+    void saveKeywordsForUser(String userId, List<String> keywords) throws Exception;
+
+    /**
+     * 키워드 검색 로직
+     *
+     * @param userId 회원 아이디
+     * @return 해당 회원의 키워드 리스트
+     */
+
+    List<UserInterestsDTO> getKeywordList(String userId) throws Exception;
+    /**
+     * 키워드 수정 로직
+     *
+     * @param userId 회원 아이디
+     */
+    void updateKeywords(String userId, List<String> keywords) throws Exception;
 
     /**
      * 회원탈퇴

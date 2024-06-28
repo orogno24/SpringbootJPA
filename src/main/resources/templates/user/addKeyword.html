@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관심사 설정</title>
+    <link rel="stylesheet" href="/css/header.css"/>
+    <link rel="icon" href="/assets/img/logo.png" type="image/x-icon">
+    <link rel="shortcut icon" href="/assets/img/logo.png" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        @font-face {
+            font-family: 'NIXGONM-Vb';
+            src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/NIXGONM-Vb.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        * {
+            font-family: 'NIXGONM-Vb';
+        }
+
+        body {
+            background: white;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .page {
+            background: #d7f9ff;
+            flex-direction: column;
+            height: calc(100% - 40px);
+            position: absolute;
+            place-content: center;
+            width: calc(100% - 40px);
+        }
+
+        @media (max-width: 767px) {
+            .page {
+                height: 100%;
+                margin-bottom: 20px;
+                padding-bottom: 20px;
+            }
+        }
+
+        #keywordDiv {
+            max-width: 700px;
+            margin: -160px auto 20px; /* 상단 마진을 -10px로 설정 */
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+          display: flex; /* 플렉스 컨테이너 설정 */
+          flex-direction: column; /* 자식 요소를 세로 방향으로 정렬 */
+          align-items: center; /* 가로축으로 중앙 정렬 */
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        p {
+            text-align: center;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        #keyword-input {
+            width: 60%;
+            padding: 10px;
+            margin-right: 10px;
+        }
+
+        #inputDiv {
+          display: flex; /* Flexbox를 사용하여 요소들을 한 줄로 정렬 */
+          justify-content: center; /* 요소들을 가로축 중앙에 배치 */
+          align-items: center; /* 요소들을 세로축 중앙에 배치 */
+          width: 67%; /* 필요하다면 너비를 100%로 설정 */
+        }
+
+        #keyword-input {
+          flex: 1; /* 입력 필드가 가능한 많은 공간을 차지하도록 함 */
+          margin-right: 10px; /* 버튼과의 간격 설정 */
+        }
+
+        .inputButton {
+          padding: 10px 15px;
+          cursor: pointer;
+          white-space: nowrap; /* 버튼 텍스트가 줄바꿈 되지 않도록 설정 */
+        }
+
+        .keywordButton {
+            background-color: #5da5bb;
+            padding: 10px 22px;
+            margin: 0 6px;
+            border-radius: 24px;
+            border: none;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 400;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .keywordButton:hover {
+            background-color: #5291a4;
+        }
+
+        #keyword-list {
+            margin-top: 20px;
+        }
+
+        .keyword-item {
+            background-color: #f0f0f0;
+            padding: 5px 10px;
+            margin: 5px;
+            display: inline-block;
+            border-radius: 5px;
+        }
+
+        .keyword-item button {
+            background: none;
+            border: none;
+            color: red;
+            cursor: pointer;
+        }
+
+        #action-buttons {
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="page">
+    <div id="keywordDiv">
+        <h1>관심사 설정</h1>
+        <p>관심 있는 키워드를 입력하여 맞춤형 문화 행사 추천을 받아보세요.<br>최대 5개의 키워드를 추가할 수 있습니다!</p>
+
+        <div id="inputDiv">
+            <input type="text" id="keyword-input" placeholder="관심 키워드를 입력하세요">
+            <button class="inputButton" onclick="addKeyword()"><i class="fa fa-search"></i> 키워드 추가</button>
+        </div>
+        <div id="keyword-list" style="height: 40px"></div>
+
+        <div id="action-buttons">
+            <button class="keywordButton" onclick="startWithKeywords()">시작하기</button>
+            <button class="keywordButton" onclick="skipKeywords()">건너뛰기</button>
+        </div>
+
+    </div>
+</div>
+<script type="text/javascript" src="/js/jquery-3.6.0.min.js"></script>
+<script>
+    let keywords = [];
+
+    function addKeyword() {
+        const input = document.getElementById('keyword-input');
+        const keyword = input.value.trim();
+        if (keywords.length >= 5) {
+            alert('키워드는 최대 5개만 추가할 수 있습니다.');
+        } else if (keyword && !keywords.includes(keyword)) {
+            keywords.push(keyword);
+            updateKeywordList();
+            input.value = '';
+        }
+    }
+
+    function removeKeyword(keyword) {
+        keywords = keywords.filter(k => k !== keyword);
+        updateKeywordList();
+    }
+
+    function updateKeywordList() {
+        const list = document.getElementById('keyword-list');
+        list.innerHTML = keywords.map(keyword =>
+            `<span class="keyword-item">#${keyword} <button onclick="removeKeyword('${keyword}')">&times;</button></span>`
+        ).join('');
+    }
+
+    function startWithKeywords() {
+        if (keywords.length > 0) {
+            $.ajax({
+                url: '/user/addKeywordProc',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(keywords),
+                success: function (response) {
+                    alert('키워드가 성공적으로 저장되었습니다. 로그인 페이지로 이동합니다.');
+                    window.location.href = '/user/login';
+                },
+                error: function (xhr, status, error) {
+                    alert('키워드 저장 중 오류가 발생했습니다. 다시 시도해주세요.');
+                    console.error('Error:', error);
+                }
+            });
+        } else {
+            alert('최소한 하나의 키워드를 추가해주세요.');
+        }
+    }
+
+    function skipKeywords() {
+        if (confirm('키워드 설정을 건너뛰시겠습니까? 나중에 설정할 수 있습니다.')) {
+            window.location.href = '/user/login';
+        }
+    }
+</script>
+</body>
+</html>

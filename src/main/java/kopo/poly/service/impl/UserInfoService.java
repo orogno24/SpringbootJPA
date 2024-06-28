@@ -1,14 +1,15 @@
 package kopo.poly.service.impl;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kopo.poly.dto.MailDTO;
-import kopo.poly.dto.UserFollowDTO;
-import kopo.poly.dto.UserInfoDTO;
+import kopo.poly.dto.*;
 import kopo.poly.repository.UserFollowRepository;
 import kopo.poly.repository.UserInfoRepository;
+import kopo.poly.repository.UserInterestsRepository;
 import kopo.poly.repository.entity.FollowPK;
 import kopo.poly.repository.entity.UserFollowEntity;
 import kopo.poly.repository.entity.UserInfoEntity;
+import kopo.poly.repository.entity.UserInterestsEntity;
 import kopo.poly.service.IMailService;
 import kopo.poly.service.IUserInfoService;
 import kopo.poly.util.CmmUtil;
@@ -31,6 +32,7 @@ public class UserInfoService implements IUserInfoService {
 
     private final UserInfoRepository userInfoRepository;
     private final UserFollowRepository userFollowRepository;
+    private final UserInterestsRepository userInterestsRepository;
     private final IMailService mailService;
 
     /**
@@ -114,6 +116,64 @@ public class UserInfoService implements IUserInfoService {
 
         log.info(this.getClass().getName() + ".insertUserInfo End!");
         return res;
+    }
+
+    /**
+     * @param userId 회원 아이디
+     * @param keywords 해당 회원이 입력한 키워드
+     */
+    @Override
+    @Transactional
+    public void saveKeywordsForUser(String userId, List<String> keywords) throws Exception {
+        log.info(this.getClass().getName() + ".saveKeywordsForUser Start!");
+
+        for (String keyword : keywords) {
+            UserInterestsEntity uEntity = UserInterestsEntity.builder()
+                    .userId(userId)
+                    .keyword(keyword)
+                    .build();
+
+            userInterestsRepository.save(uEntity);
+        }
+
+        log.info(this.getClass().getName() + ".saveKeywordsForUser End!");
+    }
+
+    @Override
+    public List<UserInterestsDTO> getKeywordList(String userId) throws Exception {
+
+        log.info(this.getClass().getName() + ".getKeywordList Start!");
+
+        List<UserInterestsEntity> rEntity = userInterestsRepository.findByUserId(userId);
+
+        List<UserInterestsDTO> rList = new ObjectMapper().convertValue(rEntity,
+                new TypeReference<List<UserInterestsDTO>>() {
+                });
+
+        log.info(this.getClass().getName() + ".getKeywordList End!");
+
+        return rList;
+    }
+
+    @Override
+    @Transactional
+    public void updateKeywords(String userId, List<String> keywords) throws Exception {
+        log.info(this.getClass().getName() + ".updateKeywordsForUser Start!");
+
+        // 기존 키워드 삭제
+        userInterestsRepository.deleteByUserId(userId);
+
+        // 새 키워드 추가
+        List<UserInterestsEntity> newInterests = keywords.stream()
+                .map(keyword -> UserInterestsEntity.builder()
+                        .userId(userId)
+                        .keyword(keyword)
+                        .build())
+                .collect(Collectors.toList());
+
+        userInterestsRepository.saveAll(newInterests);
+
+        log.info(this.getClass().getName() + ".updateKeywordsForUser End!");
     }
 
     /**
