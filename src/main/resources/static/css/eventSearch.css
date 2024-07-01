@@ -75,6 +75,27 @@ input[type="text" i] {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
+.divTableKeyword {
+    width: 80%; /* 너비를 100%에서 조정하여 중앙 정렬 효과를 더 명확하게 함 */
+    margin: 0 auto; /* 상하 마진 0, 좌우 마진 auto로 설정하여 중앙 정렬 */
+    background-color: #ffeba1;
+    border-collapse: collapse;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.eventItemKeyword {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #d0d0d0;
+}
+
+.eventItemKeyword:hover {
+    background-color: #b3c9bf;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
 .eventItem {
     cursor: pointer;
     display: flex;
@@ -89,7 +110,7 @@ input[type="text" i] {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.eventItem h3 {
+.eventItemK h3 {
     margin: 0;
     color: #333;
     cursor: pointer;
@@ -98,6 +119,23 @@ input[type="text" i] {
 .eventItem p {
     margin: 5px 0 0;
     color: #666;
+}
+
+.eventItemKeyword h3 {
+    margin: 0;
+    color: #333;
+    cursor: pointer;
+}
+
+.eventItemKeyword p {
+    margin: 5px 0 0;
+    color: #666;
+}
+
+.eventThumbnail img {
+    margin-right: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .minimalistBlack .divTableBody, .minimalistBlack .divTableRow, .minimalistBlack .divTableCell {

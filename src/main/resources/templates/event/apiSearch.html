@@ -30,8 +30,52 @@
             document.getElementById('endDate').value = formattedMonthLaterDate;
 
             // 문화행사 리스트를 자동으로 표시
+            displayEventsKeyword();
             displayEvents();
         });
+
+        function displayEventsKeyword () {
+
+            $.ajax({
+                url: '/testList',
+                type: 'GET',
+                success: function (data) {
+                    var container = document.getElementById('resultSectionKeyword'); // 결과를 표시할 컨테이너 요소
+                    container.innerHTML = ''; // 컨테이너 초기화
+
+                    data.forEach(function (event) {
+                        var listItem = document.createElement('div');
+                        listItem.className = 'eventItemKeyword';
+
+                        var uniqueIdentifier = extractFileId(event.MAIN_IMG);
+
+                        listItem.innerHTML =
+                            '<div class="eventThumbnail">' +
+                            '<img src="' + event.MAIN_IMG + '" alt="Event Thumbnail" style="max-width:200px; max-height:200px;" onerror="this.onerror=null;this.src=\'/assets/img/thumbnail.png\';">' +
+                            '</div>' +
+                            '<div class="eventInfo">' +
+                            '<h3>' + "추천 문화행사 : " + event.TITLE + '</h3>' +
+                            '<p>' + event.CODENAME + '</p>' +
+                            '<p>' + event.GUNAME + '</p>' +
+                            '<p>' + event.DATE + '</p>' +
+                            '<p>' + event.PLACE + '</p>' +
+                            '</div>';
+
+                        listItem.onclick = function () {
+                            doDetail(uniqueIdentifier);
+                        };
+
+                        container.appendChild(listItem);
+                    });
+                    $("#keywordTitle").show();
+                    $("#keywordDiv").show();
+                    $('#loadingSpinner').hide(); // 로딩 이펙트 숨기기
+                },
+                error: function (error) {
+                    console.log('Error:', error);
+                }
+            });
+        }
 
         function displayEvents() {
             $('#loadingSpinner').show(); // 로딩 이펙트 표시
@@ -245,6 +289,11 @@
 
 <div id="loadingSpinner" style="display:none;">
     <div class="spinner"></div>
+</div>
+
+<div class="divTable minimalistBlack" style="border-bottom: none; background-color: #e4fff3">
+    <div class="divTableBody" id="resultSectionKeyword">
+    </div>
 </div>
 
 <div class="divTable minimalistBlack">
