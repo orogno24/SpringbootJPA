@@ -37,7 +37,7 @@
         function displayEventsKeyword () {
 
             $.ajax({
-                url: '/testList',
+                url: '/event/recommendList',
                 type: 'GET',
                 success: function (data) {
                     var container = document.getElementById('resultSectionKeyword'); // 결과를 표시할 컨테이너 요소

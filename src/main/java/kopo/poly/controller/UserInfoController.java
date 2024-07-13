@@ -56,7 +56,7 @@ public class UserInfoController {
      * 회원가입 전 아이디 중복체크하기(Ajax를 통해 입력한 아이디 정보 받음)
      */
     @ResponseBody
-    @PostMapping(value = "getUserIdExists")
+    @GetMapping(value = "getUserIdExists")
     public UserInfoDTO getUserExists(HttpServletRequest request) throws Exception {
 
         log.info(this.getClass().getName() + ".getUserIdExists Start!");
@@ -393,6 +393,15 @@ public class UserInfoController {
         // URL에서 받은 userId를 사용하여 사용자 정보를 가져옵니다.
         UserInfoDTO dto = userInfoService.getUserInfo(userId);
 
+        // 키워드 리스트 조회
+        List<UserInterestsDTO> rList = Optional.ofNullable(userInfoService.getKeywordList(userId))
+                .orElseGet(ArrayList::new);
+
+        // keywords 리스트에서 keyword 항목만 추출하여 List<String> 타입으로 변환
+        List<String> interestKeywords = rList.stream()
+                .map(UserInterestsDTO::keyword) // UserInterestsDTO 객체에서 keyword 항목을 추출
+                .collect(Collectors.toList());
+
         // 팔로우 상태를 확인하기 위한 DTO 생성
         UserFollowDTO pDTO = UserFollowDTO.builder().followingId(userId).followerId(ssUserId).build();
 
@@ -410,6 +419,7 @@ public class UserInfoController {
 
         // 모델에 사용자 정보와 팔로우 상태를 추가
         model.addAttribute("dto", dto);
+        model.addAttribute("interestKeywords", interestKeywords);
         model.addAttribute("existsYn", existsYn);
         model.addAttribute("countByFollowerId", countByFollowerId);
         model.addAttribute("countByFollowingId", countByFollowingId);

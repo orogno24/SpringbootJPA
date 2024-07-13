@@ -16,6 +16,10 @@
             return allowedExtensions.includes(file.type);
         }
 
+        function keywordChange() {
+            location.href = "/user/keywordChange";
+        }
+
         function profileChange() {
             var fileInput = document.getElementById('profileImage');
             var file = fileInput.files[0];
@@ -283,8 +287,9 @@
             <div class="media-button">
             </div>
             <div class="buttons">
-                    <label for="profileImage" class="change-photo">사진 업로드</label>
+                <label for="profileImage" class="change-photo">사진 업로드</label>
                 <input type="file" id="profileImage" name="file" accept=".png, .jpg, .jpeg" required onchange="previewProfileImage(this);" style="display:none;">
+                <button type="button" onclick="keywordChange()">관심사 변경</button>
                 <button type="button" onclick="profileChange()">변경사항 적용</button>
             </div>
         </form>

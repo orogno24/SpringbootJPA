@@ -104,6 +104,16 @@
             /*margin-top: 15px;*/
         }
 
+        .keyword {
+            background-color: #f0f0f0;
+            color: #333;
+            padding: 5px 10px;
+            border-radius: 15px;
+            margin: 0 5px;
+            display: inline-block;
+            font-size: 14px;
+        }
+
         .profile-card .buttons {
             display: flex;
             align-items: center;
@@ -162,7 +172,7 @@
         const user_id = [[${dto.userId}]];
         const provider = [[${dto.provider}]];
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
 
             if (user_id === null || user_id === '' || user_id === 'null') {
                 alert("로그인 하시길 바랍니다.");
@@ -170,6 +180,10 @@
             }
 
         });
+
+        function keywordChange() {
+            location.href = "/user/keywordChange";
+        }
 
         function goToUserProfile2() {
 
@@ -221,8 +235,10 @@
             console.log("provider : " + provider);
 
             if (provider === "google") {
+                $("#keywordBtn").show();
                 $("#editBtn").hide();
             } else {
+                $("#keywordBtn").hide();
                 $("#editBtn").show();
             }
 
@@ -242,7 +258,7 @@
                 location.href = "/user/userProfileEdit";
             })
 
-            $(document).on('click', '#followBtn', function() {
+            $(document).on('click', '#followBtn', function () {
                 console.log('Follow button clicked');
 
                 $.ajax({
@@ -252,19 +268,19 @@
                     data: {
                         followUserId: user_id
                     },
-                    success: function(json) {
+                    success: function (json) {
                         $("#editBtn").hide();
                         $('#followBtn').replaceWith('<button class="button" id="removeBtn">팔로우 취소</button>');
                         alert(json.msg);
                         location.reload();
                     },
-                    error: function(xhr, status, error) {
+                    error: function (xhr, status, error) {
                         alert("오류 발생: " + error);
                     }
                 });
             });
 
-            $(document).on('click', '#removeBtn', function() {
+            $(document).on('click', '#removeBtn', function () {
                 console.log('Unfollow button clicked');
 
                 $.ajax({
@@ -274,13 +290,13 @@
                     data: {
                         followUserId: user_id
                     },
-                    success: function(json) {
+                    success: function (json) {
                         $("#editBtn").hide();
                         $('#removeBtn').replaceWith('<button class="button" id="followBtn">팔로우하기</button>');
                         alert(json.msg);
                         location.reload();
                     },
-                    error: function(xhr, status, error) {
+                    error: function (xhr, status, error) {
                         alert("오류 발생: " + error);
                     }
                 });
@@ -324,7 +340,8 @@
     </ul>
 </div>
 
-<h2 style="text-align: center; color:#333333; margin-top: 50px; margin-bottom: -38px" th:text="${dto.userName} + '님의 유저 프로필'"></h2>
+<h2 style="text-align: center; color:#333333; margin-top: 50px; margin-bottom: -38px"
+    th:text="${dto.userName} + '님의 유저 프로필'"></h2>
 <div class="center-container">
     <div class="profile-card">
         <div class="image">
@@ -332,13 +349,17 @@
                  class="profile-img"/>
         </div>
         <div class="text-data">
-            <input type="hidden" id="userId" th:value="${dto.userId}" />
+            <input type="hidden" id="userId" th:value="${dto.userId}"/>
             <span class="name" style="font-weight: bolder" th:text="${dto.userName}"></span>
+            <span class="Job" style="color:#525252;">관심사 키워드:
+        <span th:each="keyword : ${interestKeywords}" class="keyword" th:text="${keyword}"></span>
+    </span>
             <span class="Job" id="regDate" style="color:#525252;"></span>
         </div>
         <div class="media-button"></div>
         <div class="buttons">
             <button class="button" id="btn1">북마크한 문화행사</button>
+            <button class="button" id="keywordBtn" onclick="keywordChange()">관심사 변경</button>
             <button class="button" id="editBtn">프로필 수정</button>
             <button class="button" id="removeBtn">팔로우 취소</button>
         </div>

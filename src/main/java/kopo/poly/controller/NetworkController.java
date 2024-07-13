@@ -214,6 +214,7 @@ public class NetworkController {
                 .orElseGet(() -> ScheduleDTO.builder().build());
 
         UserInfoDTO dto = userInfoService.getUserInfo(nDTO.userId());
+        List<UserFollowDTO> rList = Optional.ofNullable(userInfoService.getFollowList(userId)).orElseGet(ArrayList::new);
 
         log.info("hDTO existsYn : " + hDTO.existsYn());
 
@@ -222,6 +223,7 @@ public class NetworkController {
         model.addAttribute("hDTO", hDTO);
         model.addAttribute("nDTO", nDTO);
         model.addAttribute("dto", dto);
+        model.addAttribute("rList", rList);
         model.addAttribute("userId", userId);
         model.addAttribute("roomName", roomName);
 

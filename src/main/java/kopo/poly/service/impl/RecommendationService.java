@@ -6,10 +6,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import kopo.poly.config.TfIdfCalculator;
 import kopo.poly.dto.ApiDTO;
 import kopo.poly.dto.RedisDTO;
+import kopo.poly.service.IKoreanTextAnalysisService;
 import kopo.poly.service.IRecommendationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -23,8 +23,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RecommendationService implements IRecommendationService {
 
-    @Autowired
-    private KoreanTextAnalysisService textAnalysisService;
+    private final IKoreanTextAnalysisService textAnalysisService;
     private final TfIdfCalculator tfIdfCalculator = new TfIdfCalculator();
 
     public List<ApiDTO> getRecommendedEvents(RedisDTO redisDTO, ApiDTO pDTO, List<String> interestKeywords) throws JsonProcessingException {

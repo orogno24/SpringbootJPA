@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import kopo.poly.dto.*;
 import kopo.poly.service.IEventService;
+import kopo.poly.service.IRecommendationService;
 import kopo.poly.service.IUserInfoService;
 import kopo.poly.util.CmmUtil;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,7 @@ public class EventController {
     // @RequiredArgsConstructor 를 통해 메모리에 올라간 서비스 객체를 Controller에서 사용할 수 있게 주입함
     private final IEventService eventService;
     private final IUserInfoService userInfoService;
+    private final IRecommendationService recommendationService;
 
     /**
      * 문화행사 검색 페이지
@@ -54,6 +56,40 @@ public class EventController {
             return "redirect:/user/login";
         }
 
+    }
+
+    /**
+     * 추천 문화행사 리스트
+     */
+    @ResponseBody
+    @GetMapping("/recommendList")
+    public List<ApiDTO> recommendList(HttpSession session) throws Exception {
+
+        log.info(this.getClass().getName() + ".recommendList 함수 실행");
+
+        String userId = CmmUtil.nvl((String) session.getAttribute("SS_USER_ID"));
+
+        RedisDTO redisDTO;
+        String colNm = "EVENT_" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        redisDTO = eventService.getCulturalEvents(colNm);
+
+        ApiDTO pDTO = ApiDTO.builder().build();
+
+        List<UserInterestsDTO> keywords = userInfoService.getKeywordList(userId);
+
+        // keywords 리스트에서 keyword 항목만 추출하여 List<String> 타입으로 변환
+        List<String> interestKeywords = keywords.stream()
+                .map(UserInterestsDTO::keyword) // UserInterestsDTO 객체에서 keyword 항목을 추출
+                .collect(Collectors.toList());
+
+        List<ApiDTO> rList = Optional.ofNullable(recommendationService.getRecommendedEvents(redisDTO, pDTO, interestKeywords))
+                .orElseGet(ArrayList::new);
+
+        for (ApiDTO apiDTO : rList) {
+            log.info("ApiDTO: " + apiDTO.toString());
+        }
+
+        return rList;
     }
 
     /**
