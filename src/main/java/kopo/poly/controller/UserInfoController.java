@@ -347,7 +347,7 @@ public class UserInfoController {
      * 회원탈퇴 과정
      */
     @ResponseBody
-    @GetMapping(value = "deleteUserProc")
+    @DeleteMapping(value = "deleteUserProc")
     public ResponseEntity<?> deleteUserProc(HttpSession session) throws Exception {
 
         log.info(this.getClass().getName() + ".user/deleteUserProc Start!");

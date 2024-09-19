@@ -142,7 +142,7 @@ public class NoticeJoinService implements INoticeJoinService {
      */
     @Transactional
     @Override
-    public NoticeDTO getNoticeInfoForQueryDSL(NoticeDTO pDTO, boolean type) throws Exception {
+    public NoticeDTO getNoticeInfoForQueryDSL(NoticeDTO pDTO, boolean type) throws Exception { 
         log.info(this.getClass().getName() + ".getNoticeInfoForQueryDSL Start!");
 
         if (type) {
@@ -184,7 +184,6 @@ public class NoticeJoinService implements INoticeJoinService {
     /**
      * 해당 댓글 수정
      *
-     * @param pDTO 댓글 수정하기 위한 정보
      */
     @Transactional
     @Override

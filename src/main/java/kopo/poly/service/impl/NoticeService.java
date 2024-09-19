@@ -97,7 +97,8 @@ public class NoticeService implements INoticeService {
                 .noticeSeq(noticeSeq).title(title).noticeYn(noticeYn).contents(contents).userId(userId)
                 .readCnt(rEntity.getReadCnt())
                 .regId(rEntity.getUserId()).regDt(rEntity.getRegDt())
-                .chgId(userId).chgDt(DateUtil.getDateTime("yyyy-MM-dd hh:mm:ss"))
+                .chgId(userId)
+                .chgDt(DateUtil.getDateTime("yyyy-MM-dd hh:mm:ss"))
                 .build();
 
         // 데이터 수정하기 (DB 반영)

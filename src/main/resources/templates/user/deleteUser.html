@@ -89,7 +89,7 @@
             if (confirmation === '탈퇴합니다') {
                 $.ajax({
                     url: '/user/deleteUserProc',
-                    type: 'GET',
+                    type: 'DELETE',
                     success: function(response) {
                         alert(response);
                         window.location.href = '/user/login';

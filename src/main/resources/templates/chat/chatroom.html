@@ -245,6 +245,7 @@
         const profilePath = [[${dto.profilePath}]];
         const protocol = location.protocol === "https:" ? "wss://" : "ws://"; // 프로토콜 설정
         const wsUrl = protocol + "culturalsquare.site/ws/" + roomName + "/" + userName + "/ko";
+        // const wsUrl = protocol + "localhost:11000/ws/" + roomName + "/" + userName + "/ko";
 
         $(document).ready(function () {
 
@@ -256,8 +257,8 @@
                 return;
             }
 
-            // ws = new WebSocket("ws://" + location.host + "/ws/" + roomName + "/" + userName + "/ko");
-            ws = new WebSocket(wsUrl);
+            ws = new WebSocket("ws://" + location.host + "/ws/" + roomName + "/" + userName + "/ko");
+            // ws = new WebSocket(wsUrl);
 
             // 웹소켓 열기
             ws.onopen = function (event) {
