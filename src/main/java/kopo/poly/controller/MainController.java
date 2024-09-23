@@ -6,11 +6,14 @@ import jakarta.servlet.http.HttpSession;
 import kopo.poly.dto.ApiDTO;
 import kopo.poly.dto.RedisDTO;
 import kopo.poly.dto.UserInfoDTO;
+import kopo.poly.dto.WeatherDTO;
 import kopo.poly.service.IEventService;
 import kopo.poly.service.IRecommendationService;
 import kopo.poly.service.IUserInfoService;
+import kopo.poly.service.IWeatherService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +33,13 @@ public class MainController {
 
     private final IEventService eventService;
     private final IUserInfoService userInfoService;
+    private final IWeatherService weatherService;
+
+    @Value("${weather.api.region}")
+    private String region;
+
+    @Value("${weather.api.key}")
+    private String key;
 
     /**
      * 메인 페이지
@@ -61,11 +71,14 @@ public class MainController {
 
         String currentMonth = String.valueOf(currentYearMonth.getMonthValue());
 
+        WeatherDTO wDTO = weatherService.getWeather(region, key);
+
         model.addAttribute("dto", dto);
         model.addAttribute("rList", rList);
         model.addAttribute("topDistricts", new ObjectMapper().writeValueAsString(topDistricts));
         model.addAttribute("eventTypeCount", new ObjectMapper().writeValueAsString(eventTypeCount));
         model.addAttribute("currentMonth", currentMonth);
+        model.addAttribute("wDTO", wDTO);
 
         log.info(this.getClass().getName() + ".main End!");
 

@@ -1,5 +1,6 @@
 package kopo.poly.config;
 
+import feign.Contract;
 import feign.Logger;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -7,9 +8,15 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class OpenFeignConfig {
 
-    // OpenFeign의 로깅 레벨을 설정
+    // API 접속을 위해 접속 방법은 기본 값으로 설정함(반드시 설정되어야 함)
+    @Bean
+    public Contract feignContract() {
+        return new Contract.Default();
+    }
+
     @Bean
     Logger.Level feignLoggerLevel() {
+
         /*
         OpenFeign 통해 전송 및 전달받는 모든 과정에 대해 로그 찍기 설정
 
