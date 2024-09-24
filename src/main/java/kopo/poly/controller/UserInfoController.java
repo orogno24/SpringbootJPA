@@ -283,67 +283,6 @@ public class UserInfoController {
     }
 
     /**
-     * 로그인 처리 및 결과 알려주는 화면으로 이동
-     */
-    @ResponseBody
-    @PostMapping(value = "loginProc")
-    public MsgDTO loginProc(HttpServletRequest request, HttpSession session) throws Exception {
-
-        log.info(this.getClass().getName() + ".loginProc Start!");
-
-        String msg; // 로그인 결과에 대한 메시지를 전달할 변수
-
-        String userId = CmmUtil.nvl(request.getParameter("userId"));
-        String password = CmmUtil.nvl(request.getParameter("password"));
-
-        log.info("userId : " + userId);
-        log.info("password : " + password);
-
-        // 웹(회원정보 입력화면)에서 받는 정보를 저장할 변수를 메모리에 올리기
-        UserInfoDTO pDTO = UserInfoDTO.builder()
-                .userId(userId)
-                .password(EncryptUtil.encHashSHA256(password)).build();
-
-        // 로그인을 위해 아이디와 비밀번호가 일치하는지 확인하기 위한 usreInfoService 호춣하기
-        int res = userInfoService.getUserLogin(pDTO);
-        UserInfoDTO rDTO = Optional.ofNullable(userInfoService.getUserIdExists(pDTO))
-                .orElseGet(() -> UserInfoDTO.builder().build());
-
-        log.info("res : " + res);
-
-        /*
-         * 스프링에서 세션을 사용하기 위해서는 함수명의 파라미터에 HttpSession session 존재해야 한다.
-         * 세션은 톰켓의 메모리에 저장되기 때문에 url마다 전달하는게 필요하지 않고,
-         * 그냥 메모리에서 부르면 되기 때문에 jsp, controller에서 쉽게 불러서 쓸 수 있다.
-         */
-
-        if (res == 1) { // 로그인 성공
-
-            /*
-             * 세션에 회원아이디 저장하기, 추후 로그인여부를 체크하기 위해 세션에 값이 존재하는지 체크한다.
-             * 일반적으로 세션에 저장되는 키는 대문자로 입력하며, 앞에 SS를 붙인다.
-             *
-             * Session 단어에서 SS를 가져온 것이다.
-             */
-            msg = "로그인이 성공했습니다.";
-            session.setAttribute("SS_USER_ID", userId);
-            session.setAttribute("SS_USER_NAME", rDTO.userName());
-
-            log.info("SS_USER_ID : " + rDTO.userId());
-            log.info("SS_USER_NAME : " + rDTO.userName());
-        } else {
-            msg = "아이디와 비밀번호가 올바르지 않습니다.";
-
-        }
-
-        // 결과 메시지 전달하기
-        MsgDTO dto = MsgDTO.builder().result(res).msg(msg).build();
-        log.info(this.getClass().getName() + "loginProc End!");
-
-        return dto;
-    }
-
-    /**
      * 로그인 성공 페이지 이동
      */
     @GetMapping(value = "loginSuccess")

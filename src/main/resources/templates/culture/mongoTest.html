@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/css/table.css"/>
+    <script type="text/javascript" src="/js/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="/js/jquery.serializeObject.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#btnSend").on("click", function () {
+                $.ajax({
+                    url: "/culture/basic",
+                    type: "post",
+                    contentType: "application/json",
+                    dataType: "JSON",
+                    data: JSON.stringify($("#f").serializeObject())
+                }).then(
+                    function (json) {
+                        alert(json.data.msg);
+                    },
+                    function (json) {
+                        const result = json.responseJSON.data;
+
+                        console.log(result);
+                        let errMSg = "";
+                        for (const data of result) {
+                            errMSg += (data.defaultMessage + "\n")
+                        }
+                        alert(errMSg);
+                    })
+            })
+        })
+    </script>
+</head>
+<body>
+<form name="f" id="f">
+    <div class="divTable minimalistBlack">
+        <div class="divTableBody">
+            <div class="divTableRow">
+                <div class="divTableCell">이름
+                </div>
+                <div class="divTableCell">
+                    <input type="text" name="facName" maxlength="100">
+                </div>
+            </div>
+            <div class="divTableRow">
+                <div class="divTableCell">코드
+                </div>
+                <div class="divTableCell">
+                    <input type="text" name="subjcode" maxlength="100">
+                </div>
+            </div>
+            <div class="divTableRow">
+                <div class="divTableCell">주소
+                </div>
+                <div class="divTableCell">
+                    <input type="text" name="addr" maxlength="100">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <button id="btnSend" type="button">테스트</button>
+    </div>
+</form>
+</body>
+</html>

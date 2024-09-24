@@ -8,7 +8,6 @@ import kopo.poly.dto.RedisDTO;
 import kopo.poly.dto.UserInfoDTO;
 import kopo.poly.dto.WeatherDTO;
 import kopo.poly.service.IEventService;
-import kopo.poly.service.IRecommendationService;
 import kopo.poly.service.IUserInfoService;
 import kopo.poly.service.IWeatherService;
 import lombok.RequiredArgsConstructor;

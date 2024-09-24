@@ -1,13 +1,22 @@
 package kopo.poly.service.impl;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.client.MongoCollection;
 import kopo.poly.dto.CultureDTO;
 import kopo.poly.persistance.mongodb.ICultureMapper;
+import kopo.poly.service.ICultureFeign;
 import kopo.poly.service.ICultureService;
+import kopo.poly.service.IWeatherFeign;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.bson.Document;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -15,6 +24,67 @@ import java.util.List;
 public class CultureService implements ICultureService {
 
     private final ICultureMapper cultureMapper; // MongoDB에 저장할 Mapper
+    private final ICultureFeign cultureFeign;
+
+    @Override
+    public int getCultureApi(String apikey) throws Exception {
+        List<Map<String, Object>> rContent = new ArrayList<>();
+        String colNm = "MONGO_LIST_TEST";
+        int startIndex = 1;
+        int pageSize = 1000; // 각 페이지에서 가져올 데이터 수
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        while (true) {
+            String response = cultureFeign.getCultureApi(apikey, "json", startIndex, startIndex + pageSize - 1);
+            Map<String, Object> rMap = objectMapper.readValue(response, new TypeReference<Map<String, Object>>() {});
+
+            // culturalSpaceInfo가 존재하는지 확인
+            Map<String, Object> culturalSpaceInfo = (Map<String, Object>) rMap.get("culturalSpaceInfo");
+
+            // culturalSpaceInfo가 null인 경우 처리
+            if (culturalSpaceInfo == null) {
+                log.error("culturalSpaceInfo is null. Response: " + response);
+                break; // 또는 적절한 예외 처리
+            }
+
+            List<Map<String, Object>> rows = (List<Map<String, Object>>) culturalSpaceInfo.get("row");
+
+            // 더 이상 행이 없으면 루프 종료
+            if (rows == null || rows.isEmpty()) {
+                break;
+            }
+
+            rContent.addAll(rows);
+
+            // 다음 배치를 위한 시작 인덱스 증가
+            startIndex += pageSize;
+        }
+
+        // Map<String, Object>를 CultureDTO로 변환
+        List<CultureDTO> pList = new ArrayList<>();
+        for (Map<String, Object> map : rContent) {
+            CultureDTO cultureDTO = objectMapper.convertValue(map, CultureDTO.class);
+            pList.add(cultureDTO);
+        }
+
+        int res = cultureMapper.insertTest(pList, colNm);
+
+        return res;
+    }
+
+    @Override
+    public int mongoTest(CultureDTO pDTO) throws Exception {
+
+        log.info(this.getClass().getName() + ".mongoTest Start!");
+
+        String colNm = "MONGODB_TEST";
+
+        int res = cultureMapper.insertData(pDTO, colNm);
+
+        log.info(this.getClass().getName() + ".mongoTest End!");
+
+        return res;
+    }
 
     /**
      * 좌표 기준 문화시설 리스트 가져오기
@@ -25,7 +95,7 @@ public class CultureService implements ICultureService {
         log.info(this.getClass().getName() + ".getCultureListNearby Start!");
 
         // MongoDB에 저장된 컬렉션 이름
-        String colNm = "CULTURE";
+        String colNm = "MONGO_LIST_TEST";
 
         List<CultureDTO> rList = cultureMapper.getCultureListNearby(colNm, pDTO);
 
@@ -42,7 +112,7 @@ public class CultureService implements ICultureService {
 
         log.info(this.getClass().getName() + ".getCultureInfo Start!");
 
-        String colNm = "CULTURE";
+        String colNm = "MONGO_LIST_TEST";
 
         CultureDTO pDTO = cultureMapper.getCultureInfo(colNm, nSeq);
 
@@ -50,4 +120,5 @@ public class CultureService implements ICultureService {
 
         return pDTO;
     }
+
 }

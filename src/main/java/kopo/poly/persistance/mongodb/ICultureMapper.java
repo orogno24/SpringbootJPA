@@ -6,6 +6,8 @@ import java.util.List;
 
 public interface ICultureMapper {
 
+    int insertTest(List<CultureDTO> pList, String colNm) throws Exception;
+
     /**
      * 좌표 기준 문화시설 리스트 조회
      *
@@ -22,5 +24,7 @@ public interface ICultureMapper {
      * @return 문화시설 리스트
      */
     CultureDTO getCultureInfo(String colNm, String nSeq) throws Exception;
+
+    int insertData(CultureDTO pDTO, String colNm) throws Exception;
 
 }

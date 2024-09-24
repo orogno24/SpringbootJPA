@@ -207,7 +207,7 @@ public class EventController {
     }
 
     /**
-     * 북마크한 문화행사 조회 페이지
+     * 북마크한 일정 조회 페이지
      */
     @GetMapping("/eventCalendarList/{userId}")
     public String eventCalendarList(@PathVariable("userId") String userId, ModelMap model) throws Exception {

@@ -307,17 +307,17 @@
 
                     listItem.innerHTML =
                         '<div class="cultureThumbnail">' +
-                        '<img src="' + culture.mainImg + '" alt="Culture Thumbnail" onerror="this.onerror=null;this.src=\'/assets/img/thumbnail.png\';">' +
+                        '<img src="' + culture.MAIN_IMG + '" alt="Culture Thumbnail" onerror="this.onerror=null;this.src=\'/assets/img/thumbnail.png\';">' +
                         '</div>' +
                         '<div class="cultureInfo">' +
-                        '<h3>' + culture.facName + '</h3>' +
-                        '<p>' + culture.subjcode + '</p>' +
-                        '<p>' + culture.addr + '</p>' +
+                        '<h3>' + culture.FAC_NAME + '</h3>' +
+                        '<p>' + culture.SUBJCODE + '</p>' +
+                        '<p>' + culture.ADDR + '</p>' +
                         '</div>';
                     container.appendChild(listItem);
 
                     listItem.onclick = function () {
-                        doDetail(culture.num);
+                        doDetail(culture.NUM);
                     };
 
                 });
@@ -338,8 +338,8 @@
         console.log("Returned data:", response);
 
         response.forEach(function (space) {
-            console.log("Coordinates: ", space.xCoord, space.yCoord);
-            var position = new kakao.maps.LatLng(space.xCoord, space.yCoord);
+            console.log("Coordinates: ", space.X_COORD, space.Y_COORD);
+            var position = new kakao.maps.LatLng(space.X_COORD, space.Y_COORD);
             var imageSrc = '/assets/img/marker.png',
                 imageSize = new kakao.maps.Size(32, 64),
                 imageOption = {offset: new kakao.maps.Point(12, 34)};
@@ -354,9 +354,9 @@
             markers.push(marker);
 
             var infowindowContent = `<div class="infowindow-content">
-            <h4>${space.facName}</h4>
-            <p>${space.subjcode}</p>
-            <p>${space.addr}</p>
+            <h4>${space.FAC_NAME}</h4>
+            <p>${space.SUBJCODE}</p>
+            <p>${space.ADDR}</p>
             </div>`;
             var infowindow = new kakao.maps.InfoWindow({
                 content: infowindowContent

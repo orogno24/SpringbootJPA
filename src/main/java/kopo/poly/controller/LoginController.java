@@ -57,7 +57,7 @@ public class LoginController {
         log.info(this.getClass().getName() + ".loginFail Start!");
 
         // 결과 메시지 전달하기
-        MsgDTO dto = MsgDTO.builder().result(1).msg("로그인이 실패하였습니다.").build();
+        MsgDTO dto = MsgDTO.builder().result(2).msg("로그인이 실패하였습니다.").build();
 
         log.info(this.getClass().getName() + ".loginFail End!");
 

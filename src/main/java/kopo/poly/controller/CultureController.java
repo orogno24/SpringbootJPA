@@ -2,20 +2,23 @@ package kopo.poly.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
+import kopo.poly.controller.response.CommonResponse;
 import kopo.poly.dto.CultureDTO;
+import kopo.poly.dto.MsgDTO;
+import kopo.poly.dto.WeatherDTO;
 import kopo.poly.service.ICultureService;
 import kopo.poly.service.impl.NaverSearchService;
 import kopo.poly.util.CmmUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +32,45 @@ public class CultureController {
 
     private final ICultureService cultureService;
     private final NaverSearchService naverSearchService;
+
+    @Value("${culture.api.key}")
+    private String apiKey;
+
+    @GetMapping("/mongoTest")
+    public String mongoTest() throws Exception {
+        cultureService.getCultureApi(apiKey);
+        return "culture/mongoTest";
+    }
+
+    @PostMapping(value="basic")
+    public ResponseEntity basic(@Valid @RequestBody CultureDTO pDTO, BindingResult bindingResult) throws Exception {
+        log.info(this.getClass().getName() + ".basic Start!");
+
+        if(bindingResult.hasErrors()) {
+            return CommonResponse.getErrors(bindingResult);
+        }
+
+        String msg = "";
+
+        log.info("pDTO : " + pDTO);
+
+        int res = cultureService.mongoTest(pDTO);
+
+        if (res == 1) {
+            msg = "성공";
+        } else {
+            msg = "실패";
+        }
+
+        MsgDTO dto = MsgDTO.builder().result(res).msg(msg).build();
+
+        log.info(this.getClass().getName() + ".basic End!");
+
+        return ResponseEntity.ok(
+                CommonResponse.of(HttpStatus.OK, HttpStatus.OK.series().name(), dto));
+
+    }
+
 
     /**
      * 문화시설 검색 페이지

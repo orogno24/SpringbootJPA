@@ -38,10 +38,10 @@ public class WeatherService implements IWeatherService {
 
         String name = (String) rootMap.get("name");
         String description = (String) weatherMap.get("description");
-        double temp = (Double) mainMap.get("temp");
-        double feelsLike = (Double) mainMap.get("feels_like");
+        double temp = ((Number) mainMap.get("temp")).doubleValue();
+        double feelsLike =((Number) mainMap.get("feels_like")).doubleValue();
         int humidity = (Integer) mainMap.get("humidity");
-        double windSpeed = (Double) windMap.get("speed");
+        double windSpeed = ((Number) windMap.get("speed")).doubleValue();
 
         // DTO로 반환
         return WeatherDTO.builder()

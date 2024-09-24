@@ -40,38 +40,31 @@ public abstract class AbstractMongoDBComon {
      * @return 생성결과
      */
     protected boolean createCollection(MongoTemplate mongodb, String colNm, String[] index) {
-
         log.info(this.getClass().getName() + ".createCollection Start!");
 
         boolean res = false;
 
         // 기존에 등록된 컬렉션 이름이 존재하는지 체크하고, 컬렉션이 없는 경우 생성함
         if (!mongodb.collectionExists(colNm)) {
-
-            // 인덱스 값이 존재한다면..
-            if (index.length > 0) {
-
-                // 컬렉션 생성 및 인덱스 생성, MongoDB에서 데이터 가져오는 방식에 맞게 인덱스는 반드시 생성하자!
-                // 데이터 양이 많지 않으면 문제되지 않으나, 최소 10만건 이상 데이터 저장시 속도가 약 10배 이상 발생함
-                mongodb.createCollection(colNm).createIndex(Indexes.ascending(index));
-
-            } else {
-
-                // 인덱스가 없으면 인덱스 없이 컬렉션 생성
-                mongodb.createCollection(colNm);
-            }
-
+            // 컬렉션 생성
+            mongodb.createCollection(colNm);
             res = true;
-
         }
 
-            log.info(this.getClass().getName() + ".createCollection End!");
+        // 인덱스가 존재한다면 생성
+        if (index.length > 0) {
+            // 'num'에 대한 오름차순 인덱스 생성
+            mongodb.getCollection(colNm).createIndex(Indexes.ascending(index[0]));
 
-            return res;
-
+            // 'location'에 대한 2dsphere 인덱스 생성
+            mongodb.getCollection(colNm).createIndex(Indexes.geo2dsphere("location"));
         }
 
-        /**
+        log.info(this.getClass().getName() + ".createCollection End!");
+        return res;
+    }
+
+    /**
          * 인덱스 컬림이 한 개일때 컬렉션 생성
          *
          * @param mongodb 접속된 MongoDB
@@ -81,7 +74,7 @@ public abstract class AbstractMongoDBComon {
          */
         protected boolean createCollection(MongoTemplate mongodb, String colNm, String index) {
 
-            String[] indexArr = {index};
+            String[] indexArr = {index, "location"};
 
             return createCollection(mongodb, colNm, indexArr);
         }
