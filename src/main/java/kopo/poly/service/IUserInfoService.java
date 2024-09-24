@@ -1,13 +1,13 @@
 package kopo.poly.service;
 
-import kopo.poly.dto.BookmarkDTO;
 import kopo.poly.dto.UserFollowDTO;
 import kopo.poly.dto.UserInfoDTO;
 import kopo.poly.dto.UserInterestsDTO;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
 
-public interface IUserInfoService {
+public interface IUserInfoService extends UserDetailsService {
 
     /**
      * 아이디 중복 체크

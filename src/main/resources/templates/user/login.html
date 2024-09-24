@@ -335,22 +335,27 @@
                 }
 
                 $.ajax({
-                        url: "/user/loginProc",
-                        type: "post",
-                        dataType: "JSON",
-                        data: $("#f").serialize(),
-                        success: function (json) {
+                    url: "/login/v1/loginProc",
+                    type: "post", // 전송방식은 Post
+                    dataType: "JSON", // 전송 결과는 JSON으로 받기
+                    data: $("#f").serialize(), // form 태그 내 input 등 객체를 자동으로 전송할 형태로 변경하기
+                }).then(
+                    function (json) { // 성공
 
-                            if (json.result === 1) {
-                                // alert(json.msg);
-                                location.href = "/alert";
-                            } else {
-                                alert(json.msg);
-                                $("#userId").focus();
-                            }
+                        if (json.data.result === 1) { // 로그인 성공
+                            location.href = "/alert";
+                        } else { // 로그인 실패
+                            alert(json.data.msg); // 메시지 띄우기
+                            $("#userId").focus(); // 아이디 입력 항목에 마우스 커서 이동
                         }
+
+                    },
+                    function () {
+                        alert("에러가 발생하였습니다. \n다음에 다시 시도하길 바랍니다."); // 메시지 띄우기
+                        $("#userId").focus(); // 아이디 입력 항목에 마우스 커서 이동
+
                     }
-                )
+                );
             })
 
             $("#password").keypress(function (event) {          // 비밀번호 입력란에서 엔터 입력시 로그인
@@ -392,13 +397,13 @@
                     </linearGradient>
                 </defs>
             </svg>
-            <form class="register-form" action="/user/loginProc" id="f">
+            <form class="register-form" id="f">
                 <div class="form">
                     <label for="userId">&nbsp;아이디를 입력해주세요.</label>
                     <input type="text" id="userId" name="userId"><br><br>
 
                     <label for="password">&nbsp;비밀번호를 입력해주세요.</label>
-                    <input type="password" id="password" name="password" oninput="showPassword()">
+                    <input type="password" id="password" name="password">
                     <br><br>
                     <div>
                         <button id="btnLogin" type="button">로그인</button>
@@ -412,7 +417,6 @@
                         </a>
                     </div>
                 </div>
-
             </form>
         </div>
     </div>

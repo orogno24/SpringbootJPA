@@ -6,6 +6,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
+import kopo.poly.controller.response.CommonResponse;
 import kopo.poly.dto.*;
 import kopo.poly.service.INoticeService;
 import kopo.poly.service.IUserInfoService;
@@ -14,7 +15,9 @@ import kopo.poly.util.EncryptUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
@@ -37,6 +40,29 @@ public class UserInfoController {
     private final INoticeService noticeService;
     private final AmazonS3 s3Client;
     private final String bucketName;
+    // Spring Security에서 제공하는 비밀번호 암호화 객체(해시 함수)
+    private final PasswordEncoder bCryptPasswordEncoder;
+
+    @PostMapping(value = "userInfo")
+    public ResponseEntity<CommonResponse> userInfo(HttpSession session) throws Exception {
+
+        log.info(this.getClass().getName() + ".userInfo Start!");
+
+        // Session 저장된 로그인한 회원아이디 가져오기
+        String userId = CmmUtil.nvl((String) session.getAttribute("SS_USER_ID"));
+
+        UserInfoDTO pDTO = UserInfoDTO.builder().userId(userId).build();
+
+        // 회원정보 조회하기
+        UserInfoDTO rDTO = Optional.ofNullable(userInfoService.getUserInfo(pDTO.userId()))
+                .orElseGet(() -> UserInfoDTO.builder().build());
+
+        log.info(this.getClass().getName() + ".userInfo End!");
+
+        return ResponseEntity.ok(
+                CommonResponse.of(HttpStatus.OK, HttpStatus.OK.series().name(), rDTO));
+
+    }
 
     /**
      * 회원가입 화면으로 이동
@@ -119,7 +145,7 @@ public class UserInfoController {
         UserInfoDTO pDTO = UserInfoDTO.builder()
                 .userId(userId)
                 .userName(userName)
-                .password(EncryptUtil.encHashSHA256(password))
+                .password(bCryptPasswordEncoder.encode(password))
                 .email(EncryptUtil.encAES128CBC(email))
                 .regId(userId)
                 .chgId(userId)

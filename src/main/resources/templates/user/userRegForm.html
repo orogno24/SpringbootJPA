@@ -58,14 +58,17 @@
 
             // Ajax 호출해서 회원가입하기
             $.ajax({
-                    url: "/user/getUserIdExists",
-                    type: "get",
+                    url: "/reg/v1/getUserIdExists",
+                    type: "post",
                     dataType: "JSON", // 전송 결과는 JSON으로 받기
                     data: $("#f").serialize(), // form 태그 내 input 등 객체를 자동으로 전송할 형태로 변경하기
                     success: function (json) { // 호출이 성공했다면..
-                        if (json.existsYn === "Y") {
+                        const result = json.data;
+
+                        if (result.existsYn === "Y") {
                             alert("이미 가입된 아이디가 존재합니다.");
                             f.userId.focus();
+
                         } else { // 회원가입 실패
                             alert("가입 가능한 아이디입니다.");
                             userIdCheck = "N";
@@ -218,22 +221,22 @@
 
             // Ajax 호출해서 회원가입하기
             $.ajax({
-                    url: "/user/insertUserInfo",
-                    type: "post", // 전송방식은 Post
-                    dataType: "JSON", // 전송 결과는 JSON으로 받기
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function (json) { // /user/insertUserInfo 호출이 성공했다면..
-                        if (json.result === 1) { // 회원가입 성공
-                            alert(json.msg); // 메시지 띄우기
-                            location.href = "/user/addKeyword"; // 로그인 페이지 이동
-                        } else { // 회원가입 실패
-                            alert(json.msg); // 메시지 띄우기
-                        }
+                url: "/reg/v1/insertUserInfo",
+                type: "post", // 전송방식은 Post
+                dataType: "JSON", // 전송 결과는 JSON으로 받기
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (json) { // /reg/v1/insertUserInfo 호출이 성공했다면..
+                    if (json.data.result === 1) { // 회원가입 성공
+                        alert(json.data.msg); // 메시지 띄우기
+                        location.href = "/user/addKeyword"; // 로그인 페이지 이동
+                    } else { // 회원가입 실패
+                        alert(json.data.msg); // 메시지 띄우기
                     }
                 }
-            )
+            });
+
         }
     </script>
 </head>
@@ -448,7 +451,7 @@
             </div>
         </div>
         <div class="right">
-            <form class="register-form" action="/user/insertUserInfo" id="f">
+            <form class="register-form" id="f" enctype="multipart/form-data">
 
                 <div class="form" style="padding-top: 7%;">
 
@@ -497,7 +500,7 @@
     const profileImageInput = document.getElementById('profileImage');
     const fileNameSpan = document.getElementById('fileName');
 
-    profileImageInput.addEventListener('change', function() {
+    profileImageInput.addEventListener('change', function () {
         const file = this.files[0];
         const validExtensions = ['image/jpeg', 'image/png'];
         if (file) {
