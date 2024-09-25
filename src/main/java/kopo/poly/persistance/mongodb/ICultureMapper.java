@@ -6,6 +6,13 @@ import java.util.List;
 
 public interface ICultureMapper {
 
+    /**
+     * OpenFeign으로 가져온 문화시설 정보를 mongodb에 저장
+     *
+     * @param pList 문화시설 전체 정보
+     * @param colNm 저장할 컬렉션 이름
+     * @return 저장 결과
+     */
     int cultureDataInsert(List<CultureDTO> pList, String colNm) throws Exception;
 
     /**
@@ -24,7 +31,5 @@ public interface ICultureMapper {
      * @return 문화시설 리스트
      */
     CultureDTO getCultureInfo(String colNm, String nSeq) throws Exception;
-
-    int insertData(CultureDTO pDTO, String colNm) throws Exception;
 
 }

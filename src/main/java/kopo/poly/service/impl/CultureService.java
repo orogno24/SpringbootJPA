@@ -30,6 +30,7 @@ public class CultureService implements ICultureService {
 
     @Value("${culture.api.key}")
     private String apiKey;
+
     @Scheduled(cron = "0 0 0 * * ?") // 매일 자정에 실행
     public void scheduledCultureDataUpdate() {
         try {
@@ -80,20 +81,6 @@ public class CultureService implements ICultureService {
         }
 
         int res = cultureMapper.cultureDataInsert(pList, colNm);
-
-        return res;
-    }
-
-    @Override
-    public int mongoTest(CultureDTO pDTO) throws Exception {
-
-        log.info(this.getClass().getName() + ".mongoTest Start!");
-
-        String colNm = "MONGODB_TEST";
-
-        int res = cultureMapper.insertData(pDTO, colNm);
-
-        log.info(this.getClass().getName() + ".mongoTest End!");
 
         return res;
     }

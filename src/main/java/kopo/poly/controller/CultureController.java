@@ -33,45 +33,6 @@ public class CultureController {
     private final ICultureService cultureService;
     private final NaverSearchService naverSearchService;
 
-    @Value("${culture.api.key}")
-    private String apiKey;
-
-    @GetMapping("/mongoTest")
-    public String mongoTest() throws Exception {
-        cultureService.getCultureApi(apiKey);
-        return "culture/mongoTest";
-    }
-
-    @PostMapping(value="basic")
-    public ResponseEntity basic(@Valid @RequestBody CultureDTO pDTO, BindingResult bindingResult) throws Exception {
-        log.info(this.getClass().getName() + ".basic Start!");
-
-        if(bindingResult.hasErrors()) {
-            return CommonResponse.getErrors(bindingResult);
-        }
-
-        String msg = "";
-
-        log.info("pDTO : " + pDTO);
-
-        int res = cultureService.mongoTest(pDTO);
-
-        if (res == 1) {
-            msg = "성공";
-        } else {
-            msg = "실패";
-        }
-
-        MsgDTO dto = MsgDTO.builder().result(res).msg(msg).build();
-
-        log.info(this.getClass().getName() + ".basic End!");
-
-        return ResponseEntity.ok(
-                CommonResponse.of(HttpStatus.OK, HttpStatus.OK.series().name(), dto));
-
-    }
-
-
     /**
      * 문화시설 검색 페이지
      */

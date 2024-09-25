@@ -7,8 +7,9 @@ import java.util.List;
 
 public interface ICultureService {
 
-    void scheduledCultureDataUpdate();
-
+    /**
+     * 문화시설 정보 가져오기(OpenFeign)
+     */
     int getCultureApi(String apikey) throws Exception;
 
     /**
@@ -20,7 +21,5 @@ public interface ICultureService {
      * 문화시설 상세정보 조회
      */
     CultureDTO getCultureInfo(String nSeq) throws Exception;
-
-    int mongoTest(CultureDTO pDTO) throws Exception;
 
 }

@@ -34,7 +34,7 @@ public class CultureMapper extends AbstractMongoDBComon implements ICultureMappe
         int res = 0;
 
         // 기존 데이터 삭제
-        mongodb.getCollection(colNm).deleteMany(new Document());
+        super.dropCollection(mongodb, colNm);
 
         // 컬렉션 및 인덱스 생성
         super.createCollection(mongodb, colNm, "num");
@@ -194,23 +194,4 @@ public class CultureMapper extends AbstractMongoDBComon implements ICultureMappe
         return rDTO;
     }
 
-    @Override
-    public int insertData(CultureDTO pDTO, String colNm) throws Exception {
-
-        log.info(this.getClass().getName() + ".insertData Start!");
-
-        int res = 0;
-
-        super.createCollection(mongodb, colNm);
-
-        MongoCollection<Document> col = mongodb.getCollection(colNm);
-
-        col.insertOne(new Document(new ObjectMapper().convertValue(pDTO, Map.class)));
-
-        res = 1;
-
-        log.info(this.getClass().getName() + ".insertData End!");
-
-        return res;
-    }
 }

@@ -1,7 +1,6 @@
 package kopo.poly.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import kopo.poly.dto.ApiDTO;
 import kopo.poly.dto.RedisDTO;
@@ -16,7 +15,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
-
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
@@ -93,14 +91,8 @@ public class MainController {
         return "index";
     }
 
-    @GetMapping("/test")
-    public String test() throws Exception {
-        log.info(this.getClass().getName() + ".test 함수 실행");
-        return "test";
-    }
-
     @GetMapping("/alert")
-    public String redirectPage(HttpServletRequest request, ModelMap modelMap, HttpSession session) throws Exception {
+    public String redirectPage(ModelMap modelMap, HttpSession session) throws Exception {
         log.info(this.getClass().getName() + ".alert 페이지 보여주는 함수 실행");
 
         String userName = (String) session.getAttribute("SS_USER_NAME");
