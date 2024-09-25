@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface ICultureMapper {
 
-    int insertTest(List<CultureDTO> pList, String colNm) throws Exception;
+    int cultureDataInsert(List<CultureDTO> pList, String colNm) throws Exception;
 
     /**
      * 좌표 기준 문화시설 리스트 조회

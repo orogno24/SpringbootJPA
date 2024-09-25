@@ -27,9 +27,9 @@ public class CultureMapper extends AbstractMongoDBComon implements ICultureMappe
     private final MongoTemplate mongodb;
 
     @Override
-    public int insertTest(List<CultureDTO> pList, String colNm) throws Exception {
+    public int cultureDataInsert(List<CultureDTO> pList, String colNm) {
 
-        log.info(this.getClass().getName() + ".insertTest Start!");
+        log.info(this.getClass().getName() + ".cultureDataInsert Start!");
 
         int res = 0;
 
@@ -56,10 +56,11 @@ public class CultureMapper extends AbstractMongoDBComon implements ICultureMappe
 
         res = 1;
 
-        log.info(this.getClass().getName() + ".insertTest End!");
+        log.info(this.getClass().getName() + ".cultureDataInsert End!");
 
         return res;
     }
+
     /**
      * 좌표 기준 문화시설 리스트 조회
      *
@@ -132,7 +133,6 @@ public class CultureMapper extends AbstractMongoDBComon implements ICultureMappe
         return rList;
     }
 
-
     /**
      * 문화시설 상세정보 조회
      *
@@ -193,7 +193,6 @@ public class CultureMapper extends AbstractMongoDBComon implements ICultureMappe
 
         return rDTO;
     }
-
 
     @Override
     public int insertData(CultureDTO pDTO, String colNm) throws Exception {

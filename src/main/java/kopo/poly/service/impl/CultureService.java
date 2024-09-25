@@ -11,6 +11,8 @@ import kopo.poly.service.IWeatherFeign;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -26,10 +28,22 @@ public class CultureService implements ICultureService {
     private final ICultureMapper cultureMapper; // MongoDB에 저장할 Mapper
     private final ICultureFeign cultureFeign;
 
+    @Value("${culture.api.key}")
+    private String apiKey;
+    @Scheduled(cron = "0 0 0 * * ?") // 매일 자정에 실행
+    public void scheduledCultureDataUpdate() {
+        try {
+            int result = getCultureApi(apiKey);
+            log.info("문화시설 데이터 업데이트 성공: {}", result);
+        } catch (Exception e) {
+            log.error("문화시설 데이터 업데이트 실패", e);
+        }
+    }
+
     @Override
     public int getCultureApi(String apikey) throws Exception {
         List<Map<String, Object>> rContent = new ArrayList<>();
-        String colNm = "MONGO_LIST_TEST";
+        String colNm = "CULTURE_DATA";
         int startIndex = 1;
         int pageSize = 1000; // 각 페이지에서 가져올 데이터 수
         ObjectMapper objectMapper = new ObjectMapper();
@@ -41,10 +55,8 @@ public class CultureService implements ICultureService {
             // culturalSpaceInfo가 존재하는지 확인
             Map<String, Object> culturalSpaceInfo = (Map<String, Object>) rMap.get("culturalSpaceInfo");
 
-            // culturalSpaceInfo가 null인 경우 처리
             if (culturalSpaceInfo == null) {
-                log.error("culturalSpaceInfo is null. Response: " + response);
-                break; // 또는 적절한 예외 처리
+                break;
             }
 
             List<Map<String, Object>> rows = (List<Map<String, Object>>) culturalSpaceInfo.get("row");
@@ -67,7 +79,7 @@ public class CultureService implements ICultureService {
             pList.add(cultureDTO);
         }
 
-        int res = cultureMapper.insertTest(pList, colNm);
+        int res = cultureMapper.cultureDataInsert(pList, colNm);
 
         return res;
     }
@@ -95,7 +107,7 @@ public class CultureService implements ICultureService {
         log.info(this.getClass().getName() + ".getCultureListNearby Start!");
 
         // MongoDB에 저장된 컬렉션 이름
-        String colNm = "MONGO_LIST_TEST";
+        String colNm = "CULTURE_DATA";
 
         List<CultureDTO> rList = cultureMapper.getCultureListNearby(colNm, pDTO);
 
@@ -112,7 +124,7 @@ public class CultureService implements ICultureService {
 
         log.info(this.getClass().getName() + ".getCultureInfo Start!");
 
-        String colNm = "MONGO_LIST_TEST";
+        String colNm = "CULTURE_DATA";
 
         CultureDTO pDTO = cultureMapper.getCultureInfo(colNm, nSeq);
 

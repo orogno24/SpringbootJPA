@@ -7,6 +7,8 @@ import java.util.List;
 
 public interface ICultureService {
 
+    void scheduledCultureDataUpdate();
+
     int getCultureApi(String apikey) throws Exception;
 
     /**
