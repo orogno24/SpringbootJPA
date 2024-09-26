@@ -26,6 +26,13 @@ public class CultureMapper extends AbstractMongoDBComon implements ICultureMappe
 
     private final MongoTemplate mongodb;
 
+    /**
+     * OpenFeign으로 가져온 문화시설 정보를 mongodb에 저장
+     *
+     * @param pList 문화시설 전체 정보
+     * @param colNm 저장할 컬렉션 이름
+     * @return 저장 결과
+     */
     @Override
     public int cultureDataInsert(List<CultureDTO> pList, String colNm) {
 

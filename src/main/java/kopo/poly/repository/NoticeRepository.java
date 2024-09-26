@@ -14,11 +14,6 @@ public interface NoticeRepository extends JpaRepository<NoticeEntity, Long> {
 
     /**
      * 공지사항 리스트
-     */
-    List<NoticeEntity> findAllByOrderByNoticeSeqDesc();
-
-    /**
-     * 공지사항 리스트
      *
      * @param noticeSeq 공지사항 PK
      */

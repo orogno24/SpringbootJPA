@@ -8,6 +8,7 @@
     <link rel="icon" href="/assets/img/logo.png" type="image/x-icon">
     <link rel="shortcut icon" href="/assets/img/logo.png" type="image/x-icon">
     <script type="text/javascript" src="/js/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="/js/jquery.serializeObject.min.js"></script>
     <script type="text/javascript">
 
         // 아이디 중복체크여부 (중복 Y / 중복아님 : N)
@@ -56,13 +57,15 @@
                 return;
             }
 
-            // Ajax 호출해서 회원가입하기
             $.ajax({
-                    url: "/reg/v1/getUserIdExists",
-                    type: "post",
-                    dataType: "JSON", // 전송 결과는 JSON으로 받기
-                    data: $("#f").serialize(), // form 태그 내 input 등 객체를 자동으로 전송할 형태로 변경하기
-                    success: function (json) { // 호출이 성공했다면..
+                url: "/reg/getUserIdExists",
+                type: "post",
+                contentType: "application/json",
+                dataType: "JSON", // 전송 결과는 JSON으로 받기
+                data: JSON.stringify($("#f").serializeObject())
+            }). then(
+                    function (json) { // 호출이 성공했다면..
+                        console.log(JSON.stringify($("#f").serializeObject()))
                         const result = json.data;
 
                         if (result.existsYn === "Y") {
@@ -73,7 +76,6 @@
                             alert("가입 가능한 아이디입니다.");
                             userIdCheck = "N";
                         }
-                    }
                 }
             )
         }
@@ -221,13 +223,13 @@
 
             // Ajax 호출해서 회원가입하기
             $.ajax({
-                url: "/reg/v1/insertUserInfo",
+                url: "/reg/insertUserInfo",
                 type: "post", // 전송방식은 Post
                 dataType: "JSON", // 전송 결과는 JSON으로 받기
                 data: formData,
                 processData: false,
                 contentType: false,
-                success: function (json) { // /reg/v1/insertUserInfo 호출이 성공했다면..
+                success: function (json) { // /reg/insertUserInfo 호출이 성공했다면..
                     if (json.data.result === 1) { // 회원가입 성공
                         alert(json.data.msg); // 메시지 띄우기
                         location.href = "/user/addKeyword"; // 로그인 페이지 이동

@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import kopo.poly.repository.entity.UserInfoEntity;
 import kopo.poly.util.CmmUtil;
-import kopo.poly.util.DateUtil;
 import kopo.poly.util.EncryptUtil;
 import lombok.Builder;
 import org.springframework.web.multipart.MultipartFile;

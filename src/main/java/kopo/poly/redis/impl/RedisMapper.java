@@ -44,8 +44,6 @@ public class RedisMapper implements IRedisMapper {
 
         log.info(this.getClass().getName() + ".insertEventList Start!");
 
-        int res;
-
         redisDB.setKeySerializer(new StringRedisSerializer());
         redisDB.setValueSerializer(new StringRedisSerializer());
 
@@ -58,8 +56,6 @@ public class RedisMapper implements IRedisMapper {
         // 저장된 데이터는 1시간동안 보관하기
         // 1시간이 지나면, 자동으로 데이터가 삭제되도록 설정함
         redisDB.expire(colNm, 60, TimeUnit.MINUTES);
-
-        res = 1;
 
         log.info(this.getClass().getName() + ".insertEventList End!");
 

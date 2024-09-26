@@ -17,7 +17,6 @@ import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -53,18 +52,17 @@ public class SecurityConfig {
                 )
                 .formLogin(login -> login // 로그인 페이지 설정
                         .loginPage("/user/login") // 폼 기반 로그인 활성화 및 로그인 페이지 지정
-                        .loginProcessingUrl("/login/v1/loginProc")
+                        .loginProcessingUrl("/login/loginProc")
                         .usernameParameter("userId") // 로그인 ID로 사용할 html의 input객체의 name 값
                         .passwordParameter("password") // 로그인 패스워드로 사용할 html의 input객체의 name 값
-                        .successForwardUrl("/login/v1/loginSuccess") // Web MVC, Controller 사용할 때 적용 / 로그인 성공 URL
-                        .failureForwardUrl("/login/v1/loginFail") // Web MVC, Controller 사용할 때 적용 / 로그인 실패 URL
+                        .successForwardUrl("/login/loginSuccess") // Web MVC, Controller 사용할 때 적용 / 로그인 성공 URL
+                        .failureForwardUrl("/login/loginFail") // Web MVC, Controller 사용할 때 적용 / 로그인 실패 URL
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout") // 로그이웃 요청 URL
                         .clearAuthentication(true) // Spring Security 저장된 인증 정보 초기화
                         .invalidateHttpSession(true) // 로그인 후, Controller에서 생성했한 세션(회원아이디 등) 삭제
                         .logoutSuccessHandler(oidcLogoutSuccessHandler()) // OAuth2 로그아웃 핸들러 지정
-                        .addLogoutHandler(new SecurityContextLogoutHandler()) // 세션 및 인증 정보 정리
                         .permitAll()
                 );
 

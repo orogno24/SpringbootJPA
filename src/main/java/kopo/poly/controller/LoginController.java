@@ -19,7 +19,7 @@ import java.util.Optional;
 
 
 @Slf4j
-@RequestMapping(value = "/login/v1")
+@RequestMapping(value = "/login")
 @RequiredArgsConstructor
 @RestController
 public class LoginController {

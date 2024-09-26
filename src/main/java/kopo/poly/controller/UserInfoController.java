@@ -1,32 +1,30 @@
 package kopo.poly.controller;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.PutObjectRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import kopo.poly.controller.response.CommonResponse;
-import kopo.poly.dto.*;
+import kopo.poly.dto.MsgDTO;
+import kopo.poly.dto.UserFollowDTO;
+import kopo.poly.dto.UserInfoDTO;
+import kopo.poly.dto.UserInterestsDTO;
 import kopo.poly.service.INoticeService;
 import kopo.poly.service.IUserInfoService;
 import kopo.poly.util.CmmUtil;
 import kopo.poly.util.EncryptUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FilenameUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -40,8 +38,6 @@ public class UserInfoController {
     private final INoticeService noticeService;
     private final AmazonS3 s3Client;
     private final String bucketName;
-    // Spring Security에서 제공하는 비밀번호 암호화 객체(해시 함수)
-    private final PasswordEncoder bCryptPasswordEncoder;
 
     @PostMapping(value = "userInfo")
     public ResponseEntity<CommonResponse> userInfo(HttpSession session) throws Exception {
@@ -101,79 +97,6 @@ public class UserInfoController {
         log.info(this.getClass().getName() + ".getUserIdExists End!");
 
         return rDTO;
-    }
-
-    /**
-     * 회원가입 로직 처리
-     */
-    @ResponseBody
-    @PostMapping(value = "insertUserInfo")
-    public MsgDTO insertUserInfo(MultipartHttpServletRequest request, HttpSession session) throws Exception {
-
-        log.info(this.getClass().getName() + ".insertUserInfo Start!");
-
-        String msg; // 회원가입 결과에 대한 메시지를 전달할 변수
-
-        String userId = CmmUtil.nvl(request.getParameter("userId"));
-        String userName = CmmUtil.nvl(request.getParameter("userName"));
-        String password = CmmUtil.nvl(request.getParameter("password"));
-        String email = CmmUtil.nvl(request.getParameter("email"));
-
-        log.info("userId : " + userId);
-        log.info("userName : " + userName);
-        log.info("password : " + password);
-        log.info("email : " + email);
-
-        MultipartFile file = request.getFile("profileImage");
-
-        String imageUrl = "/assets/img/thumbnail.png";
-
-        if (file != null && !file.isEmpty()) {
-            try {
-                String extension = FilenameUtils.getExtension(file.getOriginalFilename());
-                String fileName = "profiles/" + userId + "_" + UUID.randomUUID().toString() + "." + extension;
-                s3Client.putObject(new PutObjectRequest(bucketName, fileName, file.getInputStream(), null)
-                        .withCannedAcl(CannedAccessControlList.PublicRead));
-                imageUrl = s3Client.getUrl(bucketName, fileName).toString();
-            } catch (Exception e) {
-                log.error("파일 업로드 실패: " + e.getMessage());
-                return MsgDTO.builder().result(0).msg("파일 업로드 실패").build();
-            }
-        }
-
-        // 웹 (회원정보 입력화면)에서 받는 정보를 저장할 변수를 메모리에 올리기
-        UserInfoDTO pDTO = UserInfoDTO.builder()
-                .userId(userId)
-                .userName(userName)
-                .password(bCryptPasswordEncoder.encode(password))
-                .email(EncryptUtil.encAES128CBC(email))
-                .regId(userId)
-                .chgId(userId)
-                .profilePath(imageUrl)
-                .build();
-
-        // 회원가입 서비스 호출하여 결과 받기
-        int res = userInfoService.insertUserInfo(pDTO);
-
-        log.info("회원가입 결과(res) : " + res);
-
-        if (res == 1) {
-            msg = "회원가입되었습니다.";
-            session.setAttribute("SS_USER_ID", userId);
-        } else if (res == 2) {
-            msg = "이미 가입된 아이디입니다.";
-        } else if (res == 3) {
-            msg = "이미 가입된 이메일입니다.";
-        } else {
-            msg = "오류로 인해 회원가입이 실패하였습니다.";
-        }
-
-        // 결과 메시지 전달하기
-        MsgDTO dto = MsgDTO.builder().result(res).msg(msg).build();
-
-        log.info(this.getClass().getName() + ".insertUserInfo End!");
-
-        return dto;
     }
 
     /**

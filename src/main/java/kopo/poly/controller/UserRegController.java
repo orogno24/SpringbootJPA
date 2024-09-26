@@ -25,7 +25,7 @@ import java.util.UUID;
 
 
 @Slf4j
-@RequestMapping(value = "/reg/v1")
+@RequestMapping(value = "/reg")
 @RequiredArgsConstructor
 @RestController
 public class UserRegController {
@@ -38,7 +38,7 @@ public class UserRegController {
     private final PasswordEncoder bCryptPasswordEncoder;
 
     @PostMapping(value = "getUserIdExists")
-    public ResponseEntity<CommonResponse> getUserIdExists(@ModelAttribute UserInfoDTO pDTO) throws Exception {
+    public ResponseEntity<CommonResponse> getUserIdExists(@RequestBody UserInfoDTO pDTO) throws Exception {
         log.info(this.getClass().getName() + ".getUserIdExists Start!");
 
         UserInfoDTO rDTO = userInfoService.getUserIdExists(pDTO);
@@ -64,7 +64,6 @@ public class UserRegController {
         MsgDTO dto; // 결과 메시지 구조
         String imageUrl = "/assets/img/thumbnail.png";
 
-        // 	 반드시, 값을 받았으면, 꼭 로그를 찍어서 값이 제대로 들어오는지 파악해야함, 반드시 작성할 것
         log.info("pDTO : " + pDTO);
 
         if (pDTO.profileImage() != null && !pDTO.profileImage().isEmpty()) {
