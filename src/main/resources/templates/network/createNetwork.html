@@ -17,7 +17,6 @@
 
         header {
             margin-top: 30px;
-            padding: 20px;
             text-align: center;
             font-size: 24px;
             font-weight: bold;
@@ -46,6 +45,16 @@
             border: 1px solid #ddd;
             border-radius: 4px;
             box-sizing: border-box;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 1rem; /* 텍스트 크기 통일 */
         }
 
         button {
@@ -127,6 +136,20 @@
         <input type="datetime-local" id="startDate" name="startDate" th:value="${startDate}"><br>
         <input type="datetime-local" id="endDate" name="endDate" th:value="${endDate}"><br>
     </div>
+
+    <label for="userCount">최대 인원:</label>
+    <select id="userCount" name="userCount" required>
+        <option value="">선택하세요</option>
+        <option value="2">2명</option>
+        <option value="3">3명</option>
+        <option value="4">4명</option>
+        <option value="5">5명</option>
+        <option value="6">6명</option>
+        <option value="7">7명</option>
+        <option value="8">8명</option>
+        <option value="9">9명</option>
+        <option value="10">10명</option>
+    </select><br>
 
     <label for="description">내용:</label>
     <textarea name="description" id="description" class="form-control" placeholder="간단한 설명, 참여 인원, 이동 수단, 비용 등의 항목을 입력해주세요."

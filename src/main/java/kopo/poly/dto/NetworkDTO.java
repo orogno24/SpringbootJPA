@@ -10,6 +10,8 @@ public record NetworkDTO(
         String contents,
         String startDate,
         String endDate,
+        Long userCount,
+        Long currentCount,
         String eventSeq,
         String eventName,
         String imagePath,

@@ -14,4 +14,6 @@ public interface ScheduleRepository extends JpaRepository<ScheduleEntity, Long> 
 
     List<ScheduleEntity> findAllByUserId(String userId);
 
+    List<ScheduleEntity> findAllByNetworkSeq(Long networkSeq);
+
 }

@@ -178,4 +178,12 @@ public interface IUserInfoService extends UserDetailsService {
      */
     List<String> noticeFollowList(String userId) throws Exception;
 
+    /**
+     * userList에 있는 유저들의 정보 가져오기
+     *
+     * @param userList 유저 목록
+     * @return 리스트에 있는 유저들의 정보
+     */
+    List<UserInfoDTO> getUserInfoList(List<String> userList) throws Exception;
+
 }

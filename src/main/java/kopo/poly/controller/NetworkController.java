@@ -18,6 +18,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -33,64 +34,23 @@ public class NetworkController {
     private final IUserInfoService userInfoService;
     private final ICultureService cultureService;
 
-    /**
-     * 일정 추가 페이지
-     */
-    @GetMapping("/createNetwork")
-    public String createNetwork(@RequestParam(required = false) String eventName,
-                                @RequestParam(required = false) String description,
-                                @RequestParam(required = false) String startDate,
-                                @RequestParam(required = false) String endDate,
-                                @RequestParam(required = false) String selectedEventId,
-                                @RequestParam(required = false) String selectedEventName,
-                                @RequestParam(required = false) String ImagePath,
-                                Model model) throws Exception {
-        log.info(this.getClass().getName() + ".createNetwork 함수 실행");
-
-        if (selectedEventId != null) {
-            model.addAttribute("eventName", eventName);
-            model.addAttribute("description", description);
-            model.addAttribute("startDate", startDate);
-            model.addAttribute("endDate", endDate);
-            model.addAttribute("selectedEventId", selectedEventId);
-            model.addAttribute("selectedEventName", selectedEventName);
-            model.addAttribute("ImagePath", ImagePath);
-
-            return "network/createNetwork";
-        } else {
-            return "redirect:/user/login";
-        }
-
-    }
-
-    /**
-     * 일정 추가 페이지
-     */
     @PostMapping("/createNetwork")
-    public String createNetwork(@RequestParam String eventName,
-                              @RequestParam String description,
-                              @RequestParam String startDate,
-                              @RequestParam String endDate,
-                              @RequestParam(required = false) String selectedEventId,
-                              @RequestParam(required = false) String selectedEventName,
-                              @RequestParam(required = false) String ImagePath,
-                              Model model, HttpSession session) {
-
+    public String showCreateNetworkForm(@RequestBody NetworkDTO pDTO, Model model) {
         log.info(this.getClass().getName() + ".createNetwork 함수 실행");
+        log.info("pDTO: " + pDTO);
 
-        if (selectedEventId != null) {
-        model.addAttribute("eventName", eventName);
-        model.addAttribute("description", description);
-        model.addAttribute("startDate", startDate);
-        model.addAttribute("endDate", endDate);
+        String selectedEventId = pDTO.eventSeq();
+        if (selectedEventId == null) return "redirect:/user/login";
+
+        model.addAttribute("eventName", pDTO.name());
+        model.addAttribute("description", pDTO.contents());
+        model.addAttribute("startDate", pDTO.startDate());
+        model.addAttribute("endDate", pDTO.endDate());
         model.addAttribute("selectedEventId", selectedEventId);
-        model.addAttribute("selectedEventName", selectedEventName);
-        model.addAttribute("ImagePath", ImagePath);
+        model.addAttribute("selectedEventName", pDTO.eventName());
+        model.addAttribute("ImagePath", pDTO.imagePath());
 
         return "network/createNetwork";
-        } else {
-            return "redirect:/user/login";
-        }
     }
 
     /**
@@ -103,6 +63,7 @@ public class NetworkController {
                                 @RequestParam String description,
                                 @RequestParam String startDate,
                                 @RequestParam String endDate,
+                                @RequestParam Long userCount,
                                 @RequestParam(required = false) String selectedEventId,
                                 @RequestParam(required = false) String selectedEventName,
                                 @RequestParam(required = false) String ImagePath,
@@ -110,7 +71,7 @@ public class NetworkController {
 
         log.info(this.getClass().getName() + ".insertNetwork 함수 실행");
         String msg = "";
-        MsgDTO dto = null;
+        MsgDTO dto;
 
         try {
             String userId = CmmUtil.nvl((String) session.getAttribute("SS_USER_ID"));
@@ -123,12 +84,19 @@ public class NetworkController {
                     .contents(description)
                     .startDate(selectedStartDate)
                     .endDate(selectedEndDate)
+                    .userCount(userCount)
                     .eventSeq(selectedEventId)
                     .eventName(selectedEventName)
                     .imagePath(ImagePath)
                     .build();
 
-            networkService.insertNetWorkInfo(pDTO);
+            Long networkSeq = networkService.insertNetWorkInfo(pDTO);
+
+            ScheduleDTO scheduleDTO = ScheduleDTO.builder()
+                    .userId(userId)
+                    .networkSeq(networkSeq)
+                    .build();
+            networkService.insertBookmark(scheduleDTO);
             msg = "등록되었습니다.";
         } catch (Exception e) {
             msg = "실패하였습니다. : " + e.getMessage();
@@ -153,21 +121,21 @@ public class NetworkController {
         String userId = CmmUtil.nvl((String) session.getAttribute("SS_USER_ID"));
 
         if (userId.length() > 0) {
-        String event = "EVENT";
-        String culture = "CULTURE";
+            String event = "EVENT";
+            String culture = "CULTURE";
 
-        List<NetworkDTO> eventList = Optional.ofNullable(networkService.getNetworkList(event))
-                .orElseGet(ArrayList::new);
+            List<NetworkDTO> eventList = Optional.ofNullable(networkService.getNetworkList(event))
+                    .orElseGet(ArrayList::new);
 
-        List<NetworkDTO> cultureList = Optional.ofNullable(networkService.getNetworkList(culture))
-                .orElseGet(ArrayList::new);
+            List<NetworkDTO> cultureList = Optional.ofNullable(networkService.getNetworkList(culture))
+                    .orElseGet(ArrayList::new);
 
-        model.addAttribute("eventList", eventList);
-        model.addAttribute("cultureList", cultureList);
+            model.addAttribute("eventList", eventList);
+            model.addAttribute("cultureList", cultureList);
 
-        log.info(this.getClass().getName() + ".networkList End!");
+            log.info(this.getClass().getName() + ".networkList End!");
 
-        return "network/networkList";
+            return "network/networkList";
         } else {
             return "redirect:/user/login";
         }
@@ -188,48 +156,51 @@ public class NetworkController {
 
         if (userId.length() > 0) {
 
-        uniqueIdentifier = "https://culture.seoul.go.kr/cmmn/file/getImage.do?atchFileId=" + uniqueIdentifier + "&thumb=Y";
+            uniqueIdentifier = "https://culture.seoul.go.kr/cmmn/file/getImage.do?atchFileId=" + uniqueIdentifier + "&thumb=Y";
 
-        RedisDTO redisDTO = null;
-        String colNm = "EVENT_" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        redisDTO = eventService.getCulturalEvents(colNm);
+            RedisDTO redisDTO = null;
+            String colNm = "EVENT_" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+            redisDTO = eventService.getCulturalEvents(colNm);
 
-        ApiDTO rDTO = Optional.ofNullable(eventService.getApiInfo(redisDTO, uniqueIdentifier))
-                .orElseGet(() -> ApiDTO.builder().build());
+            ApiDTO rDTO = Optional.ofNullable(eventService.getApiInfo(redisDTO, uniqueIdentifier))
+                    .orElseGet(() -> ApiDTO.builder().build());
 
-        String networkSeq = CmmUtil.nvl(request.getParameter("networkSeq"), "");
-        NetworkDTO nDTO = networkService.getNetworkInfo(networkSeq);
-        String roomName = "커뮤니티 채팅방 " + networkSeq;
+            String networkSeq = CmmUtil.nvl(request.getParameter("networkSeq"), "");
+            NetworkDTO nDTO = networkService.getNetworkInfo(networkSeq);
+            String roomName = "커뮤니티 채팅방 " + networkSeq;
 
-        if (chatService.findByRoomName(roomName)) {
-            log.info("exists");
-        } else {
-            chatService.insertRoomNameWithSeq(roomName, userId, Long.valueOf(networkSeq));
-            log.info("success");
-        }
+            if (chatService.findByRoomName(roomName)) {
+                log.info("exists");
+            } else {
+                chatService.insertRoomNameWithSeq(roomName, userId, Long.valueOf(networkSeq));
+                log.info("success");
+            }
 
-        ScheduleDTO gDTO = ScheduleDTO.builder().userId(userId).networkSeq(Long.valueOf(networkSeq)).build();
+            ScheduleDTO gDTO = ScheduleDTO.builder().userId(userId).networkSeq(Long.valueOf(networkSeq)).build();
 
-        ScheduleDTO hDTO = Optional.ofNullable(networkService.getBookmarkExists(gDTO))
-                .orElseGet(() -> ScheduleDTO.builder().build());
+            ScheduleDTO hDTO = Optional.ofNullable(networkService.getBookmarkExists(gDTO))
+                    .orElseGet(() -> ScheduleDTO.builder().build());
 
-        UserInfoDTO dto = userInfoService.getUserInfo(nDTO.userId());
-        List<UserFollowDTO> rList = Optional.ofNullable(userInfoService.getFollowList(userId)).orElseGet(ArrayList::new);
+            UserInfoDTO dto = userInfoService.getUserInfo(nDTO.userId());
 
-        log.info("hDTO existsYn : " + hDTO.existsYn());
+            List<String> userList = networkService.getBookmarkUsers(userId, networkSeq);
+            List<UserInfoDTO> userInfoList = userInfoService.getUserInfoList(userList);
 
-        // 조회된 결과값 넣어주기
-        model.addAttribute("rDTO", rDTO);
-        model.addAttribute("hDTO", hDTO);
-        model.addAttribute("nDTO", nDTO);
-        model.addAttribute("dto", dto);
-        model.addAttribute("rList", rList);
-        model.addAttribute("userId", userId);
-        model.addAttribute("roomName", roomName);
+            long currentUserCount = userInfoList.size();
 
-        log.info(this.getClass().getName() + ".networkEventInfo End!");
+            // 조회된 결과값 넣어주기
+            model.addAttribute("rDTO", rDTO);
+            model.addAttribute("hDTO", hDTO);
+            model.addAttribute("nDTO", nDTO);
+            model.addAttribute("userInfoList", userInfoList);
+            model.addAttribute("currentUserCount", currentUserCount);
+            model.addAttribute("dto", dto);
+            model.addAttribute("userId", userId);
+            model.addAttribute("roomName", roomName);
 
-        return "network/networkEventInfo";
+            log.info(this.getClass().getName() + ".networkEventInfo End!");
+
+            return "network/networkEventInfo";
 
         } else {
             return "redirect:/user/login";
@@ -249,42 +220,47 @@ public class NetworkController {
         String userId = (String) session.getAttribute("SS_USER_ID");
 
         if (userId.length() > 0) {
-        log.info("nSeq: " + nSeq);
-        log.info("userId: " + userId);
 
-        CultureDTO rDTO = Optional.ofNullable(cultureService.getCultureInfo(nSeq))
-                .orElseGet(() -> CultureDTO.builder().build());
+            CultureDTO rDTO = Optional.ofNullable(cultureService.getCultureInfo(nSeq))
+                    .orElseGet(() -> CultureDTO.builder().build());
 
-        String networkSeq = CmmUtil.nvl(request.getParameter("networkSeq"), "");
+            String networkSeq = CmmUtil.nvl(request.getParameter("networkSeq"), "");
 
-        ScheduleDTO gDTO = ScheduleDTO.builder().userId(userId).networkSeq(Long.valueOf(networkSeq)).build();
+            ScheduleDTO gDTO = ScheduleDTO.builder().userId(userId).networkSeq(Long.valueOf(networkSeq)).build();
 
-        ScheduleDTO hDTO = Optional.ofNullable(networkService.getBookmarkExists(gDTO))
-                .orElseGet(() -> ScheduleDTO.builder().build());
+            ScheduleDTO hDTO = Optional.ofNullable(networkService.getBookmarkExists(gDTO))
+                    .orElseGet(() -> ScheduleDTO.builder().build());
 
-        NetworkDTO nDTO = networkService.getNetworkInfo(networkSeq);
-        UserInfoDTO dto = userInfoService.getUserInfo(nDTO.userId());
+            NetworkDTO nDTO = networkService.getNetworkInfo(networkSeq);
+            UserInfoDTO dto = userInfoService.getUserInfo(nDTO.userId());
 
-        String roomName = "커뮤니티 채팅방 " + networkSeq;
+            List<String> userList = networkService.getBookmarkUsers(userId, networkSeq);
+            List<UserInfoDTO> userInfoList = userInfoService.getUserInfoList(userList);
 
-        if (chatService.findByRoomName(roomName)) {
-            log.info("exists");
-        } else {
-            chatService.insertRoomNameWithSeq(roomName, userId, Long.valueOf(networkSeq));
-            log.info("success");
-        }
+            long currentUserCount = userInfoList.size();
 
-        // 조회된 결과값 넣어주기
-        model.addAttribute("rDTO", rDTO);
-        model.addAttribute("hDTO", hDTO);
-        model.addAttribute("nDTO", nDTO);
-        model.addAttribute("dto", dto);
-        model.addAttribute("userId", userId);
-        model.addAttribute("roomName", roomName);
+            String roomName = "커뮤니티 채팅방 " + networkSeq;
 
-        log.info(this.getClass().getName() + ".networkCultureInfo End!");
+            if (chatService.findByRoomName(roomName)) {
+                log.info("exists");
+            } else {
+                chatService.insertRoomNameWithSeq(roomName, userId, Long.valueOf(networkSeq));
+                log.info("success");
+            }
 
-        return "network/networkCultureInfo";
+            // 조회된 결과값 넣어주기
+            model.addAttribute("rDTO", rDTO);
+            model.addAttribute("hDTO", hDTO);
+            model.addAttribute("nDTO", nDTO);
+            model.addAttribute("userInfoList", userInfoList);
+            model.addAttribute("currentUserCount", currentUserCount);
+            model.addAttribute("dto", dto);
+            model.addAttribute("userId", userId);
+            model.addAttribute("roomName", roomName);
+
+            log.info(this.getClass().getName() + ".networkCultureInfo End!");
+
+            return "network/networkCultureInfo";
 
         } else {
             return "redirect:/user/login";
@@ -335,6 +311,7 @@ public class NetworkController {
     /**
      * 일정 북마크 추가
      */
+    @Transactional
     @ResponseBody
     @PostMapping("/addNetwork")
     public MsgDTO addNetwork(HttpServletRequest request, HttpSession session) {
@@ -343,23 +320,32 @@ public class NetworkController {
 
         MsgDTO dto = null;
         String msg = "";
+        int result = 1;
 
         try {
             String userId = (String) session.getAttribute("SS_USER_ID");
             String eventSeq = CmmUtil.nvl(request.getParameter("eventSeq"));
 
-            log.info("userId : " + userId);
-            log.info("eventSeq : " + eventSeq);
+            // 현재 인원 수 조회
+            NetworkDTO countDTO = networkService.countParticipants(eventSeq);
+            Long currentCount = countDTO.currentCount();
+            Long userCount = countDTO.userCount();
 
-            ScheduleDTO pDTO = ScheduleDTO.builder()
-                    .userId(userId)
-                    .networkSeq(Long.valueOf(eventSeq))
-                    .build();
+            if (currentCount < userCount) {
 
-            networkService.insertBookmark(pDTO);
+                ScheduleDTO pDTO = ScheduleDTO.builder()
+                        .userId(userId)
+                        .networkSeq(Long.valueOf(eventSeq))
+                        .build();
 
-            msg = "북마크에 추가되었습니다.";
+                networkService.insertBookmark(pDTO);
+                networkService.countChange(true, eventSeq);
 
+                msg = "북마크 추가 완료!";
+            } else {
+                result = 2;
+                msg = "북마크 추가 실패!";
+            }
         } catch (Exception e) {
 
             msg = "실패하였습니다. : " + e.getMessage();
@@ -368,19 +354,17 @@ public class NetworkController {
 
         } finally {
 
-            dto = MsgDTO.builder().msg(msg).build();
-
+            dto = MsgDTO.builder().result(result).msg(msg).build();
             log.info(this.getClass().getName() + ".addNetwork End!");
 
         }
-
         return dto;
-
     }
 
     /**
      * 일정 북마크 해제
      */
+    @Transactional
     @ResponseBody
     @PostMapping(value = "removeNetwork")
     public MsgDTO removeNetwork(HttpServletRequest request, HttpSession session) {
@@ -393,6 +377,8 @@ public class NetworkController {
         try {
             String userId = (String) session.getAttribute("SS_USER_ID");
             String eventSeq = CmmUtil.nvl(request.getParameter("eventSeq"));
+
+            networkService.countChange(false, eventSeq);
 
             log.info("userId : " + userId);
             log.info("eventSeq : " + eventSeq);

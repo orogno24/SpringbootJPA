@@ -36,6 +36,12 @@ public class NetworkEntity {
     @Column(name = "end_date", nullable = false)
     private String endDate;
 
+    @Column(name = "user_count", nullable = false)
+    private Long userCount;
+
+    @Column(name = "current_count", nullable = false)
+    private Long currentCount;
+
     @Column(name = "event_seq", length = 100)
     private String eventSeq;
 

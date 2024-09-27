@@ -4,6 +4,7 @@ import kopo.poly.repository.entity.UserInfoEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -27,5 +28,8 @@ public interface UserInfoRepository extends JpaRepository<UserInfoEntity, String
 
     // 비밀번호찾기
     UserInfoEntity findByUserIdAndEmailAndUserName(String userId, String email, String userName);
+
+    // 유저들의 정보 가져오기
+    List<UserInfoEntity> findByUserIdIn(List<String> userList);
 
 }

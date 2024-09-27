@@ -428,21 +428,6 @@ public class EventService implements IEventService  {
 
         String userId = CmmUtil.nvl(pDTO.userId());
         String eventSeq = CmmUtil.nvl(pDTO.eventSeq());
-//        String eventTitle = CmmUtil.nvl(pDTO.eventTitle());
-//        String startDate = CmmUtil.nvl(pDTO.startDate());
-//        String endDate = CmmUtil.nvl(pDTO.endDate());
-//
-//        startDate = startDate.split(" ")[0];
-//        endDate = endDate.split(" ")[0];
-
-//        LocalDate originalEndDate = LocalDate.parse(endDate, DateTimeFormatter.ISO_DATE);
-//        endDate = originalEndDate.plusDays(1).toString();
-
-        log.info("userId : " + userId);
-        log.info("eventSeq : " + eventSeq);
-//        log.info("eventTitle : " + eventTitle);
-//        log.info("startDate : " + startDate);
-//        log.info("endDate : " + endDate);
 
         BookmarkEntity pEntity = BookmarkEntity.builder()
                 .userId(userId)
@@ -450,7 +435,6 @@ public class EventService implements IEventService  {
                 .eventSeq(eventSeq)
                 .build();
 
-        // 공지사항 저장하기
         bookmarkRepository.save(pEntity);
 
         log.info(this.getClass().getName() + ".insertBookmark End!");

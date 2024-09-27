@@ -11,9 +11,7 @@ import kopo.poly.dto.UserInfoDTO;
 import kopo.poly.repository.NetworkRepository;
 import kopo.poly.repository.NetworkSQLRepository;
 import kopo.poly.repository.ScheduleRepository;
-import kopo.poly.repository.entity.NetworkEntity;
-import kopo.poly.repository.entity.NetworkSQLEntity;
-import kopo.poly.repository.entity.ScheduleEntity;
+import kopo.poly.repository.entity.*;
 import kopo.poly.service.INetworkService;
 import kopo.poly.util.CmmUtil;
 import kopo.poly.util.DateUtil;
@@ -39,7 +37,7 @@ public class NetworkService implements INetworkService {
     private final ScheduleRepository scheduleRepository;
 
     @Override
-    public void insertNetWorkInfo(NetworkDTO pDTO) throws Exception {
+    public Long insertNetWorkInfo(NetworkDTO pDTO) throws Exception {
 
         log.info(this.getClass().getName() + ".insertNetWorkInfo Start!");
 
@@ -51,6 +49,8 @@ public class NetworkService implements INetworkService {
                 .contents(pDTO.contents())
                 .startDate(pDTO.startDate())
                 .endDate(pDTO.endDate())
+                .userCount(pDTO.userCount())
+                .currentCount(1L)
                 .eventSeq(pDTO.eventSeq())
                 .eventName(pDTO.eventName())
                 .imagePath(pDTO.imagePath())
@@ -58,9 +58,53 @@ public class NetworkService implements INetworkService {
                 .type(type)
                 .build();
 
-        networkRepository.save(pEntity);
+        NetworkEntity rEntity = networkRepository.save(pEntity);
 
         log.info(this.getClass().getName() + ".insertNetWorkInfo End!");
+
+        return rEntity.getNetworkSeq();
+    }
+
+    @Override
+    public NetworkDTO countParticipants(String eventSeq) {
+
+        Optional<NetworkEntity> networkEntity = networkRepository.findById(Long.valueOf(eventSeq));
+
+        return NetworkDTO.builder().currentCount(networkEntity.get().getCurrentCount()).userCount(networkEntity.get().getUserCount()).build();
+    }
+
+    @Override
+    public void countChange(Boolean add, String eventSeq) throws Exception {
+
+        log.info(this.getClass().getName() + ".countChange Start!");
+
+        Optional<NetworkEntity> networkEntity = networkRepository.findNetworkWithLock(Long.valueOf(eventSeq));
+        Long count = (long) (add ? 1 : -1);
+
+        if (networkEntity.isPresent()) {
+
+            NetworkEntity rEntity = networkEntity.get();
+
+            NetworkEntity updatedEntity = NetworkEntity.builder()
+                    .networkSeq(rEntity.getNetworkSeq())
+                    .userId(rEntity.getUserId())
+                    .name(rEntity.getName())
+                    .contents(rEntity.getContents())
+                    .startDate(rEntity.getStartDate())
+                    .endDate(rEntity.getEndDate())
+                    .userCount(rEntity.getUserCount())
+                    .currentCount(rEntity.getCurrentCount() + count)
+                    .eventSeq(rEntity.getEventSeq())
+                    .eventName(rEntity.getEventName())
+                    .imagePath(rEntity.getImagePath())
+                    .regDt(rEntity.getRegDt())
+                    .type(rEntity.getType())
+                    .build();
+
+            networkRepository.save(updatedEntity);
+        }
+
+        log.info(this.getClass().getName() + ".countChange End!");
 
     }
 
@@ -198,18 +242,17 @@ public class NetworkService implements INetworkService {
     }
 
     @Override
-    public List<NetworkDTO> getNetworkListByUserId(NetworkDTO pDTO) throws Exception {
-        log.info(this.getClass().getName() + ".getNetworkListByUserId Start!");
+    public List<String> getBookmarkUsers(String userId, String networkSeq) throws Exception {
 
-        String userId = CmmUtil.nvl(pDTO.userId());
+        log.info(this.getClass().getName() + ".getBookmarkUsers Start!");
 
-        List<NetworkEntity> rList = networkRepository.findAllByUserId(userId);
+        List<ScheduleEntity> rList = scheduleRepository.findAllByNetworkSeq(Long.valueOf(networkSeq));
 
-        List<NetworkDTO> nList = new ObjectMapper().convertValue(rList,
-                new TypeReference<List<NetworkDTO>>() {
-                });
+        List<String> nList = rList.stream() // 전체 데이터에서 userId만 추출하는 과정
+                .map(ScheduleEntity::getUserId)
+                .collect(Collectors.toList());
 
-        log.info(this.getClass().getName() + ".getNetworkListByUserId End!");
+        log.info(this.getClass().getName() + ".getBookmarkUsers End!");
 
         return nList;
     }

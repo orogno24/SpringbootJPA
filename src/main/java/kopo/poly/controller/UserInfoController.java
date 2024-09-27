@@ -115,12 +115,28 @@ public class UserInfoController {
      * 키워드 추가 페이지
      */
     @GetMapping(value = "addKeyword")
-    public String addKeyword() {
+    public String addKeyword(HttpSession session) {
+
         log.info(this.getClass().getName() + ".user/addKeyword Start!");
+
+        String userId = CmmUtil.nvl((String) session.getAttribute("SS_USER_ID"));
+
+        List<UserInterestsDTO> rList;
+
+        try {
+            rList = Optional.ofNullable(userInfoService.getKeywordList(userId))
+                    .orElseGet(ArrayList::new);
+        } catch (Exception e) {
+            rList = new ArrayList<>();
+        }
 
         log.info(this.getClass().getName() + ".user/addKeyword End!");
 
-        return "user/addKeyword";
+        if (!rList.isEmpty()) {
+            return "user/keywordChange";
+        } else {
+            return "user/addKeyword";
+        }
     }
 
     /**

@@ -39,6 +39,9 @@ public class NetworkSQLEntity {
     @Column(name = "end_date", nullable = false)
     private String endDate;
 
+    @Column(name = "user_count", nullable = false)
+    private String userCount;
+
     @Column(name = "event_seq", length = 100)
     private String eventSeq;
 

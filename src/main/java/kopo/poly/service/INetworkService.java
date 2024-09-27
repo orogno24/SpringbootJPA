@@ -15,7 +15,19 @@ public interface INetworkService {
      *
      * @param pDTO 모임 저장하기 위한 정보
      */
-    void insertNetWorkInfo(NetworkDTO pDTO) throws Exception;
+    Long insertNetWorkInfo(NetworkDTO pDTO) throws Exception;
+
+    /**
+     * 최대 인원 조회하기
+     *
+     * @param eventSeq 해당하는 일정 번호
+     */
+    NetworkDTO countParticipants(String eventSeq);
+
+    /**
+     * 일정의 현재 인원 변경
+     */
+    void countChange(Boolean add, String eventSeq) throws Exception;
 
     /**
      * NativeQuery를 사용하여 특정 기준 네트워크 리스트 가져오기
@@ -56,11 +68,10 @@ public interface INetworkService {
     ScheduleDTO getBookmarkExists(ScheduleDTO pDTO) throws Exception;
 
     /**
-     * 특정 유저의 일정 리스트 가져오기
-     * @param pDTO 유저아이디
-     * @return  북마크의 Seq 리스트
+     * 북마크한 유저들 리스트 조회
+     * @param networkSeq 일정 seq
      */
-    List<NetworkDTO> getNetworkListByUserId(NetworkDTO pDTO) throws Exception;
+    List<String> getBookmarkUsers(String userId, String networkSeq) throws Exception;
 
     /**
      * 북마크에서 Seq만 추출 후 List에 담기

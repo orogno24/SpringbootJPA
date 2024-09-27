@@ -40,7 +40,7 @@ public class SecurityConfig {
 
         http.csrf(AbstractHttpConfigurer::disable) // CSRF 보호 비활성화 (필요에 따라 설정)
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/main", "/alert").authenticated() // Spring Security 인증된 사용자만 접근
+                        .requestMatchers("/main", "/alert", "/user/addKeyword").authenticated() // Spring Security 인증된 사용자만 접근
                         .anyRequest().permitAll() // 그 외 나머지 url 요청은 인증 받지 않아도 접속 가능함
                 )
                 .oauth2Login(oauth2 -> oauth2

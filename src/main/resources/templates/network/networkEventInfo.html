@@ -19,7 +19,7 @@
         let ws; // 웹소켓 객체
 
         const ss_user_id = [[${session.SS_USER_ID}]];
-        const eventName  = [[${nDTO.eventName}]];
+        const eventName = [[${nDTO.eventName}]];
         const networkSeq = [[${nDTO.networkSeq}]];
         const startDate = [[${rDTO.startDate}]];
         const endDate = [[${rDTO.endDate}]];
@@ -45,14 +45,14 @@
             });
 
             $("#btnAddBookmark").on("click", function () {
-                $(this).find('i').addClass('pulse-animation').one('animationend', function() {
+                $(this).find('i').addClass('pulse-animation').one('animationend', function () {
                     $(this).removeClass('pulse-animation');
                 });
                 addBookmark(); // 북마크 추가 함수 호출
             });
 
             $("#btnRemoveBookmark").on("click", function () {
-                $(this).find('i').addClass('pulse-animation').one('animationend', function() {
+                $(this).find('i').addClass('pulse-animation').one('animationend', function () {
                     $(this).removeClass('pulse-animation');
                 });
                 removeBookmark();
@@ -78,7 +78,7 @@
         });
 
         function openWebSocket() {
-            $.post("/chat/chatroom", { roomName: roomName, userId: ss_user_id, networkSeq: networkSeq}, function() {
+            $.post("/chat/chatroom", {roomName: roomName, userId: ss_user_id, networkSeq: networkSeq}, function () {
                 window.location.href = "/chat/chatroom/" + roomName;
             });
         }
@@ -100,12 +100,17 @@
 
         function updateBookmarkButton() {
             var existsYn = /*[[${hDTO.existsYn}]]*/ 'N';
-            if (existsYn === 'Y') {
-                $("#btnAddBookmark").hide();
-                $("#btnRemoveBookmark").show();
+
+            if (ss_user_id === user_id) {
+                $("#btnAddBookmark, #btnRemoveBookmark").hide();
             } else {
-                $("#btnAddBookmark").show();
-                $("#btnRemoveBookmark").hide();
+                if (existsYn === 'Y') {
+                    $("#btnAddBookmark").hide();
+                    $("#btnRemoveBookmark").show();
+                } else {
+                    $("#btnAddBookmark").show();
+                    $("#btnRemoveBookmark").hide();
+                }
             }
         }
 
@@ -126,16 +131,25 @@
                 success: function (json) {
                     $("#btnAddBookmark").hide();
                     $("#btnRemoveBookmark").show();
+                    let html = '<p>해당 일정을 북마크에 추가했습니다!</p>';
+
+                    if (json.result === 2) {
+                        html = '<p>최대 참가자 수를 초과하였습니다.</p>'
+                    }
+
                     Swal.fire({
-                        title: '북마크 추가 완료!',
-                        text: json.msg,
+                        title: json.msg,
                         imageUrl: '/assets/img/dolphin.gif',
                         imageWidth: 400,
                         imageHeight: 320,
                         imageAlt: 'Custom image',
-                        html: '<p>해당 일정을 북마크에 추가했습니다!</p>',
+                        html: html,
                         confirmButtonText: '확인',
                         confirmButtonColor: '#5da5bb'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            location.reload(); // 페이지 새로고침
+                        }
                     });
                 }
             });
@@ -162,27 +176,67 @@
                         html: '<p>해당 일정을 북마크에서 해제했습니다!</p>',
                         confirmButtonText: '확인',
                         confirmButtonColor: '#5da5bb'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            location.reload(); // 페이지 새로고침
+                        }
                     });
                 }
             });
         }
+
         /*]]>*/
     </script>
     <style>
+
+        #btnAddBookmark, #btnRemoveBookmark {
+            background-color: #5da5bb;
+            font-size: 14px;
+            padding: 8px 12px;
+            border-radius: 5px;
+            max-width: 200px;
+            width: auto;
+            display: block;
+            border: none;
+            transition: transform 0.3s ease;
+        }
+
+        #btnAddBookmark:hover, #btnRemoveBookmark:hover {
+            background-color: #4c8698;
+            transform: scale(1.05);
+        }
+
+        .user-list {
+            display: flex;
+            flex-direction: column; /* 세로 방향으로 배치 */
+            gap: 10px; /* 각 유저 간의 간격 */
+        }
+
         .user-info {
             display: flex;
             align-items: center;
-            flex-shrink: 0; /* 이 요소의 크기가 줄어들지 않도록 */
+            padding: 5px 10px; /* 패딩 추가로 공간 확보 */
+            border-radius: 8px; /* 둥근 모서리 */
+            background-color: #f9f9f9; /* 배경색 추가 */
+            transition: background-color 0.2s; /* 배경색 변경 시 애니메이션 */
+        }
+
+        .user-info:hover {
+            background-color: #eaeaea; /* 호버 시 배경색 변경 */
         }
 
         .user-name {
-            margin-right: 10px;
-            font-size: 1rem; /* Adjust font size as needed */
+            margin-left: 10px; /* 이미지와 이름 간의 간격 */
+            font-size: 1rem; /* 폰트 크기 */
+            flex-grow: 1; /* 남은 공간 차지 */
+            white-space: nowrap; /* 줄 바꿈 방지 */
+            overflow: hidden; /* 넘치는 부분 숨김 */
+            text-overflow: ellipsis; /* 넘치는 부분 ... 처리 */
         }
 
         .profile-img {
-            width: 30px;
-            height: 30px;
+            width: 40px; /* 크기 약간 증가 */
+            height: 40px;
             border-radius: 50%;
             object-fit: cover;
             display: block;
@@ -210,25 +264,33 @@
 
     <div class="header-container">
         <h2 th:text="${nDTO.name}"></h2>
-        <div class="bookmark">
-            <button id="btnAddBookmark" type="button" style="background:none; border:none; font-size:30px; color:#ffc3fa;">
-                <i class="far fa-heart"></i>
-            </button>
-            <button id="btnRemoveBookmark" type="button" style="display:none; background:none; border:none; font-size:30px; color:#ffc3fa;">
-                <i class="fas fa-heart"></i>
-            </button>
-        </div>
-    </div>
-
-    <div class="user-info">
-        <p style="font-weight: bold">개설자:&nbsp;</p>
-        <span class="user-name" th:text="${dto.userName}"></span>
-        <img th:src="${dto.profilePath}" onerror="this.src='/assets/img/profile.png'" style="cursor: pointer"
-             alt="Profile Image" class="profile-img" th:onclick="goToUserProfile([[${dto.userId}]])">
     </div>
 
     <div>
         <p><strong>기간:</strong> <span th:text="${nDTO.startDate}"></span> ~ <span th:text="${nDTO.endDate}"></span></p>
+    </div>
+
+    <div class="user" style="display: flex; align-items: center;">
+        <p style="font-weight: bold;">
+            <span>참여 인원</span>
+            <span th:text="'(' + ${currentUserCount} + ' / ' + ${nDTO.userCount} + '):'"></span>
+        </p>
+        <div class="bookmark" style="display: flex; align-items: center; align-self:normal">
+            <button id="btnAddBookmark" type="button" style="margin-right: 10px;">
+                참여하기
+            </button>
+            <button id="btnRemoveBookmark" type="button">
+                취소
+            </button>
+        </div>
+    </div>
+
+    <div class="user-list" th:each="dto: ${userInfoList}">
+        <div class="user-info" style="cursor: pointer" th:onclick="goToUserProfile([[${dto.userId}]])">
+            <img th:src="${dto.profilePath}" onerror="this.src='/assets/img/profile.png'"
+                 alt="Profile Image" class="profile-img">
+            <span class="user-name" th:text="${dto.userName}"></span>
+        </div>
     </div>
 
     <div style="margin-top: 30px">
@@ -263,7 +325,7 @@
                 </div>
             </div>
 
-            <input type="hidden" id="userId" th:value="${userId}" />
+            <input type="hidden" id="userId" th:value="${userId}"/>
 
             <div class="info-item">
                 <a href="#" th:href="${rDTO.orgLink}" target="_blank">홈페이지 바로가기</a>

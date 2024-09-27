@@ -163,7 +163,7 @@
         }
     </style>
 </head>
-<body style="background-color: #d7fff9; margin: 0">
+<body style="background-color: #d7f9ff; margin: 0">
 
 <div class="header" style="padding: 0 16px;">
     <a href="/main" class="logo">
@@ -339,20 +339,31 @@
         const descriptionParam = urlParams.get('description');
         const startDateParam = urlParams.get('startDate');
         const endDateParam = urlParams.get('endDate');
-        const form = document.createElement('form');
-        form.method = 'post';
-        form.action = '/network/createNetwork';
 
-        form.appendChild(createHiddenInput('eventName', eventNameParam));
-        form.appendChild(createHiddenInput('description', descriptionParam));
-        form.appendChild(createHiddenInput('startDate', startDateParam));
-        form.appendChild(createHiddenInput('endDate', endDateParam));
-        form.appendChild(createHiddenInput('selectedEventId', uniqueIdentifier));
-        form.appendChild(createHiddenInput('selectedEventName', uniqueIdentifier2));
-        form.appendChild(createHiddenInput('ImagePath', uniqueIdentifier3));
+        const data = {
+            name: eventNameParam,
+            contents: descriptionParam,
+            startDate: startDateParam,
+            endDate: endDateParam,
+            eventSeq: uniqueIdentifier,
+            eventName: uniqueIdentifier2,
+            imagePath: uniqueIdentifier3,
+        };
 
-        document.body.appendChild(form);
-        form.submit();
+        fetch('/network/createNetwork', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        })
+            .then(response => response.text())
+            .then(html => {
+                document.open();
+                document.write(html);
+                document.close();
+            })
+            .catch(error => console.error('Error:', error));
     }
 
     function createHiddenInput(name, value) {

@@ -114,7 +114,7 @@ public class UserInfoService implements IUserInfoService {
     }
 
     /**
-     * @param userId 회원 아이디
+     * @param userId   회원 아이디
      * @param keywords 해당 회원이 입력한 키워드
      */
     @Override
@@ -135,7 +135,7 @@ public class UserInfoService implements IUserInfoService {
     }
 
     @Override
-    public List<UserInterestsDTO> getKeywordList(String userId) throws Exception {
+    public List<UserInterestsDTO> getKeywordList(String userId) {
 
         log.info(this.getClass().getName() + ".getKeywordList Start!");
 
@@ -188,7 +188,7 @@ public class UserInfoService implements IUserInfoService {
     }
 
     /**
-     *  로그인을 위해 아이디와 비밀번호가 일치하는지 확인하기
+     * 로그인을 위해 아이디와 비밀번호가 일치하는지 확인하기
      *
      * @param pDTO 로그인을 위한 회원정보
      * @return 회원가입 결과
@@ -670,6 +670,28 @@ public class UserInfoService implements IUserInfoService {
         log.info(this.getClass().getName() + ".noticeFollowList End!");
 
         return followingList;
+    }
+
+    /**
+     * userList에 있는 유저들의 정보 가져오기
+     *
+     * @param userList 유저 목록
+     * @return 리스트에 있는 유저들의 정보
+     */
+    @Override
+    public List<UserInfoDTO> getUserInfoList(List<String> userList) throws Exception {
+
+        log.info(this.getClass().getName() + ".getUserInfoList Start!");
+
+        List<UserInfoEntity> userInfoEntityList = userInfoRepository.findByUserIdIn(userList);
+
+        List<UserInfoDTO> userInfoList = userInfoEntityList.stream()
+                .map(user -> UserInfoDTO.builder().userId(user.getUserId()).userName(user.getUserName()).profilePath(user.getProfilePath())
+                        .build()).collect(Collectors.toList());
+
+        log.info(this.getClass().getName() + ".getUserInfoList End!");
+
+        return userInfoList;
     }
 
     /**
