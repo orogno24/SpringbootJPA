@@ -93,5 +93,11 @@ public interface IEventService {
      */
     BookmarkDTO getBookmarkExists(BookmarkDTO pDTO) throws Exception;
 
+    /**
+     * 북마크 개수 카운트
+     * @param userId 카운트할 대상 아이디
+     */
+    Long bookmarkCount(String userId) throws Exception;
+
 
 }

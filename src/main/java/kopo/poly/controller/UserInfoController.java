@@ -9,6 +9,8 @@ import kopo.poly.dto.MsgDTO;
 import kopo.poly.dto.UserFollowDTO;
 import kopo.poly.dto.UserInfoDTO;
 import kopo.poly.dto.UserInterestsDTO;
+import kopo.poly.service.IEventService;
+import kopo.poly.service.INetworkService;
 import kopo.poly.service.INoticeService;
 import kopo.poly.service.IUserInfoService;
 import kopo.poly.util.CmmUtil;
@@ -36,6 +38,9 @@ public class UserInfoController {
     // @RequiredArgsConstructor 를 통해 메모리에 올라간 서비스 객체를 Controller에서 사용할 수 있게 주입함
     private final IUserInfoService userInfoService;
     private final INoticeService noticeService;
+    private final IEventService eventService;
+    private final INetworkService networkService;
+
     private final AmazonS3 s3Client;
     private final String bucketName;
 
@@ -312,6 +317,9 @@ public class UserInfoController {
         long countByFollowerId = userInfoService.countByFollowerId(userId);
         long countByFollowingId = userInfoService.countByFollowingId(userId);
         long countByUserId = noticeService.countByUserId(userId);
+        long bookmarkCount = eventService.bookmarkCount(userId);
+        long scheduleCount = networkService.scheduleCount(userId);
+        long totalCount = bookmarkCount + scheduleCount;
 
         // 팔로우 상태 확인
         boolean followStatus = userInfoService.getFollowInfo(pDTO);
@@ -327,6 +335,7 @@ public class UserInfoController {
         model.addAttribute("existsYn", existsYn);
         model.addAttribute("countByFollowerId", countByFollowerId);
         model.addAttribute("countByFollowingId", countByFollowingId);
+        model.addAttribute("totalCount", totalCount);
         model.addAttribute("countByUserId", countByUserId);
 
         log.info(this.getClass().getName() + ".user/userProfile End!");

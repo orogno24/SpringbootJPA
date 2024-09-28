@@ -17,10 +17,13 @@ import java.util.Optional;
 @Repository
 public interface NetworkRepository extends JpaRepository<NetworkEntity, Long> {
 
-    long countByEventSeq(String eventSeq);
-
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT n FROM NetworkEntity n WHERE n.networkSeq = :networkSeq")
     Optional<NetworkEntity> findNetworkWithLock(@Param("networkSeq") Long networkSeq);
+
+    /**
+     * 특정 userId 기준 북마크 개수 조회
+     */
+    long countByUserId(String userId);
 
 }

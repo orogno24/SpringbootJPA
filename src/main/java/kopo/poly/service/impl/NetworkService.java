@@ -258,6 +258,11 @@ public class NetworkService implements INetworkService {
     }
 
     @Override
+    public Long scheduleCount(String userId) throws Exception {
+        return networkRepository.countByUserId(userId);
+    }
+
+    @Override
     public List<ScheduleDTO> getScheduleSeq(ScheduleDTO pDTO) throws Exception {
         log.info(this.getClass().getName() + ".getScheduleSeq Start!");
 

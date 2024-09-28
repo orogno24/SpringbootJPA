@@ -85,4 +85,10 @@ public interface INetworkService {
      */
     List<NetworkDTO> getNetworkDateList(List<NetworkDTO> networkList, List<Long> BookMarkSeqList) throws JsonProcessingException;
 
+    /**
+     * 북마크 개수 카운트
+     * @param userId 카운트할 대상 아이디
+     */
+    Long scheduleCount(String userId) throws Exception;
+
 }

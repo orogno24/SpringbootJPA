@@ -16,9 +16,7 @@ import kopo.poly.util.ExtractImageUtil;
 import kopo.poly.util.NetworkUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -35,9 +33,6 @@ public class EventService implements IEventService  {
     
     private final BookmarkRepository bookmarkRepository;
     private final IRedisMapper redisMapper;
-
-    @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
 
     @Value("${data.api.key}")
     private String apiKey;
@@ -88,9 +83,6 @@ public class EventService implements IEventService  {
         // RedisDTO의 contents를 List<Map<String, Object>>로 변환
         List<Map<String, Object>> rContent = objectMapper.readValue(redisDTO.contents(), new TypeReference<List<Map<String, Object>>>() {});
 
-        // 날짜 및 시간을 처리할 수 있는 Formatter 정의
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
-
         // 조건에 맞는 데이터만 필터링
         Stream<ApiDTO> stream = rContent.stream().map(content -> objectMapper.convertValue(content, ApiDTO.class));
 
@@ -113,6 +105,9 @@ public class EventService implements IEventService  {
         if (pDTO.isFree() != null && !pDTO.isFree().isEmpty()) {
             stream = stream.filter(e -> e.isFree().equals(pDTO.isFree()));
         }
+
+        // 날짜 및 시간을 처리할 수 있는 Formatter 정의
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
 
         // startDate가 설정되어 있다면, 해당 날짜 이전의 이벤트는 제외
         if (pDTO.startDate() != null && !pDTO.startDate().isEmpty()) {
@@ -497,6 +492,15 @@ public class EventService implements IEventService  {
 
         return rDTO;
 
+    }
+
+    /**
+     * 북마크 개수 카운트
+     * @param userId 카운트할 대상 아이디
+     */
+    @Override
+    public Long bookmarkCount(String userId) throws Exception {
+        return bookmarkRepository.countByUserId(userId);
     }
 
 }

@@ -14,4 +14,9 @@ public interface BookmarkRepository extends JpaRepository<BookmarkEntity, Long> 
 
     List<BookmarkEntity> findAllByUserId(String userId);
 
+    /**
+     * 특정 userId 기준 북마크 개수 조회
+     */
+    long countByUserId(String userId);
+
 }
