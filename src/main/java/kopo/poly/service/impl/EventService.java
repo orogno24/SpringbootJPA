@@ -274,11 +274,6 @@ public class EventService implements IEventService  {
                     LocalDateTime eventStartDate = LocalDateTime.parse(startDateStr, formatter);
                     LocalDateTime eventEndDate = LocalDateTime.parse(endDateStr, formatter);
                     boolean isInDateRange = !eventStartDate.toLocalDate().isBefore(startDate) && !eventEndDate.toLocalDate().isAfter(endDate);
-
-//                    if (isInDateRange) {
-//                        log.info("Event " + content.get("EVENTID") + ": Start Date = " + eventStartDate + ", End Date = " + eventEndDate + ", In Date Range: " + isInDateRange);
-//                    }
-
                     return isInDateRange;
                 })
                 .collect(Collectors.groupingBy(content -> content.get("GUNAME").toString(), Collectors.counting()));

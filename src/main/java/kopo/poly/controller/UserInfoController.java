@@ -227,18 +227,6 @@ public class UserInfoController {
     }
 
     /**
-     * 로그인 성공 페이지 이동
-     */
-    @GetMapping(value = "loginSuccess")
-    public String loginSuccess() {
-        log.info(this.getClass().getName() + ".user/loginSuccess Start!");
-
-        log.info(this.getClass().getName() + ".user/loginSuccess End!");
-
-        return "user/loginSuccess";
-    }
-
-    /**
      * 회원탈퇴 페이지
      */
     @GetMapping(value = "deleteUser")

@@ -91,6 +91,9 @@ public class MainController {
         return "index";
     }
 
+    /**
+     * 로그인 성공 후 alert 페이지
+     */
     @GetMapping("/alert")
     public String redirectPage(ModelMap modelMap, HttpSession session) throws Exception {
         log.info(this.getClass().getName() + ".alert 페이지 보여주는 함수 실행");

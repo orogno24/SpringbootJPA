@@ -2,21 +2,17 @@ package kopo.poly.service.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.client.MongoCollection;
 import kopo.poly.dto.CultureDTO;
 import kopo.poly.persistance.mongodb.ICultureMapper;
 import kopo.poly.service.ICultureFeign;
 import kopo.poly.service.ICultureService;
-import kopo.poly.service.IWeatherFeign;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.bson.Document;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
