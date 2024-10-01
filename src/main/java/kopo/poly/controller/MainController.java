@@ -87,7 +87,7 @@ public class MainController {
      */
     @GetMapping("/index")
     public String index() throws Exception {
-        log.info(this.getClass().getName() + ".index 함수 실행");
+        log.info(this.getClass().getName() + ".index Start!");
         return "index";
     }
 
@@ -95,8 +95,8 @@ public class MainController {
      * 로그인 성공 후 alert 페이지
      */
     @GetMapping("/alert")
-    public String redirectPage(ModelMap modelMap, HttpSession session) throws Exception {
-        log.info(this.getClass().getName() + ".alert 페이지 보여주는 함수 실행");
+    public String redirectPage(ModelMap modelMap, HttpSession session) {
+        log.info(this.getClass().getName() + ".alert Start!");
 
         String userName = (String) session.getAttribute("SS_USER_NAME");
 
