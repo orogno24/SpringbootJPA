@@ -95,7 +95,7 @@ public class MainController {
      * 로그인 성공 후 alert 페이지
      */
     @GetMapping("/alert")
-    public String redirectPage(ModelMap modelMap, HttpSession session) {
+    public String alert(ModelMap modelMap, HttpSession session) {
         log.info(this.getClass().getName() + ".alert Start!");
 
         String userName = (String) session.getAttribute("SS_USER_NAME");
