@@ -10,28 +10,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 public abstract class AbstractMongoDBComon {
 
     /**
-     * 컬렉션 생성
-     *
-     * @param mongodb 접속된 MongoDB
-     * @param colNm   생성할 컬렉션명
-     * @return 생성결과
-     */
-    protected boolean createCollection(MongoTemplate mongodb, String colNm) {
-
-        boolean res;
-
-        if (mongodb.collectionExists(colNm)) {
-            res = false;
-
-        } else {
-            mongodb.createCollection(colNm);
-            res = true;
-        }
-
-        return res;
-    }
-
-    /**
      * 인덱스 컬럼이 여러 개일때 컬렉션 생성
      *
      * @param mongodb 접속된 MongoDB

@@ -33,7 +33,6 @@ public class RecommendationService implements IRecommendationService {
                 .map(content -> objectMapper.convertValue(content, ApiDTO.class))
                 .collect(Collectors.toList());
 
-        // TF-IDF 모델 훈련
         List<List<String>> documents = allEvents.stream()
                 .map(event -> textAnalysisService.analyzeText(event.title()))
                 .collect(Collectors.toList());
