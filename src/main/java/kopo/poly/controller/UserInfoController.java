@@ -139,9 +139,12 @@ public class UserInfoController {
 
         if (!rList.isEmpty()) {
             return "user/keywordChange";
+        } else if(userId.isEmpty()) {
+            return "redirect:/user/login";
         } else {
             return "user/addKeyword";
         }
+
     }
 
     /**
